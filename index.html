@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Dominic Bowkett — Building Surveyor · Energy Assessor · Retrofit Assessor</title>
+  <meta name="description" content="Dominic Bowkett — independent building surveyor, domestic energy assessor and retrofit assessor. Based in Tunbridge Wells, working across Kent, East Sussex and the South East." />
+  <meta name="theme-color" content="#000000" />
+  <link rel="canonical" href="https://dominicbowkett.com/" />
+
+  <style>
+    /* ------------------------------------------------------------------
+       DOMINIC BOWKETT — STATIC SITE
+       Black & white. Brutalist. Grid. No external assets.
+       ------------------------------------------------------------------ */
+
+    :root {
+      --ink: #000;
+      --paper: #fff;
+      --rule: 1.5px;
+      --rule-thick: 3px;
+      --gap: clamp(16px, 2vw, 28px);
+      --pad-x: clamp(20px, 4vw, 56px);
+      --mono: ui-monospace, "SF Mono", "SFMono-Regular", Menlo, Consolas, "Liberation Mono", monospace;
+      --sans: "Helvetica Neue", Helvetica, Arial, "Segoe UI", system-ui, sans-serif;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+    html, body { margin: 0; padding: 0; }
+    html { background: var(--paper); color: var(--ink); -webkit-font-smoothing: antialiased; }
+    body {
+      font-family: var(--sans);
+      font-size: 16px;
+      line-height: 1.45;
+      background: var(--paper);
+      color: var(--ink);
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover, a:focus-visible { background: var(--ink); color: var(--paper); outline: none; }
+
+    img, svg { display: block; max-width: 100%; }
+
+    /* Reusable helpers */
+    .mono { font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; }
+    .rule { background: var(--ink); height: var(--rule); width: 100%; }
+    .rule-thick { background: var(--ink); height: var(--rule-thick); width: 100%; }
+    .sr { position:absolute; width:1px; height:1px; padding:0; margin:-1px; overflow:hidden; clip:rect(0,0,0,0); border:0; }
+
+    /* ===============  TOP BAR  =============== */
+    header.top {
+      position: sticky; top: 0; z-index: 50;
+      background: var(--paper);
+      border-bottom: var(--rule) solid var(--ink);
+    }
+    .top-grid {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      align-items: center;
+      gap: var(--gap);
+      padding: 12px var(--pad-x);
+    }
+    .top-left, .top-right { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; }
+    .top-right { text-align: right; }
+    .top-mark { font-family: var(--sans); font-weight: 900; letter-spacing: -0.02em; font-size: 18px; }
+    .top-mark span { display: inline-block; padding: 2px 8px; border: var(--rule) solid var(--ink); }
+
+    nav.primary { border-bottom: var(--rule) solid var(--ink); }
+    nav.primary ol {
+      list-style: none; margin: 0; padding: 0;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+    }
+    nav.primary li + li { border-left: var(--rule) solid var(--ink); }
+    nav.primary a {
+      display: flex; align-items: baseline; justify-content: space-between;
+      padding: 14px var(--pad-x);
+      font-family: var(--mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    nav.primary a .num { opacity: 0.55; margin-right: 12px; }
+
+    /* ===============  HERO  =============== */
+    .hero {
+      border-bottom: var(--rule-thick) solid var(--ink);
+    }
+    .hero-meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--gap);
+      padding: 14px var(--pad-x);
+      border-bottom: var(--rule) solid var(--ink);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .hero-meta span:nth-child(2) { text-align: center; }
+    .hero-meta span:nth-child(3) { text-align: right; }
+
+    .hero-stack {
+      display: grid;
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      gap: 0;
+    }
+    .hero-stack > * { padding: clamp(28px, 4vw, 56px) var(--pad-x); }
+    .hero-name {
+      border-right: var(--rule) solid var(--ink);
+      display: flex; flex-direction: column; justify-content: space-between;
+      gap: clamp(28px, 5vw, 80px);
+    }
+    .hero-name h1 {
+      margin: 0;
+      font-family: var(--sans);
+      font-weight: 900;
+      font-size: clamp(64px, 14vw, 220px);
+      line-height: 0.86;
+      letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+    .hero-name h1 span { display: block; }
+    .hero-name h1 .slash {
+      display: inline-block;
+      transform: translateY(-0.05em);
+      padding: 0 0.05em;
+    }
+    .hero-foot {
+      display: flex; justify-content: space-between; align-items: end;
+      gap: var(--gap);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+
+    .hero-pitch { display: flex; flex-direction: column; justify-content: space-between; gap: 32px; }
+    .hero-pitch .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65; }
+    .hero-pitch p.lede {
+      margin: 14px 0 0;
+      font-size: clamp(20px, 2vw, 28px);
+      line-height: 1.18;
+      letter-spacing: -0.01em;
+      max-width: 36ch;
+    }
+    .hero-pitch p.lede b { font-weight: 900; }
+    .hero-pitch .cta {
+      display: inline-flex; align-items: center; gap: 16px;
+      align-self: flex-start;
+      padding: 14px 22px;
+      border: var(--rule-thick) solid var(--ink);
+      font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    }
+    .hero-pitch .cta::after { content: "\2192"; font-size: 18px; transform: translateY(-1px); }
+
+    /* ===============  MARQUEE  =============== */
+    .marquee {
+      border-bottom: var(--rule) solid var(--ink);
+      overflow: hidden;
+      background: var(--ink);
+      color: var(--paper);
+    }
+    .marquee-track {
+      display: flex; gap: 48px;
+      white-space: nowrap;
+      padding: 16px 0;
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(20px, 3vw, 36px);
+      letter-spacing: -0.01em;
+      text-transform: uppercase;
+      animation: slide 38s linear infinite;
+    }
+    .marquee-track span { display: inline-flex; align-items: center; gap: 48px; }
+    .marquee-track span::after { content: "\25CF"; font-size: 0.5em; transform: translateY(-3px); }
+    @keyframes slide { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    @media (prefers-reduced-motion: reduce) { .marquee-track { animation: none; } }
+
+    /* ===============  SECTION  =============== */
+    section { border-bottom: var(--rule-thick) solid var(--ink); }
+    .section-head {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--gap);
+      padding: 14px var(--pad-x);
+      border-bottom: var(--rule) solid var(--ink);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .section-head h2 { margin: 0; font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; font-weight: 700; }
+    .section-head .right { text-align: right; }
+
+    /* services */
+    .services { display: grid; grid-template-columns: repeat(4, 1fr); }
+    .service { padding: clamp(24px, 3vw, 40px) var(--pad-x); display: flex; flex-direction: column; gap: 18px; min-height: 320px; }
+    .service + .service { border-left: var(--rule) solid var(--ink); }
+    .service .num { font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; }
+    .service h3 {
+      margin: 0;
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(22px, 2.2vw, 32px); line-height: 1; letter-spacing: -0.02em;
+      text-transform: uppercase;
+    }
+    .service p { margin: 0; font-size: 14.5px; line-height: 1.5; max-width: 28ch; }
+    .service .more { margin-top: auto; font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; border-top: var(--rule) solid var(--ink); padding-top: 12px; }
+    .service .more::after { content: " \2192"; }
+
+    /* coverage */
+    .coverage { padding: clamp(40px, 6vw, 96px) var(--pad-x); }
+    .coverage .codes {
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(48px, 10vw, 160px);
+      line-height: 0.9; letter-spacing: -0.04em; text-transform: uppercase;
+      word-spacing: 0.18em;
+    }
+    .coverage .codes .dot { display: inline-block; transform: translateY(-0.18em); padding: 0 0.05em; }
+    .coverage .footnote {
+      margin-top: 24px;
+      display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--gap);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+    }
+    .coverage .footnote span:nth-child(2) { text-align: center; }
+    .coverage .footnote span:nth-child(3) { text-align: right; }
+
+    /* credentials */
+    .creds {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+    }
+    .cred { padding: 22px var(--pad-x); display: flex; flex-direction: column; gap: 4px; min-height: 110px; justify-content: center; }
+    .cred + .cred { border-left: var(--rule) solid var(--ink); }
+    .cred .label { font-family: var(--mono); font-size: 10.5px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; }
+    .cred .value { font-family: var(--sans); font-weight: 900; font-size: clamp(18px, 1.6vw, 24px); letter-spacing: -0.01em; text-transform: uppercase; }
+
+    /* CTA */
+    .cta-row {
+      display: grid; grid-template-columns: 2fr 1fr;
+      align-items: stretch;
+    }
+    .cta-row > * { padding: clamp(40px, 5vw, 80px) var(--pad-x); }
+    .cta-headline {
+      border-right: var(--rule) solid var(--ink);
+    }
+    .cta-headline h2 {
+      margin: 0;
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(40px, 7vw, 110px);
+      line-height: 0.9; letter-spacing: -0.04em; text-transform: uppercase;
+    }
+    .cta-side { display: flex; flex-direction: column; justify-content: space-between; gap: 24px; }
+    .cta-side p { margin: 0; font-size: 15px; line-height: 1.5; }
+    .cta-side a.button {
+      display: inline-flex; align-items: center; justify-content: space-between; gap: 16px;
+      padding: 18px 22px;
+      background: var(--ink); color: var(--paper);
+      font-family: var(--mono); font-size: 12px; letter-spacing: 0.14em; text-transform: uppercase; font-weight: 700;
+    }
+    .cta-side a.button:hover { background: var(--paper); color: var(--ink); outline: var(--rule-thick) solid var(--ink); outline-offset: -3px; }
+    .cta-side a.button::after { content: "\2192"; font-size: 18px; }
+
+    /* ===============  FOOTER  =============== */
+    footer.foot { background: var(--ink); color: var(--paper); }
+    .foot-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--gap);
+      padding: clamp(32px, 4vw, 56px) var(--pad-x);
+      border-bottom: var(--rule) solid var(--paper);
+    }
+    .foot-top h4 { margin: 0 0 16px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.7; font-weight: 600; }
+    .foot-top ul { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; font-size: 14px; }
+    .foot-top a:hover, .foot-top a:focus-visible { background: var(--paper); color: var(--ink); }
+    .foot-mark {
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(28px, 3.6vw, 56px);
+      line-height: 1; letter-spacing: -0.03em; text-transform: uppercase;
+    }
+    .foot-mark p { margin: 16px 0 0; font-size: 14px; max-width: 38ch; opacity: 0.85; line-height: 1.5; }
+    .foot-bottom {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: var(--gap);
+      padding: 14px var(--pad-x);
+      font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase;
+      opacity: 0.85;
+    }
+    .foot-bottom span:nth-child(2) { text-align: center; }
+    .foot-bottom span:nth-child(3) { text-align: right; }
+
+    /* ===============  RESPONSIVE  =============== */
+    @media (max-width: 900px) {
+      nav.primary ol { grid-template-columns: repeat(2, 1fr); }
+      nav.primary li:nth-child(2) { border-left: var(--rule) solid var(--ink); }
+      nav.primary li:nth-child(3), nav.primary li:nth-child(4) { border-top: var(--rule) solid var(--ink); }
+      nav.primary li:nth-child(3) { border-left: 0; }
+      .hero-stack { grid-template-columns: 1fr; }
+      .hero-name { border-right: 0; border-bottom: var(--rule) solid var(--ink); }
+      .services { grid-template-columns: repeat(2, 1fr); }
+      .service:nth-child(odd) { border-left: 0; }
+      .service:nth-child(2) { border-left: var(--rule) solid var(--ink); }
+      .service:nth-child(3), .service:nth-child(4) { border-top: var(--rule) solid var(--ink); }
+      .creds { grid-template-columns: repeat(2, 1fr); }
+      .cred:nth-child(2) { border-left: var(--rule) solid var(--ink); }
+      .cred:nth-child(3), .cred:nth-child(4) { border-top: var(--rule) solid var(--ink); }
+      .cred:nth-child(3) { border-left: 0; }
+      .cta-row { grid-template-columns: 1fr; }
+      .cta-headline { border-right: 0; border-bottom: var(--rule) solid var(--ink); }
+      .foot-top { grid-template-columns: 1fr 1fr; }
+      .top-grid { grid-template-columns: 1fr 1fr; }
+      .top-mark { display: none; }
+    }
+
+    @media (max-width: 560px) {
+      .hero-meta, .section-head, .coverage .footnote, .foot-bottom { grid-template-columns: 1fr; gap: 4px; }
+      .hero-meta span:nth-child(2), .hero-meta span:nth-child(3),
+      .section-head .right,
+      .coverage .footnote span:nth-child(2), .coverage .footnote span:nth-child(3),
+      .foot-bottom span:nth-child(2), .foot-bottom span:nth-child(3) { text-align: left; }
+      .services { grid-template-columns: 1fr; }
+      .service { border-left: 0 !important; }
+      .service + .service { border-top: var(--rule) solid var(--ink); }
+      .creds { grid-template-columns: 1fr; }
+      .cred + .cred { border-left: 0; border-top: var(--rule) solid var(--ink); }
+      .foot-top { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ===============  TOP BAR  =============== -->
+  <header class="top" role="banner">
+    <div class="top-grid">
+      <div class="top-left">DB · Independent Practice · Est. 2018</div>
+      <a class="top-mark" href="/" aria-label="Dominic Bowkett, home"><span>DB</span></a>
+      <div class="top-right">Tunbridge Wells · Kent · UK</div>
+    </div>
+    <nav class="primary" aria-label="Primary">
+      <ol>
+        <li><a href="/about/"><span><span class="num">01</span>About</span><span class="num" aria-hidden="true">&rarr;</span></a></li>
+        <li><a href="/services/"><span><span class="num">02</span>Services</span><span class="num" aria-hidden="true">&rarr;</span></a></li>
+        <li><a href="/blog/"><span><span class="num">03</span>Journal</span><span class="num" aria-hidden="true">&rarr;</span></a></li>
+        <li><a href="/contact/"><span><span class="num">04</span>Contact</span><span class="num" aria-hidden="true">&rarr;</span></a></li>
+      </ol>
+    </nav>
+  </header>
+
+  <main id="main">
+
+    <!-- ===============  HERO  =============== -->
+    <section class="hero" aria-labelledby="hero-h">
+      <div class="hero-meta">
+        <span>Index &mdash; 001 / Home</span>
+        <span>Building Surveys · EPCs · Retrofit · Ventilation</span>
+        <span>Practising in the South East</span>
+      </div>
+
+      <div class="hero-stack">
+        <div class="hero-name">
+          <h1 id="hero-h">
+            <span>Dominic</span>
+            <span>Bowkett<span class="slash">.</span></span>
+          </h1>
+          <div class="hero-foot">
+            <span>Independent &mdash; Impartial &mdash; RPSA Accredited</span>
+            <span>Scroll &darr;</span>
+          </div>
+        </div>
+
+        <aside class="hero-pitch">
+          <div>
+            <div class="eyebrow">A short introduction</div>
+            <p class="lede">
+              I&rsquo;m a <b>building surveyor, domestic energy assessor and retrofit assessor</b> working with homeowners, landlords and small developers across <b>Kent, East Sussex</b> and the wider South East &mdash; helping them buy, let and improve property with confidence.
+            </p>
+          </div>
+          <a class="cta" href="/contact/">Request a quote</a>
+        </aside>
+      </div>
+    </section>
+
+    <!-- ===============  MARQUEE  =============== -->
+    <div class="marquee" aria-hidden="true">
+      <div class="marquee-track">
+        <span>Available for instructions</span>
+        <span>RPSA building surveys</span>
+        <span>Energy Performance Certificates</span>
+        <span>PAS 2035 retrofit assessments</span>
+        <span>Ventilation testing</span>
+        <span>MEP accredited</span>
+        <span>Available for instructions</span>
+        <span>RPSA building surveys</span>
+        <span>Energy Performance Certificates</span>
+        <span>PAS 2035 retrofit assessments</span>
+        <span>Ventilation testing</span>
+        <span>MEP accredited</span>
+      </div>
+    </div>
+
+    <!-- ===============  SERVICES  =============== -->
+    <section aria-labelledby="services-h">
+      <div class="section-head">
+        <h2 id="services-h">&sect; 01 &mdash; Services</h2>
+        <span>Four core instructions</span>
+        <span class="right"><a href="/services/">All services &rarr;</a></span>
+      </div>
+      <div class="services">
+        <article class="service">
+          <div class="num">01</div>
+          <h3>Building<br/>Surveys</h3>
+          <p>Plain-English condition reports for buyers, owners and landlords &mdash; from Level 2 home surveys to detailed Level 3 building surveys on period and listed property.</p>
+          <a class="more" href="/services/building-surveys/">Read more</a>
+        </article>
+        <article class="service">
+          <div class="num">02</div>
+          <h3>Energy<br/>Certificates</h3>
+          <p>Accredited domestic EPCs for sales, lettings and MEES compliance &mdash; with practical, costed advice on how to lift the rating where it matters.</p>
+          <a class="more" href="/services/epc/">Read more</a>
+        </article>
+        <article class="service">
+          <div class="num">03</div>
+          <h3>Retrofit<br/>Assessments</h3>
+          <p>PAS 2035 retrofit assessments for ECO4, GBIS and self-funded works &mdash; the foundation of any well-planned, low-risk fabric upgrade.</p>
+          <a class="more" href="/services/retrofit/">Read more</a>
+        </article>
+        <article class="service">
+          <div class="num">04</div>
+          <h3>Ventilation<br/>Testing</h3>
+          <p>Independent ventilation testing and design review for new builds, refurbishments and retrofit projects &mdash; meeting Approved Document F.</p>
+          <a class="more" href="/services/ventilation/">Read more</a>
+        </article>
+      </div>
+    </section>
+
+    <!-- ===============  COVERAGE  =============== -->
+    <section aria-labelledby="coverage-h">
+      <div class="section-head">
+        <h2 id="coverage-h">&sect; 02 &mdash; Coverage</h2>
+        <span>Postcode districts</span>
+        <span class="right">South East England</span>
+      </div>
+      <div class="coverage">
+        <div class="codes" aria-label="Postcode coverage">
+          TN<span class="dot">·</span>RH<span class="dot">·</span>ME<span class="dot">·</span>DA<span class="dot">·</span>BR<span class="dot">·</span>RM<span class="dot">·</span>KT<span class="dot">·</span>CR<span class="dot">·</span>SM<span class="dot">·</span>BN
+        </div>
+        <div class="footnote">
+          <span>Tunbridge Wells &mdash; Sevenoaks &mdash; Tonbridge</span>
+          <span>Maidstone &mdash; Ashford &mdash; Canterbury</span>
+          <span>Hastings &mdash; Eastbourne &mdash; Brighton</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===============  CREDENTIALS  =============== -->
+    <section aria-labelledby="creds-h">
+      <div class="section-head">
+        <h2 id="creds-h">&sect; 03 &mdash; Credentials</h2>
+        <span>Qualifications &amp; accreditations</span>
+        <span class="right">Independent practice</span>
+      </div>
+      <div class="creds">
+        <div class="cred"><div class="label">Qualifications</div><div class="value">BA · GDL · MSc</div></div>
+        <div class="cred"><div class="label">Surveying</div><div class="value">MRPSA</div></div>
+        <div class="cred"><div class="label">Energy &amp; Retrofit</div><div class="value">CertDEA · Elmhurst</div></div>
+        <div class="cred"><div class="label">Schemes</div><div class="value">ECMK · Trustmark · MEP</div></div>
+      </div>
+    </section>
+
+    <!-- ===============  CTA  =============== -->
+    <section aria-labelledby="cta-h">
+      <div class="section-head">
+        <h2 id="cta-h">&sect; 04 &mdash; Get in touch</h2>
+        <span>Quotes within one working day</span>
+        <span class="right">No obligation</span>
+      </div>
+      <div class="cta-row">
+        <div class="cta-headline">
+          <h2>Plan it well.<br/>Build it once.</h2>
+        </div>
+        <div class="cta-side">
+          <p>Tell me a little about the property &mdash; postcode, age, what you&rsquo;re trying to do &mdash; and I&rsquo;ll come back with a fixed fee, a date and a clear scope.</p>
+          <a class="button" href="/contact/">Start an enquiry</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ===============  FOOTER  =============== -->
+  <footer class="foot" role="contentinfo">
+    <div class="foot-top">
+      <div>
+        <h4>Practice</h4>
+        <div class="foot-mark">Dominic<br/>Bowkett.</div>
+        <p>Independent building surveyor, domestic energy assessor and retrofit assessor. Practising across Kent, East Sussex and the South East.</p>
+      </div>
+      <div>
+        <h4>Site</h4>
+        <ul>
+          <li><a href="/about/">About</a></li>
+          <li><a href="/services/">Services</a></li>
+          <li><a href="/blog/">Journal</a></li>
+          <li><a href="/contact/">Contact</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Services</h4>
+        <ul>
+          <li><a href="/services/building-surveys/">Building surveys</a></li>
+          <li><a href="/services/epc/">Energy certificates</a></li>
+          <li><a href="/services/retrofit/">Retrofit assessments</a></li>
+          <li><a href="/services/ventilation/">Ventilation testing</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="mailto:hello@dominicbowkett.com">hello@dominicbowkett.com</a></li>
+          <li>Tunbridge Wells, Kent</li>
+          <li><a href="https://uk.linkedin.com/in/dominic-bowkett">LinkedIn &rarr;</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="foot-bottom">
+      <span>&copy; <span id="yr">2026</span> Dominic Bowkett</span>
+      <span>All rights reserved</span>
+      <span>Site v1.0 &mdash; Static &mdash; B/W</span>
+    </div>
+  </footer>
+
+  <script>
+    // tiny: keep the year fresh without a build step
+    document.getElementById('yr').textContent = new Date().getFullYear();
+  </script>
+
+</body>
+</html>
