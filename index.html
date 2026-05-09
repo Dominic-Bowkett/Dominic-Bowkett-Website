@@ -318,6 +318,20 @@
     }
     .logo-cell .glyph svg { width: 36px; height: 36px; }
     .logo-cell .glyph img { width: 44px; height: 44px; object-fit: contain; display: block; }
+    /* For cells using real branded artwork the inner frame is dropped
+       so the logo can present at proper proportions. */
+    .logo-cell .brand {
+      width: 100%;
+      min-height: 60px;
+      display: grid; place-items: center;
+    }
+    .logo-cell .brand img {
+      max-width: 100%;
+      max-height: 64px;
+      width: auto; height: auto;
+      object-fit: contain;
+      display: block;
+    }
     .logo-cell .mark {
       font-family: var(--sans); font-weight: 900;
       font-size: clamp(16px, 1.5vw, 22px);
@@ -952,18 +966,11 @@
           <div class="sub">Government endorsed</div>
         </div>
 
-        <!-- 4. ECMK -->
-        <!--
-          Logo slot wired to assets/logos/ecmk.svg. Drop the official
-          ECMK member badge into that file (registered members can get
-          it directly from the scheme). The same slot pattern can be
-          extended to the other accreditation cells.
-        -->
+        <!-- 4. ECMK (real branded artwork) -->
         <div class="logo-cell">
-          <div class="glyph">
-            <img src="assets/logos/ecmk.svg" alt="ECMK accreditation badge" width="44" height="44" loading="lazy" />
+          <div class="brand">
+            <img src="assets/logos/ecmk.jpg" alt="ECMK" loading="lazy" />
           </div>
-          <div class="mark">ECMK</div>
           <div class="sub">Scheme registered</div>
         </div>
 
