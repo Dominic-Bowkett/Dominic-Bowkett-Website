@@ -167,6 +167,65 @@
     }
     .hero-pitch .cta::after { content: "\2192"; font-size: 18px; transform: translateY(-1px); }
 
+    /* ===============  ABOUT / PRACTITIONER  =============== */
+    .about-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+    }
+    .about-portrait {
+      border-right: var(--rule) solid var(--ink);
+      background: #ededed;
+      min-height: 460px;
+      display: block;
+      overflow: hidden;
+    }
+    .about-portrait img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      min-height: 460px;
+      object-fit: cover;
+      object-position: center top;
+    }
+    .about-bio {
+      padding: clamp(36px, 5vw, 72px) var(--pad-x);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 22px;
+    }
+    .about-bio .eyebrow {
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65;
+    }
+    .about-bio h3 {
+      margin: 0;
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(40px, 6vw, 88px);
+      line-height: 0.92; letter-spacing: -0.04em;
+      text-transform: uppercase;
+    }
+    .about-bio p {
+      margin: 0;
+      font-size: clamp(15px, 1.1vw, 17px);
+      line-height: 1.55;
+      max-width: 52ch;
+    }
+    .about-bio .signature {
+      margin-top: 6px;
+      display: flex; align-items: center; gap: 18px;
+      font-family: var(--mono); font-size: 11px;
+      letter-spacing: 0.1em; text-transform: uppercase;
+    }
+    .about-bio .signature .pen {
+      font-family: "Brush Script MT", "Snell Roundhand", "Lucida Handwriting", cursive;
+      font-style: italic;
+      font-size: clamp(28px, 3vw, 40px);
+      line-height: 1; letter-spacing: 0;
+      text-transform: none;
+      transform: translateY(-2px);
+    }
+
     /* ===============  ELEVATIONS STRIP  =============== */
     .elevations {
       border-bottom: var(--rule) solid var(--ink);
@@ -424,6 +483,9 @@
 
     /* ===============  RESPONSIVE  =============== */
     @media (max-width: 900px) {
+      .about-grid { grid-template-columns: 1fr; }
+      .about-portrait { border-right: 0; border-bottom: var(--rule) solid var(--ink); min-height: 360px; }
+      .about-portrait img { min-height: 360px; }
       .elevations .caption { grid-template-columns: repeat(2, 1fr); row-gap: 6px; }
       nav.primary ol { grid-template-columns: repeat(2, 1fr); }
       nav.primary li:nth-child(2) { border-left: var(--rule) solid var(--ink); }
@@ -531,10 +593,37 @@
       </div>
     </section>
 
+    <!-- ===============  PRACTITIONER  =============== -->
+    <section aria-labelledby="about-h">
+      <div class="section-head">
+        <h2 id="about-h">&sect; 00 &mdash; Practitioner</h2>
+        <span>Independent &mdash; Tunbridge Wells</span>
+        <span class="right">Estd. 2018</span>
+      </div>
+      <div class="about-grid">
+        <figure class="about-portrait">
+          <img src="assets/img/dom-portrait.webp"
+               alt="Portrait of Dominic Bowkett"
+               width="800" height="980" loading="lazy" />
+        </figure>
+        <div class="about-bio">
+          <span class="eyebrow">A short introduction</span>
+          <h3>Hello,<br/>I&rsquo;m Dom.</h3>
+          <p>I trained in law and the social sciences before moving into surveying &mdash; a route that taught me to read documents carefully, write clearly, and think hard about the people behind the property.</p>
+          <p>I now run an independent practice from Tunbridge Wells, working with homeowners, landlords and small developers across Kent, East Sussex and the wider South East.</p>
+          <p>What you&rsquo;ll get from me: plain-English reports, fixed fees agreed up front, and a practical, honest read of the building you&rsquo;re about to buy, sell or improve.</p>
+          <div class="signature">
+            <span class="pen">Dominic</span>
+            <span>Dominic Bowkett &middot; MRPSA</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===============  ELEVATIONS  =============== -->
     <section class="elevations" aria-labelledby="elev-h">
       <div class="head">
-        <span id="elev-h">&sect; 00 &mdash; Elevations</span>
+        <span id="elev-h">&sect; 01 &mdash; Elevations</span>
         <span>Stock typology &mdash; South East England</span>
         <span>Sheet 01 / 04</span>
       </div>
@@ -781,7 +870,7 @@
     <!-- ===============  SERVICES  =============== -->
     <section aria-labelledby="services-h">
       <div class="section-head">
-        <h2 id="services-h">&sect; 01 &mdash; Services</h2>
+        <h2 id="services-h">&sect; 02 &mdash; Services</h2>
         <span>Four core instructions</span>
         <span class="right"><a href="/services/">All services &rarr;</a></span>
       </div>
@@ -868,7 +957,7 @@
     <!-- ===============  COVERAGE  =============== -->
     <section aria-labelledby="coverage-h">
       <div class="section-head">
-        <h2 id="coverage-h">&sect; 02 &mdash; Coverage</h2>
+        <h2 id="coverage-h">&sect; 03 &mdash; Coverage</h2>
         <span>Postcode districts</span>
         <span class="right">South East England</span>
       </div>
@@ -917,7 +1006,7 @@
     -->
     <section aria-labelledby="creds-h">
       <div class="section-head">
-        <h2 id="creds-h">&sect; 03 &mdash; Accreditations</h2>
+        <h2 id="creds-h">&sect; 04 &mdash; Accreditations</h2>
         <span>Independent &middot; registered &middot; audited</span>
         <span class="right">Qualifications &mdash; BA &middot; GDL &middot; MSc</span>
       </div>
@@ -1035,7 +1124,7 @@
     <!-- ===============  CTA  =============== -->
     <section aria-labelledby="cta-h">
       <div class="section-head">
-        <h2 id="cta-h">&sect; 04 &mdash; Get in touch</h2>
+        <h2 id="cta-h">&sect; 05 &mdash; Get in touch</h2>
         <span>Quotes within one working day</span>
         <span class="right">No obligation</span>
       </div>
@@ -1062,7 +1151,7 @@
     -->
     <section aria-labelledby="pay-h">
       <div class="pay-head">
-        <h2 id="pay-h">&sect; 05 &mdash; Payments accepted</h2>
+        <h2 id="pay-h">&sect; 06 &mdash; Payments accepted</h2>
         <span>Card &middot; bank transfer &middot; split payment</span>
         <span>Secure checkout</span>
       </div>
