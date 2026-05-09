@@ -400,6 +400,56 @@
       font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; opacity: 0.7;
     }
 
+    /* ===============  ACCREDITATIONS LOGO STRIP (scrolling)  =============== */
+    .logo-strip {
+      overflow: hidden;
+      position: relative;
+      background: var(--paper);
+    }
+    .logo-strip::before,
+    .logo-strip::after {
+      content: "";
+      position: absolute; top: 0; bottom: 0; width: 80px; z-index: 2;
+      pointer-events: none;
+    }
+    .logo-strip::before { left: 0;  background: linear-gradient(to right, #fff, rgba(255,255,255,0)); }
+    .logo-strip::after  { right: 0; background: linear-gradient(to left,  #fff, rgba(255,255,255,0)); }
+    .logo-track {
+      display: flex; width: max-content;
+      animation: logoslide 55s linear infinite;
+    }
+    .logo-set {
+      list-style: none; margin: 0; padding: 28px 0;
+      display: flex; align-items: center;
+      flex-shrink: 0;
+    }
+    .logo-item {
+      flex-shrink: 0;
+      height: 64px;
+      display: flex; align-items: center;
+      margin-right: 72px;
+    }
+    .logo-item img {
+      height: 64px; width: auto; max-width: none;
+      display: block; object-fit: contain;
+    }
+    .logo-item.text {
+      font-family: var(--sans); font-weight: 900;
+      font-size: clamp(20px, 1.8vw, 26px);
+      letter-spacing: -0.01em; text-transform: uppercase;
+      line-height: 1;
+      white-space: nowrap;
+    }
+    @keyframes logoslide {
+      from { transform: translateX(0); }
+      to   { transform: translateX(-50%); }
+    }
+    .logo-strip:hover .logo-track,
+    .logo-strip:focus-within .logo-track { animation-play-state: paused; }
+    @media (prefers-reduced-motion: reduce) {
+      .logo-track { animation: none; }
+    }
+
     /* ===============  PAYMENTS STRIP  =============== */
     .pay-head {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
@@ -1011,112 +1061,39 @@
         <span class="right">Qualifications &mdash; BA &middot; GDL &middot; MSc</span>
       </div>
 
-      <div class="logos">
-        <!-- 1. RPSA -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: replace with official RPSA badge -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
-              <rect x="4" y="4" width="28" height="28" />
-              <rect x="10" y="10" width="16" height="16" />
-              <line x1="18" y1="4" x2="18" y2="10" />
-              <line x1="18" y1="26" x2="18" y2="32" />
-              <line x1="4" y1="18" x2="10" y2="18" />
-              <line x1="26" y1="18" x2="32" y2="18" />
-            </svg>
-          </div>
-          <div class="mark">RPSA</div>
-          <div class="sub">Member &mdash; MRPSA</div>
-        </div>
-
-        <!-- 2. Elmhurst Energy (real branded artwork) -->
-        <div class="logo-cell">
-          <div class="brand">
-            <img src="assets/logos/elmhurst.jpg" alt="Elmhurst Energy approved energy assessor" loading="lazy" />
-          </div>
-          <div class="sub">Approved energy assessor</div>
-        </div>
-
-        <!-- 3. TrustMark -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: replace with TrustMark licensed-business badge -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.8">
-              <circle cx="18" cy="18" r="13" />
-              <path d="M 11 18 L 16 23 L 25 13" stroke-width="2.4" />
-            </svg>
-          </div>
-          <div class="mark">TrustMark</div>
-          <div class="sub">Government endorsed</div>
-        </div>
-
-        <!-- 4. ECMK (real branded artwork) -->
-        <div class="logo-cell">
-          <div class="brand">
-            <img src="assets/logos/ecmk.jpg" alt="ECMK" loading="lazy" />
-          </div>
-          <div class="sub">Scheme registered</div>
-        </div>
-
-        <!-- 5. PAS 2035 -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: PAS 2035 retrofit assessor -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
-              <rect x="3" y="9" width="30" height="18" />
-              <text x="18" y="22" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="10" font-weight="900" fill="currentColor" stroke="none">2035</text>
-              <line x1="3" y1="13" x2="33" y2="13" />
-              <line x1="3" y1="23" x2="33" y2="23" />
-            </svg>
-          </div>
-          <div class="mark">PAS 2035</div>
-          <div class="sub">Retrofit assessor</div>
-        </div>
-
-        <!-- 6. CertDEA -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: domestic energy assessor -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
-              <rect x="6" y="5" width="24" height="22" />
-              <line x1="6" y1="11" x2="30" y2="11" />
-              <line x1="10" y1="17" x2="22" y2="17" />
-              <line x1="10" y1="21" x2="20" y2="21" />
-              <path d="M 12 27 L 12 33 L 18 30 L 24 33 L 24 27" />
-            </svg>
-          </div>
-          <div class="mark">CertDEA</div>
-          <div class="sub">Domestic energy assessor</div>
-        </div>
-
-        <!-- 7. MEP -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: MEP accreditation badge -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
-              <circle cx="18" cy="18" r="6" />
-              <line x1="18" y1="2"  x2="18" y2="12" />
-              <line x1="18" y1="24" x2="18" y2="34" />
-              <line x1="2"  y1="18" x2="12" y2="18" />
-              <line x1="24" y1="18" x2="34" y2="18" />
-              <circle cx="18" cy="18" r="2" fill="currentColor" stroke="none" />
-            </svg>
-          </div>
-          <div class="mark">MEP</div>
-          <div class="sub">Accredited tester</div>
-        </div>
-
-        <!-- 8. CWI Tech -->
-        <div class="logo-cell">
-          <div class="glyph" aria-hidden="true">
-            <!-- placeholder: CWI Tech survey accreditation -->
-            <svg viewBox="0 0 36 36" fill="none" stroke="currentColor" stroke-width="1.6">
-              <polygon points="18,4 31,11 31,25 18,32 5,25 5,11" />
-              <text x="18" y="22" text-anchor="middle" font-family="Helvetica, Arial, sans-serif" font-size="9" font-weight="900" fill="currentColor" stroke="none">CWI</text>
-            </svg>
-          </div>
-          <div class="mark">CWI Tech</div>
-          <div class="sub">Cavity wall surveys</div>
+      <!--
+        Single-line scrolling logo strip. All logos render at uniform
+        64px height with width derived from each badge's natural aspect
+        ratio. Real artwork lives in /assets/logos/. Placeholders
+        (RPSA, PAS 2035, CertDEA, MEP, CWI Tech) display as bold text
+        wordmarks at the same height until you supply the real badges.
+        The set is duplicated (second copy aria-hidden) so the loop is
+        seamless. Hover or focus pauses the animation.
+      -->
+      <div class="logo-strip" aria-label="Accreditations">
+        <div class="logo-track">
+          <ul class="logo-set">
+            <li class="logo-item text">RPSA</li>
+            <li class="logo-item"><img src="assets/logos/trustmark.png" alt="TrustMark — government endorsed quality" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/elmhurst.jpg" alt="Elmhurst Energy approved energy assessor" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/quidos.png" alt="Quidos — energy efficiency" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/ecmk.jpg" alt="ECMK scheme registered" loading="lazy" /></li>
+            <li class="logo-item text">PAS 2035</li>
+            <li class="logo-item text">CertDEA</li>
+            <li class="logo-item text">MEP</li>
+            <li class="logo-item text">CWI Tech</li>
+          </ul>
+          <ul class="logo-set" aria-hidden="true">
+            <li class="logo-item text">RPSA</li>
+            <li class="logo-item"><img src="assets/logos/trustmark.png" alt="" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/elmhurst.jpg" alt="" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/quidos.png" alt="" loading="lazy" /></li>
+            <li class="logo-item"><img src="assets/logos/ecmk.jpg" alt="" loading="lazy" /></li>
+            <li class="logo-item text">PAS 2035</li>
+            <li class="logo-item text">CertDEA</li>
+            <li class="logo-item text">MEP</li>
+            <li class="logo-item text">CWI Tech</li>
+          </ul>
         </div>
       </div>
     </section>
