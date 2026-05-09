@@ -429,10 +429,23 @@
       display: flex; align-items: center;
       margin-right: 72px;
     }
+    /*
+      Every brand image differs in how much padding sits around its
+      letterforms. Sizing every <img> to the same height makes the
+      ones with no padding (e.g. Quidos pure wordmark) look much
+      larger than the ones with lots of padding (e.g. Elmhurst).
+      Per-badge heights below target visible cap height, not image
+      bounding box, so the brands read at roughly equal weight.
+      Tune the numbers when you swap artwork.
+    */
     .logo-item img {
-      height: 64px; width: auto; max-width: none;
+      width: auto; max-width: none;
       display: block; object-fit: contain;
     }
+    .logo-item--elmhurst  img { height: 64px; }   /* badge w/ generous padding */
+    .logo-item--trustmark img { height: 60px; }   /* circle mark + small wordmark */
+    .logo-item--ecmk      img { height: 54px; }   /* square wordmark, modest padding */
+    .logo-item--quidos    img { height: 36px; }   /* pure wordmark, no padding */
     .logo-item.text {
       font-family: var(--sans); font-weight: 900;
       font-size: clamp(20px, 1.8vw, 26px);
@@ -1074,10 +1087,10 @@
         <div class="logo-track">
           <ul class="logo-set">
             <li class="logo-item text">RPSA</li>
-            <li class="logo-item"><img src="assets/logos/trustmark.png" alt="TrustMark — government endorsed quality" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/elmhurst.jpg" alt="Elmhurst Energy approved energy assessor" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/quidos.png" alt="Quidos — energy efficiency" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/ecmk.jpg" alt="ECMK scheme registered" loading="lazy" /></li>
+            <li class="logo-item logo-item--trustmark"><img src="assets/logos/trustmark.png" alt="TrustMark — government endorsed quality" loading="lazy" /></li>
+            <li class="logo-item logo-item--elmhurst"><img src="assets/logos/elmhurst.jpg" alt="Elmhurst Energy approved energy assessor" loading="lazy" /></li>
+            <li class="logo-item logo-item--quidos"><img src="assets/logos/quidos.png" alt="Quidos — energy efficiency" loading="lazy" /></li>
+            <li class="logo-item logo-item--ecmk"><img src="assets/logos/ecmk.jpg" alt="ECMK scheme registered" loading="lazy" /></li>
             <li class="logo-item text">PAS 2035</li>
             <li class="logo-item text">CertDEA</li>
             <li class="logo-item text">MEP</li>
@@ -1085,10 +1098,10 @@
           </ul>
           <ul class="logo-set" aria-hidden="true">
             <li class="logo-item text">RPSA</li>
-            <li class="logo-item"><img src="assets/logos/trustmark.png" alt="" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/elmhurst.jpg" alt="" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/quidos.png" alt="" loading="lazy" /></li>
-            <li class="logo-item"><img src="assets/logos/ecmk.jpg" alt="" loading="lazy" /></li>
+            <li class="logo-item logo-item--trustmark"><img src="assets/logos/trustmark.png" alt="" loading="lazy" /></li>
+            <li class="logo-item logo-item--elmhurst"><img src="assets/logos/elmhurst.jpg" alt="" loading="lazy" /></li>
+            <li class="logo-item logo-item--quidos"><img src="assets/logos/quidos.png" alt="" loading="lazy" /></li>
+            <li class="logo-item logo-item--ecmk"><img src="assets/logos/ecmk.jpg" alt="" loading="lazy" /></li>
             <li class="logo-item text">PAS 2035</li>
             <li class="logo-item text">CertDEA</li>
             <li class="logo-item text">MEP</li>
