@@ -1,5 +1,3 @@
-name = "dominic-bowkett-website"
+name = "dominic-bowkett-pages"
 compatibility_date = "2026-05-10"
-
-[assets]
-directory = "./public"
+pages_build_output_dir = "./public"
