@@ -14,7 +14,7 @@ INK = (0, 0, 0)
 PAPER = (255, 255, 255)
 
 ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "assets" / "og.png"
+OUT = ROOT / "public" / "assets" / "og.png"
 
 SANS_BOLD = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
 SANS_REG = "/usr/share/fonts/truetype/liberation/LiberationSans-Regular.ttf"
