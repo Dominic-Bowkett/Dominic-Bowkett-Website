@@ -234,6 +234,36 @@ section.std:last-of-type { border-bottom: 0; }
 }
 .section-content p a:hover { border-bottom-color: var(--ink); opacity: 1; }
 
+/* ===============  PORTRAIT  =============== */
+.practice-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 320px);
+  gap: clamp(32px, 5vw, 88px);
+  align-items: start;
+}
+figure.portrait {
+  margin: 0;
+}
+figure.portrait img {
+  width: 100%;
+  height: auto;
+  filter: grayscale(1) contrast(1.02);
+  border: 1px solid var(--rule);
+}
+figure.portrait figcaption {
+  margin-top: 14px;
+  font-family: var(--mono);
+  font-size: 11px;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  text-transform: uppercase;
+}
+figure.portrait.portrait-sm {
+  max-width: 260px;
+  margin-bottom: 36px;
+}
+
 /* ===============  INDEX LIST (services, writing, etc.)  =============== */
 .index-list {
   border-top: 1px solid var(--rule);
@@ -861,6 +891,9 @@ footer.foot {
   .hero-label {
     padding-top: 0;
   }
+
+  .practice-split { grid-template-columns: 1fr; }
+  .practice-split figure.portrait { max-width: 320px; }
 
   .index-list .item-body { grid-template-columns: 1fr; gap: 12px; }
   .index-list a.item { grid-template-columns: 60px 1fr 24px; }
