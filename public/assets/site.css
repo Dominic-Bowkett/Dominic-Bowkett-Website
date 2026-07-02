@@ -237,7 +237,7 @@ section.std:last-of-type { border-bottom: 0; }
 /* ===============  PORTRAIT  =============== */
 .practice-split {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) clamp(220px, 24vw, 320px);
+  grid-template-columns: minmax(0, 1fr) clamp(160px, 16vw, 220px);
   gap: clamp(32px, 5vw, 88px);
   align-items: start;
 }
@@ -260,7 +260,7 @@ figure.portrait figcaption {
   text-transform: uppercase;
 }
 figure.portrait.portrait-sm {
-  max-width: 260px;
+  max-width: 180px;
   margin-bottom: 36px;
 }
 
@@ -893,7 +893,7 @@ footer.foot {
   }
 
   .practice-split { grid-template-columns: 1fr; }
-  .practice-split figure.portrait { max-width: 320px; }
+  .practice-split figure.portrait { max-width: 240px; }
 
   .index-list .item-body { grid-template-columns: 1fr; gap: 12px; }
   .index-list a.item { grid-template-columns: 60px 1fr 24px; }
