@@ -59,9 +59,13 @@ a {
   border-bottom: 1px solid currentColor;
   transition: opacity 0.15s, border-color 0.15s;
 }
-a:hover, a:focus-visible {
+a:hover {
   opacity: 0.6;
-  outline: none;
+}
+a:focus-visible {
+  outline: 1px solid var(--ink);
+  outline-offset: 3px;
+  opacity: 1;
 }
 
 .sr {
@@ -166,11 +170,11 @@ nav.primary a[aria-current="page"] {
   margin: 0;
   font-family: var(--sans);
   font-weight: 300;
-  font-size: clamp(36px, 5.4vw, 72px);
-  line-height: 1.08;
-  letter-spacing: -0.025em;
+  font-size: clamp(38px, 5.8vw, 82px);
+  line-height: 1.05;
+  letter-spacing: -0.028em;
   color: var(--ink);
-  max-width: 22ch;
+  max-width: 20ch;
 }
 .hero .lede {
   margin: 56px 0 0;
@@ -327,7 +331,6 @@ section.std:last-of-type { border-bottom: 0; }
   display: block;
   width: 100%;
   height: auto;
-  max-height: 120px;
   opacity: 0.85;
 }
 .elevations-mark svg.skyline * {
@@ -486,13 +489,22 @@ footer.foot {
 }
 
 /* ===============  PROSE (article body)  =============== */
+/* Article text sits in the same 1:5 asymmetric grid as the page hero,
+   so the left edge of the copy aligns with the h1 above it. */
 .prose {
   padding: clamp(56px, 8vw, 112px) 0;
 }
 .prose .body {
-  max-width: var(--container-text);
+  max-width: var(--container);
   margin: 0 auto;
   padding: 0 var(--pad-x);
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  gap: 0 clamp(24px, 4vw, 64px);
+}
+.prose .body > * {
+  grid-column: 2;
+  max-width: 68ch;
 }
 .prose h2 {
   font-family: var(--sans);
@@ -707,7 +719,15 @@ footer.foot {
   font-family: var(--mono); font-size: 11px;
   color: var(--muted); letter-spacing: 0.02em;
   text-transform: uppercase;
+  white-space: nowrap;
 }
+.posts .arrow {
+  font-family: var(--sans); font-weight: 300; font-size: 18px;
+  color: var(--ink); opacity: 0.4;
+  align-self: center;
+  transition: opacity 0.15s;
+}
+.posts a.post-row:hover .arrow { opacity: 1; }
 .posts h2 {
   margin: 0 0 8px;
   font-family: var(--sans); font-weight: 400;
@@ -775,7 +795,6 @@ footer.foot {
   border: 0;
   border-bottom: 1px solid var(--ink);
 }
-.contact-grid .btn::after { content: " \2197"; }
 
 /* ===============  CRED LIST (about page accreditations)  =============== */
 .cred-list {
@@ -857,12 +876,12 @@ footer.foot {
     grid-template-columns: 60px 1fr;
     gap: 12px 24px;
   }
-  .posts .date {
-    grid-column: 2; grid-row: 1;
-    margin-bottom: 4px;
-  }
-  .posts h2 { grid-column: 2; }
-  .posts p { grid-column: 2; }
+  .posts .date { grid-column: 2; grid-row: 1; }
+  .posts .post-main { grid-column: 2; }
+  .posts .arrow { display: none; }
+
+  .prose .body { grid-template-columns: 1fr; }
+  .prose .body > * { grid-column: 1; }
 
   .contact-grid { grid-template-columns: 1fr; }
   .contact-grid > div + div {
