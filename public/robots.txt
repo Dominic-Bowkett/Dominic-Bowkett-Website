@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://dominicbowkett.com/sitemap.xml
+Sitemap: https://www.dominicbowkett.com/sitemap.xml
