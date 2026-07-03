@@ -447,6 +447,17 @@ footer.foot {
   border: 0;
 }
 .foot-grid ul a:hover { opacity: 0.55; }
+.foot-legal {
+  max-width: var(--container);
+  margin: 40px auto 0;
+  padding: 0 var(--pad-x);
+  font-family: var(--mono);
+  font-size: 10px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  line-height: 1.8;
+}
 .foot-bottom {
   max-width: var(--container);
   margin: 56px auto 0;
