@@ -347,6 +347,26 @@ figure.portrait.portrait-sm {
   font-weight: 400;
 }
 
+/* Postcode areas — wrapping, evenly aligned tiles */
+.postcodes {
+  list-style: none;
+  margin: 32px 0 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.postcodes li {
+  font-family: var(--mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--ink);
+  border: 1px solid var(--rule);
+  padding: 6px 0;
+  min-width: 46px;
+  text-align: center;
+}
+
 /* ===============  ELEVATIONS (architectural mark)  =============== */
 .elevations-mark {
   padding: clamp(64px, 8vw, 112px) 0;
