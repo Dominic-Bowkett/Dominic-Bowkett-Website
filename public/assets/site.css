@@ -367,6 +367,17 @@ figure.portrait.portrait-sm {
   text-align: center;
 }
 
+/* Which? Trusted Traders reviews widget */
+iframe#which-trusted-traders-review-widget {
+  border: 0;
+  width: 100%;
+  min-height: 810px;
+  margin-top: 32px;
+}
+@media screen and (min-width: 768px) {
+  iframe#which-trusted-traders-review-widget { min-height: 435px; }
+}
+
 /* ===============  ELEVATIONS (architectural mark)  =============== */
 .elevations-mark {
   padding: clamp(64px, 8vw, 112px) 0;
