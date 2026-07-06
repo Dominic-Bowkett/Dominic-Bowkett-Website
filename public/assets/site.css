@@ -367,9 +367,9 @@ figure.portrait.portrait-sm {
   text-align: center;
 }
 
-/* Which? Trusted Trader endorsement badge */
-.which-badge { margin-top: 32px; }
-.which-badge img { width: 240px; max-width: 60%; height: auto; }
+/* Which? Trusted Trader endorsement badge — mirrors the portrait layout,
+   but keeps its colour (no grayscale) and no border */
+figure.which-badge img { filter: none; border: 0; }
 
 /* Footer legal links — their own row beneath the copyright line */
 .foot-legal-links {
