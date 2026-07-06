@@ -4,7 +4,7 @@
   "description": "Independent building surveyor, domestic energy assessor and retrofit assessor. Hartfield, East Sussex.",
   "start_url": "/",
   "scope": "/",
-  "display": "standalone",
+  "display": "browser",
   "background_color": "#ffffff",
   "theme_color": "#000000",
   "icons": [
