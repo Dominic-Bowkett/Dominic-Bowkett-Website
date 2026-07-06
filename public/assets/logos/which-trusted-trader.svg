@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 712 568" role="img" aria-label="Which? Trusted Trader endorsed business">
+  <ellipse cx="356" cy="284" rx="340" ry="268" fill="#ffffff" stroke="#E4002B" stroke-width="24"/>
+  <path d="M150 232 A 300 250 0 0 1 562 232" fill="none" stroke="#E4E4E4" stroke-width="7" stroke-linecap="round"/>
+  <path d="M150 336 A 300 250 0 0 0 562 336" fill="none" stroke="#E4E4E4" stroke-width="7" stroke-linecap="round"/>
+  <g font-family="Arial, 'Helvetica Neue', Helvetica, sans-serif" fill="#0a0a0a" text-anchor="middle">
+    <text x="356" y="292" font-size="140" font-weight="700" letter-spacing="-5">Which?</text>
+    <text x="356" y="378" font-size="78" font-weight="700" letter-spacing="-2">Trusted Trader</text>
+  </g>
+  <rect x="505" y="299" width="56" height="20" fill="#E4002B"/>
+</svg>

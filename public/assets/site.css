@@ -367,16 +367,25 @@ figure.portrait.portrait-sm {
   text-align: center;
 }
 
-/* Which? Trusted Traders reviews widget */
-iframe#which-trusted-traders-review-widget {
-  border: 0;
-  width: 100%;
-  min-height: 810px;
-  margin-top: 32px;
+/* Which? Trusted Trader endorsement badge */
+.which-badge { margin-top: 32px; }
+.which-badge img { width: 240px; max-width: 60%; height: auto; }
+
+/* Footer legal links — their own row beneath the copyright line */
+.foot-legal-links {
+  max-width: var(--container);
+  margin: 14px auto 0;
+  padding: 0 var(--pad-x);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
 }
-@media screen and (min-width: 768px) {
-  iframe#which-trusted-traders-review-widget { min-height: 435px; }
-}
+.foot-legal-links a { color: var(--ink-soft); border: 0; }
+.foot-legal-links a:hover { opacity: 0.55; }
 
 /* ===============  ELEVATIONS (architectural mark)  =============== */
 .elevations-mark {
