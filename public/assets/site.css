@@ -482,6 +482,11 @@ footer.foot {
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
+.foot-bottom a {
+  color: var(--ink-soft);
+  border: 0;
+}
+.foot-bottom a:hover { opacity: 0.55; }
 
 /* ===============  PAGE HERO (sub-pages)  =============== */
 .page-hero {
