@@ -913,6 +913,220 @@ footer.foot {
   line-height: 1.4;
 }
 
+/* ===============  KIT / GEAR GUIDES  =============== */
+/* Product review pages. Same monochrome discipline as the rest of the
+   site: ruled blocks, mono labels, no colour, no stars. The one
+   concession to commerce is a bordered button that inverts on hover. */
+
+.affil-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  border: 1px solid var(--rule);
+  padding: 14px 18px;
+  margin: 0 0 40px;
+}
+.affil-note a { border-bottom: 1px solid var(--rule-strong); }
+
+a.buy {
+  display: inline-block;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: #0f1111;
+  background: #ffd814;
+  border: 1px solid #fcd200;
+  border-radius: 100px;
+  padding: 11px 26px;
+  transition: background 0.15s, border-color 0.15s;
+}
+a.buy::after { content: " \2197"; }
+a.buy:hover {
+  background: #f7ca00;
+  border-color: #f2c200;
+  color: #0f1111;
+  opacity: 1;
+}
+
+/* Product photo — hotlinked from Amazon's CDN, floated beside the copy */
+figure.prod-shot {
+  float: right;
+  width: clamp(120px, 20vw, 190px);
+  margin: 4px 0 20px 28px;
+  padding: 14px;
+  background: #ffffff;
+  border: 1px solid var(--rule);
+}
+figure.prod-shot img { width: 100%; height: auto; }
+.top-pick, .pick { display: flow-root; }
+@media (max-width: 560px) {
+  figure.prod-shot { float: none; width: 65%; margin: 0 auto 20px; }
+}
+
+/* Top pick — the verdict block at the head of the guide */
+.top-pick {
+  background: var(--paper-deep);
+  border: 1px solid var(--rule-strong);
+  padding: clamp(28px, 4vw, 44px);
+  margin: 0 0 48px;
+}
+.top-pick .flag {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+.top-pick h3 {
+  margin: 0 0 12px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(20px, 2.2vw, 26px);
+  line-height: 1.2;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.top-pick p { margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: var(--ink-soft); }
+.top-pick .price-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 20px;
+}
+.top-pick a.buy { margin-top: 4px; }
+
+/* Individual product entries */
+.pick {
+  border-top: 1px solid var(--rule);
+  padding: 40px 0 44px;
+  margin-top: 8px;
+}
+.pick .pick-head {
+  display: flex;
+  align-items: baseline;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin: 0 0 6px;
+}
+.pick .rank {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+}
+.pick h3 {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: clamp(19px, 2vw, 23px);
+  line-height: 1.25;
+  letter-spacing: -0.015em;
+  color: var(--ink);
+}
+.pick .use-case {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 6px 0 18px;
+}
+.pick p { margin: 0 0 16px; font-size: 16px; line-height: 1.6; color: var(--ink-soft); }
+
+.pros-cons {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px 40px;
+  margin: 24px 0;
+}
+.pros-cons h4 {
+  margin: 0 0 10px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.pros-cons ul {
+  margin: 0; padding-left: 18px;
+  font-size: 14px; line-height: 1.55;
+  color: var(--ink-soft);
+}
+.pros-cons li { margin: 0 0 6px; }
+.pros-cons li::marker { color: var(--muted-2); }
+
+.pick .price-note {
+  font-family: var(--mono);
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0 0 18px;
+}
+
+/* Comparison table */
+.compare-wrap {
+  overflow-x: auto;
+  margin: 8px 0 24px;
+  border: 1px solid var(--rule);
+}
+table.compare {
+  border-collapse: collapse;
+  width: 100%;
+  min-width: 640px;
+  font-family: var(--sans);
+  font-size: 13.5px;
+  line-height: 1.45;
+}
+table.compare th {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-align: left;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule-strong);
+  background: var(--paper-deep);
+  white-space: nowrap;
+}
+table.compare td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--rule);
+  color: var(--ink-soft);
+  vertical-align: top;
+}
+table.compare tr:last-child td { border-bottom: 0; }
+table.compare td:first-child { color: var(--ink); font-weight: 500; }
+table.compare a { border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+table.compare a:hover { border-bottom-color: var(--ink); opacity: 1; }
+
+/* Kit index — shop landing page. Category headings sit inside the
+   .posts list; rows reuse the journal's post-row treatment. */
+h2.kit-cat {
+  margin: 0;
+  padding: 56px 0 20px;
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+h2.kit-cat:first-child { padding-top: 0; }
+
+@media (max-width: 700px) {
+  .pros-cons { grid-template-columns: 1fr; }
+}
+
 /* ===============  RESPONSIVE  =============== */
 @media (max-width: 900px) {
   body { font-size: 15px; }
