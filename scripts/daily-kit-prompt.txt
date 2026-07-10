@@ -1,0 +1,13 @@
+You are publishing ONE new Field Kit affiliate product guide on dominicbowkett.com. The repo is the current working directory. Work autonomously; do not ask questions.
+
+STEPS:
+1. Run git pull --rebase origin main first.
+2. Read docs/KIT-GUIDE-SPEC.md (the complete authoring spec - follow it exactly) and docs/KIT-CALENDAR.md.
+3. Take the FIRST unticked "- [ ]" topic in the calendar's Upcoming list. If none remain, first research 10 new surveyor-relevant Amazon-product topics via web search (UK-relevant, Amazon-available), append them to the calendar, then take the first.
+4. Research 6-8 real, currently-available amazon.co.uk products for the topic via web search. Read an existing guide (e.g. public/journal/best-damp-meters/index.html) as the skeleton/voice reference.
+5. Write the guide to public/journal/<slug>/index.html per the spec. Non-negotiables: Amazon SEARCH links only with tag=opeconltd-21, linkCode=ll2, linkId=82f351c719c3e9b898aac4324778e6cd, ampersands written as &amp; in hrefs, rel="sponsored nofollow noopener" target="_blank"; a verified Amazon-CDN product photo per product block (verify every image URL returns HTTP 200 with an image/* content type before using it; wrong or broken images are worse than none); NO personal-testing or ownership claims - features overview from specs and published user feedback, with the transparency sentence and Amazon Associates disclosure in the .affil-note; UK English, dry practitioner voice, no hype, no ratings markup.
+6. Publish per the spec's Publishing section: add the post row (dated today) to public/journal/index.html newest-first and its @id to the Blog JSON-LD; add a row to the right category group in public/kit/index.html; add the URL to public/sitemap.xml and bump the journal lastmod; tick the topic in docs/KIT-CALENDAR.md with slug and today's date.
+7. Self-verify before committing: every Amazon href contains tag=opeconltd-21; no href contains a raw & or a double-escaped &amp;amp;; every img src returns 200; internal links resolve to files in the repo; no sentence claims Dom owns or tested a product.
+8. Commit everything with message "Add Field Kit guide: <slug>" plus a Co-Authored-By: Claude <noreply@anthropic.com> trailer, and push to main. If push fails, retry once after git pull --rebase origin main.
+
+Publish exactly ONE guide per run. If a step fails irrecoverably, stop without committing partial work and print a clear summary of what failed.
