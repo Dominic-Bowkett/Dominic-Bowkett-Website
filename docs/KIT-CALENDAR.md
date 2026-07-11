@@ -37,10 +37,10 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-crack-monitors — crack monitor (150, CPC £0.50) — 8 Jul 2026
 - [x] best-tape-measures — best tape measure (1,000) — 9 Jul 2026
 - [x] best-air-quality-monitors — air quality monitor (2,300) — 10 Jul 2026
+- [x] best-moisture-traps — moisture trap (900) — 11 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
-- [ ] best-moisture-traps — moisture trap (900) — condensation in cupboards/caravans, honest limits
 - [ ] best-mould-test-kits — mould test kit (200) — when a kit helps vs when you need a survey
 - [ ] best-smoke-pens — smoke pen (300) — ventilation/draught tracing, Part F context
 - [ ] best-work-trousers — best work trousers (900) — kneeling, crawling, holster pockets
