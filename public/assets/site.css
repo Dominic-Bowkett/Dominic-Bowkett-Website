@@ -186,6 +186,21 @@ nav.primary a[aria-current="page"] {
   color: var(--ink-soft);
 }
 
+.hero-contact {
+  margin-top: 28px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 36px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: clamp(16px, 1.4vw, 19px);
+  color: var(--ink);
+}
+.hero-contact a {
+  border-bottom: 1px solid var(--muted-2);
+}
+.hero-contact a:hover { border-bottom-color: var(--ink); opacity: 1; }
+
 /* ===============  SECTION SCAFFOLD  =============== */
 section.std {
   padding: var(--section-pad) 0;
