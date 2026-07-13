@@ -59,8 +59,10 @@ If neither verifies, omit the figure rather than ship a broken/wrong image.
 Copy the head/header/footer skeleton from any existing guide (e.g.
 `public/journal/best-damp-meters/index.html`), adjusting title/meta/OG/canonical/JSON-LD.
 Asset paths from a post are `../../` (use the CSS href exactly as in the copied page,
-including its `?v=` parameter). The header nav and footer Site list include the Kit item
-(`../../kit/`). Do not add any `<style>` or `<script>` beyond the footer year script.
+including its `?v=` parameter). The header nav and footer Site list must NOT contain a
+Kit item — guides live under Writing only (the /kit/ hub page still exists and is linked
+from article bodies, just not from the menu). Do not add any `<style>` or `<script>`
+beyond the footer year script.
 
 Body, inside `<article class="prose"><div class="body">`:
 
