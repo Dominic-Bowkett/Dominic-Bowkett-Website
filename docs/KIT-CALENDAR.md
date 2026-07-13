@@ -39,10 +39,10 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-air-quality-monitors — air quality monitor (2,300) — 10 Jul 2026
 - [x] best-moisture-traps — moisture trap (900) — 11 Jul 2026
 - [x] best-mould-test-kits — mould test kit (200) — 12 Jul 2026
+- [x] best-smoke-pens — smoke pen (300) — 13 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
-- [ ] best-smoke-pens — smoke pen (300) — ventilation/draught tracing, Part F context
 - [ ] best-work-trousers — best work trousers (900) — kneeling, crawling, holster pockets
 - [ ] best-rugged-tablets — rugged tablet (600) — site software, RdSAP apps in the field
 - [ ] best-inspection-mirrors — inspection mirror (500) — telescopic mirrors for voids/behind pipes
