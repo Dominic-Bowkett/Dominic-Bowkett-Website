@@ -41,10 +41,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-mould-test-kits — mould test kit (200) — 12 Jul 2026
 - [x] best-smoke-pens — smoke pen (300) — 13 Jul 2026
 - [x] best-work-trousers — best work trousers (900) — 14 Jul 2026
+- [x] best-rugged-tablets — rugged tablet (600) — 15 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
-
-- [ ] best-rugged-tablets — rugged tablet (600) — site software, RdSAP apps in the field
 - [ ] best-inspection-mirrors — inspection mirror (500) — telescopic mirrors for voids/behind pipes
 - [ ] best-safety-glasses — safety glasses (5,700) — drilling/loft work, anti-fog
 - [ ] best-hard-hats — best hard hat (150) — bump caps vs hard hats for survey work
