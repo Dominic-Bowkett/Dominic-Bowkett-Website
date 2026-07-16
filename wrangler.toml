@@ -1,3 +1,18 @@
 name = "dominic-bowkett-pages"
 compatibility_date = "2026-05-10"
 pages_build_output_dir = "./public"
+
+[vars]
+MAIL_FROM = "Dominic Bowkett <info@dominicbowkett.com>"
+
+# --- Enquiry unsubscribe feature: uncomment once the KV namespace exists ---
+# Suppression list for unsubscribed enquiry contacts.
+#   wrangler kv namespace create SUPPRESSED
+# then paste the returned id below and uncomment this block:
+# [[kv_namespaces]]
+# binding = "SUPPRESSED"
+# id = "PASTE_KV_NAMESPACE_ID_HERE"
+
+# Secrets (do NOT put in this file) — set once per project:
+#   wrangler pages secret put RESEND_API_KEY
+#   wrangler pages secret put UNSUB_SECRET   # any long random string
