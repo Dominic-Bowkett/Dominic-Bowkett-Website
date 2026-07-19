@@ -1213,3 +1213,35 @@ h2.kit-cat:first-child { padding-top: 0; }
   .foot-grid { grid-template-columns: 1fr; }
   .elevations-mark .caption { grid-template-columns: 1fr; }
 }
+
+/* ===============  WHATSAPP CHAT BUTTON  =============== */
+.wa-float {
+  position: fixed;
+  right: clamp(16px, 3vw, 28px);
+  bottom: clamp(16px, 3vw, 28px);
+  z-index: 60;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background: #25d366;
+  border-bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(12, 12, 12, 0.22);
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.wa-float:hover {
+  opacity: 1;
+  border-bottom: 0;
+  transform: translateY(-2px);
+  box-shadow: 0 10px 24px rgba(12, 12, 12, 0.28);
+}
+.wa-float svg {
+  width: 28px;
+  height: 28px;
+  fill: #ffffff;
+}
+@media print {
+  .wa-float { display: none; }
+}
