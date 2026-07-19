@@ -1,0 +1,11 @@
+You are publishing today's surveyor's news briefing on dominicbowkett.com. The repo is the current working directory. Work autonomously; do not ask questions.
+
+STEPS:
+1. Run git pull --rebase origin main first.
+2. Read docs/NEWS-ROUNDUP-SPEC.md in full and follow it exactly — it defines scope, sourcing rules, structure, voice and publishing steps.
+3. Establish today's date from the system (run: date). Never guess it.
+4. Research the last ~24-48 hours of UK news on EPCs/MEES, landlord regulation, retrofit/PAS 2035, building surveying, conveyancing, housing market data, building safety and damp/mould enforcement, via web search. Open and read every story you intend to cover; verify claims against the fetched text; prefer primary sources.
+5. Apply the skip rule: if you cannot fill THREE genuinely newsworthy on-topic stories from the window, print "no post today: thin news day" and exit WITHOUT changing any file.
+6. Otherwise write the post per the spec (news-DD-MM-YYYY slug, commentary-led, every story source-linked, no affiliate links, no images), complete the publishing steps (journal index + JSON-LD, sitemap, NOT the kit page), self-verify, commit "Add surveyor's notes: DD Mon YYYY" with the Co-Authored-By: Claude <noreply@anthropic.com> trailer, and push to main (retry once after git pull --rebase if rejected).
+
+Publish at most ONE briefing per run. If a step fails irrecoverably, stop without committing partial work and print a clear summary of what failed.
