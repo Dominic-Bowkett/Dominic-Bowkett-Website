@@ -783,10 +783,14 @@ footer.foot {
   margin: 0 auto;
   padding: 0 var(--pad-x);
 }
+/* Rows share the page-hero's 1fr:5fr grid so titles sit exactly on the
+   content column ("Writing." heading, ledes, article text) at every width.
+   Num and date stack in the label column; arrow floats at the right edge. */
 .posts a.post-row {
+  position: relative;
   display: grid;
-  grid-template-columns: 60px 120px minmax(0, 1fr) 24px;
-  gap: clamp(20px, 3vw, 48px);
+  grid-template-columns: 1fr 5fr;
+  gap: 6px clamp(24px, 4vw, 64px);
   padding: 32px 0;
   border-top: 1px solid var(--rule);
   text-decoration: none;
@@ -796,6 +800,9 @@ footer.foot {
   border-left: 0;
   border-right: 0;
 }
+.posts .num { grid-column: 1; grid-row: 1; align-self: start; }
+.posts .date { grid-column: 1; grid-row: 2; align-self: start; }
+.posts .post-main { grid-column: 2; grid-row: 1 / span 2; padding-right: 48px; }
 .posts a.post-row:last-of-type { border-bottom: 1px solid var(--rule); }
 .posts a.post-row:hover .num,
 .posts a.post-row:hover .date,
@@ -814,7 +821,10 @@ footer.foot {
 .posts .arrow {
   font-family: var(--sans); font-weight: 300; font-size: 18px;
   color: var(--ink); opacity: 0.4;
-  align-self: center;
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform: translateY(-50%);
   transition: opacity 0.15s;
 }
 .posts a.post-row:hover .arrow { opacity: 1; }
@@ -1180,11 +1190,12 @@ h2.kit-cat:first-child { padding-top: 0; }
   .service-stack .arrow { display: none; }
 
   .posts a.post-row {
-    grid-template-columns: 60px 1fr;
-    gap: 12px 24px;
+    grid-template-columns: 1fr;
+    gap: 4px;
   }
-  .posts .date { grid-column: 2; grid-row: 1; }
-  .posts .post-main { grid-column: 2; }
+  .posts .num { display: none; }
+  .posts .date { grid-column: 1; grid-row: 1; margin-bottom: 8px; }
+  .posts .post-main { grid-column: 1; grid-row: 2; padding-right: 0; }
   .posts .arrow { display: none; }
 
   .prose .body { grid-template-columns: 1fr; }
