@@ -1,0 +1,12 @@
+You are publishing today's "cost of X in 2026" guide on dominicbowkett.com. The repo is the current working directory. Work autonomously; do not ask questions.
+
+STEPS:
+1. Run git pull --rebase origin main first.
+2. Read docs/COST-GUIDE-SPEC.md in full and follow it exactly — it defines voice, pricing/sourcing rules, structure and publishing steps.
+3. Establish today's date from the system (run: date). Never guess it.
+4. Take the FIRST unticked "- [ ]" topic in docs/COST-CALENDAR.md's Upcoming list. If none remain, research 8 new "cost of X" property/surveying topics via web search (UK-relevant, meaningful search demand), append them to the calendar, then take the first.
+5. Research current 2026 UK prices for that topic via web search. Cross-check every headline figure against at least TWO reputable sources (Checkatrade, HomeOwners Alliance, Which?, Energy Saving Trust, Federation of Master Builders, BOXT/Heatable, gov.uk grant pages, etc). Open and read each source. Note current grants where they apply. Read an existing non-kit post (public/journal/listed-buildings-epc/index.html) as the skeleton/voice reference.
+6. Write the guide to public/journal/<slug>/index.html per the spec. Non-negotiables: every price is a RANGE not a single number; prices dated and cross-checked; NO affiliate links; NO images; dry surveyor voice with genuine professional judgement (including when the work is oversold or unnecessary); UK English. End with the relevant service cross-link, the phone (07946 618203) and contact CTA.
+7. Complete the publishing steps (journal index + Blog JSON-LD, sitemap, tick the calendar; do NOT touch the kit page), self-verify (sources read, two-source cross-check, JSON-LD parses, internal links resolve, date consistent, no affiliate links/images), commit "Add cost guide: <slug>" with the Co-Authored-By: Claude <noreply@anthropic.com> trailer, and push to main (retry once after git pull --rebase if rejected).
+
+Publish exactly ONE guide per run. If a step fails irrecoverably, stop without committing partial work and print a clear summary of what failed.
