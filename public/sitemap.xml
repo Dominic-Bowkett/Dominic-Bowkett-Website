@@ -49,6 +49,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.dominicbowkett.com/journal/epc-cost/</loc>
+    <lastmod>2026-07-21</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.dominicbowkett.com/journal/listed-buildings-epc/</loc>
     <lastmod>2026-05-10</lastmod>
     <changefreq>yearly</changefreq>
