@@ -44,8 +44,14 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/</loc>
-    <lastmod>2026-07-21</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-dash-cams-van/</loc>
+    <lastmod>2026-07-22</lastmod>
+    <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
@@ -62,7 +68,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/kit/</loc>
-    <lastmod>2026-07-20</lastmod>
+    <lastmod>2026-07-22</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
