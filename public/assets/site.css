@@ -1152,6 +1152,95 @@ h2.kit-cat:first-child { padding-top: 0; }
   .pros-cons { grid-template-columns: 1fr; }
 }
 
+/* ===============  REVIEWS  =============== */
+/* Client reviews pulled from third-party platforms. Star glyphs are
+   inline SVG; the whole card links out to the source review. */
+.reviews-platforms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 28px;
+  margin: 0 0 40px;
+  padding: 0 0 32px;
+  border-bottom: 1px solid var(--rule);
+}
+.rev-platform {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  border: 0;
+}
+.rev-platform:hover { opacity: 0.6; }
+.rev-platform b {
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 13px;
+  letter-spacing: 0;
+  text-transform: none;
+  color: var(--ink);
+}
+.stars {
+  display: inline-flex;
+  gap: 1px;
+  vertical-align: middle;
+}
+.stars svg { width: 14px; height: 14px; display: block; }
+.stars .s-full { fill: var(--ink); }
+.stars .s-empty { fill: var(--rule-strong); }
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: clamp(16px, 2vw, 24px);
+}
+.review-card {
+  border: 1px solid var(--rule);
+  padding: clamp(20px, 2.5vw, 28px);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  color: var(--ink);
+  border-radius: 0;
+  transition: border-color 0.15s;
+}
+a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
+.review-card .stars svg { width: 15px; height: 15px; }
+.review-card h3 {
+  margin: 0;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.review-card p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.review-card .rev-meta {
+  margin-top: auto;
+  padding-top: 4px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
+.review-card .rev-src { border-bottom: 1px solid var(--rule-strong); }
+
+@media (max-width: 700px) {
+  .review-grid { grid-template-columns: 1fr; }
+}
+
 /* ===============  RESPONSIVE  =============== */
 @media (max-width: 900px) {
   body { font-size: 15px; }
