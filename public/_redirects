@@ -1,0 +1,36 @@
+# Cloudflare Pages redirects.
+# Reclaim link equity from the previous WordPress site: old URLs that still
+# hold backlinks (per Ahrefs) are 301'd to the closest live page so their
+# authority flows through instead of hitting a 404. Apex/http -> www/https
+# canonicalisation is handled at the Cloudflare DNS/redirect-rule layer.
+# Format: /source  /destination  status
+
+# --- Old WordPress cruft that carries referring domains ---
+/feed                                                              /journal/                    301
+/feed/                                                             /journal/                    301
+/comments/feed/                                                    /journal/                    301
+/dominic-bowkett/search-engine-optimization/                      /                            301
+/seo/search-engine-optimization/                                  /                            301
+/dominic-bowkett/social-care-elderly-usa/                         /                            301
+/dom-bowkett/artificial-intelligence-art-design-dominic-bowkett/  /                            301
+/dominic-bowkett/dominic-bowkett-artificial-intelligence-article-writing-the-future/  /        301
+
+# --- Old WordPress path prefixes (catch-all for any remaining deep links) ---
+/dominic-bowkett/*                                                 /                            301
+/dom-bowkett/*                                                     /                            301
+/seo/*                                                             /                            301
+/blog/*                                                            /journal/                    301
+/wp-content/*                                                      /                            301
+/category/*                                                        /journal/                    301
+/tag/*                                                             /journal/                    301
+/author/*                                                          /about/                      301
+
+# --- Sensible aliases for how people/links refer to services ---
+/services/homebuyer-report/                                        /services/homebuyer-survey/  301
+/services/home-condition-survey/                                   /services/homebuyer-survey/  301
+/services/building-survey/                                         /services/building-surveys/  301
+/services/drone-survey/                                            /services/drone-roof-surveys/ 301
+/services/roof-survey/                                             /services/drone-roof-surveys/ 301
+/services/energy-performance-certificate/                          /services/epc/               301
+/epc/                                                              /services/epc/               301
+/contact-us/                                                       /contact/                    301
