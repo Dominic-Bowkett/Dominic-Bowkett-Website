@@ -10,7 +10,7 @@ noted per topic.
 
 - [x] house-survey-cost — house survey cost (1,800) + building/homebuyers survey cost — the direct instruction-winner; TP 26,000; end with your survey CTA — published /journal/house-survey-cost/ on 2026-07-20
 - [x] epc-cost — epc cost (900) + how much does an epc cost (800) — your own service; what the £ pays for; RdSAP explained — published /journal/epc-cost/ on 2026-07-21
-- [ ] air-source-heat-pump-cost — air source heat pump cost (4,300) + heat pump cost (2,500) — 3-bed worked example after the Boiler Upgrade Scheme grant
+- [x] air-source-heat-pump-cost — air source heat pump cost (4,300) + heat pump cost (2,500) — 3-bed worked example after the Boiler Upgrade Scheme grant — published /journal/air-source-heat-pump-cost/ on 2026-07-22
 - [ ] new-boiler-cost — new boiler cost (5,900) + boiler replacement cost (1,400) — boiler vs heat pump honestly compared
 - [ ] cavity-wall-insulation-cost — cavity wall insulation cost (2,400) — and when it makes damp WORSE (the surveyor's angle)
 - [ ] loft-insulation-cost — loft insulation cost (1,900) — fastest payback in housing; GBIS/ECO4 grants
@@ -33,6 +33,7 @@ noted per topic.
 
 - house-survey-cost — 2026-07-20 — /journal/house-survey-cost/
 - epc-cost — 2026-07-21 — /journal/epc-cost/
+- air-source-heat-pump-cost — 2026-07-22 — /journal/air-source-heat-pump-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
