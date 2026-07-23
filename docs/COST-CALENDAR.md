@@ -12,7 +12,7 @@ noted per topic.
 - [x] epc-cost — epc cost (900) + how much does an epc cost (800) — your own service; what the £ pays for; RdSAP explained — published /journal/epc-cost/ on 2026-07-21
 - [x] air-source-heat-pump-cost — air source heat pump cost (4,300) + heat pump cost (2,500) — 3-bed worked example after the Boiler Upgrade Scheme grant — published /journal/air-source-heat-pump-cost/ on 2026-07-22
 - [x] new-boiler-cost — new boiler cost (5,900) + boiler replacement cost (1,400) — boiler vs heat pump honestly compared — published /journal/new-boiler-cost/ on 2026-07-23
-- [ ] sellers-survey-cost — seller's survey / pre-sale survey cost + "home insight survey cost" + how much does a survey cost to sell a house — the pre-marketing seller's survey; ~£600–£800; cost-of-a-fall-through framing (England 30% vs Scotland <10%); MUST cross-link and CTA to /services/home-insight-survey/
+- [x] sellers-survey-cost — seller's survey / pre-sale survey cost + "home insight survey cost" + how much does a survey cost to sell a house — the pre-marketing seller's survey; ~£600–£800; cost-of-a-fall-through framing (England 30% vs Scotland <10%); MUST cross-link and CTA to /services/home-insight-survey/ — published /journal/sellers-survey-cost/ on 2026-07-23
 - [ ] cavity-wall-insulation-cost — cavity wall insulation cost (2,400) — and when it makes damp WORSE (the surveyor's angle)
 - [ ] loft-insulation-cost — loft insulation cost (1,900) — fastest payback in housing; GBIS/ECO4 grants
 - [ ] damp-proofing-cost — damp proofing cost (1,000) + damp proof course cost (1,000) — what's fair, what's a rip-off, "you may not need a chemical DPC"
@@ -36,6 +36,7 @@ noted per topic.
 - epc-cost — 2026-07-21 — /journal/epc-cost/
 - air-source-heat-pump-cost — 2026-07-22 — /journal/air-source-heat-pump-cost/
 - new-boiler-cost — 2026-07-23 — /journal/new-boiler-cost/
+- sellers-survey-cost — 2026-07-23 — /journal/sellers-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
