@@ -46,9 +46,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-safety-glasses — safety glasses (5,700) — 18 Jul 2026
 - [x] best-hard-hats — best hard hat (150) — bump caps vs hard hats for survey work — 20 Jul 2026
 - [x] best-dash-cams-van — best dash cam (4,500, KD high — target "dash cam for van") — working vehicle angle — 22 Jul 2026
+- [x] best-digital-angle-finders — digital angle finder (2,400) — roof pitch, staircase checks — 23 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
-- [ ] best-digital-angle-finders — digital angle finder (2,400) — roof pitch, staircase checks
 - [ ] best-tool-boxes-van — tool storage / van organisation
 - [ ] best-extension-leads — RCD site extension leads
 - [ ] best-van-security-locks — van security, tool theft
