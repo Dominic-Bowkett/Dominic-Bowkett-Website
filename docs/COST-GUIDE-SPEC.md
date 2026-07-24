@@ -54,7 +54,7 @@ Copy the head/header/footer skeleton from a recent non-kit post
 (`public/journal/listed-buildings-epc/index.html`), keeping the current CSS `?v=` param
 and the nav exactly as found (no Kit item). Asset paths from a post are `../../`.
 
-- Title ≤ 62 chars, contains the primary keyword and "in 2026", ends "— Dominic Bowkett".
+- Title MAX 60 characters (Ahrefs flags >60), contains the primary keyword and "2026", ends "— Dominic Bowkett". Drop filler to stay within 60 (e.g. "How much does an X cost in 2026?" → "X cost in 2026 —" if needed).
   e.g. "How much does a house survey cost in 2026? — Dominic Bowkett".
 - meta description ≤ 160 chars with the primary keyword and a headline price range.
 - article:section "Costs". Canonical https://www.dominicbowkett.com/journal/<slug>/.

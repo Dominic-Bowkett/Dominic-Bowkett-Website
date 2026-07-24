@@ -55,7 +55,7 @@ existing news post if one exists (`ls public/journal/news-*` first), else from
 `public/journal/listed-buildings-epc/index.html`. Keep the current CSS `?v=` param and
 the nav exactly as found in the copied page (no Kit item).
 
-- Title: "Surveyor's notes — DATE: [hook from the lead story]" ≤65 chars where
+- Title: "Surveyor's notes — DATE: [short hook]" MAX 60 characters (Ahrefs flags >60); drop or shorten the hook to stay within 60 where
   possible. H1 may break lines like other posts. article:section "Surveyor's notes".
 - meta description ≤160 chars naming the two biggest stories.
 - Hero meta row: Published date · Reading time · By Dominic Bowkett · MRPSA.

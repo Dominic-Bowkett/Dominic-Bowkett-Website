@@ -97,7 +97,7 @@ BlogPosting + BreadcrumbList (copy pattern) + ItemList of ranked products (posit
 url = affiliate link). NEVER Review/Product markup with ratings.
 
 ## Meta
-- title ≤65 chars, natural, contains primary keyword, ends "— Dominic Bowkett".
+- title MAX 60 characters (Ahrefs flags >60), natural, contains primary keyword, ends "— Dominic Bowkett". Prefer dropping filler words ("The", "for survey work") over exceeding 60.
 - meta description ≤160 chars with primary keyword. article:section "Field kit".
 - Canonical https://www.dominicbowkett.com/journal/<SLUG>/
 - Hero meta row: `<span>Published DATE</span><span>Reading time · N min</span><span>By Dominic Bowkett · MRPSA</span>`
