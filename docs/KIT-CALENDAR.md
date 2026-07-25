@@ -48,9 +48,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-dash-cams-van — best dash cam (4,500, KD high — target "dash cam for van") — working vehicle angle — 22 Jul 2026
 - [x] best-digital-angle-finders — digital angle finder (2,400) — roof pitch, staircase checks — 23 Jul 2026
 - [x] best-tool-boxes-van — tool storage / van organisation — 24 Jul 2026
+- [x] best-extension-leads — RCD site extension leads — 25 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
-- [ ] best-extension-leads — RCD site extension leads
 - [ ] best-van-security-locks — van security, tool theft
 - [ ] best-step-ladders — step ladder (complement to telescopic guide)
 - [ ] best-cordless-screwdrivers — access panels, meter cupboards
