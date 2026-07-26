@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+# Cloudflare rewrites mailto: links into /cdn-cgi/l/email-protection#... which
+# 404s for crawlers; Cloudflare's own guidance is to exclude /cdn-cgi/ here.
+Disallow: /cdn-cgi/
 
 Sitemap: https://www.dominicbowkett.com/sitemap.xml
