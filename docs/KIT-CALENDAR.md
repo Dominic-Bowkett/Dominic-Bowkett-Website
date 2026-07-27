@@ -49,9 +49,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-digital-angle-finders — digital angle finder (2,400) — roof pitch, staircase checks — 23 Jul 2026
 - [x] best-tool-boxes-van — tool storage / van organisation — 24 Jul 2026
 - [x] best-extension-leads — RCD site extension leads — 25 Jul 2026
+- [x] best-van-security-locks — van security, tool theft — 27 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
-- [ ] best-van-security-locks — van security, tool theft
 - [ ] best-step-ladders — step ladder (complement to telescopic guide)
 - [ ] best-cordless-screwdrivers — access panels, meter cupboards
 - [ ] best-multitools-surveyors — pocket multitools
