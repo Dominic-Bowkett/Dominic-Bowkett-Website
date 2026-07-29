@@ -51,9 +51,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-extension-leads — RCD site extension leads — 25 Jul 2026
 - [x] best-van-security-locks — van security, tool theft — 27 Jul 2026
 - [x] best-step-ladders — step ladder (complement to telescopic guide) — 28 Jul 2026
+- [x] best-cordless-screwdrivers — access panels, meter cupboards — 29 Jul 2026
 
 ## Upcoming (daily routine takes the first unticked)
-- [ ] best-cordless-screwdrivers — access panels, meter cupboards
 - [ ] best-multitools-surveyors — pocket multitools
 - [ ] best-label-printers — sample/photo labelling, report workflow
 - [ ] best-sack-trucks — kit hauling for flats/stairs
