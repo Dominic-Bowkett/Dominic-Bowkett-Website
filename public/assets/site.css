@@ -1418,15 +1418,24 @@ a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
   border: 1px solid var(--rule);
   margin-bottom: 22px;
 }
-/* Normalise on WIDTH, not height: all three are horizontal lockups, and
-   equal width is what reads as "equal size". Their artboards carry
-   different amounts of padding, so a common max-height would leave the
-   wider mark looking a third bigger than the others. */
+/* Normalise on AREA, not height or width. These six marks run from
+   2.0:1 (RPSA) to 3.9:1 (TrustMark), so a common height makes the wide
+   ones look huge and a common width makes them look half-size. Each
+   width below is sqrt(17000 * ownAspectRatio), which gives every logo
+   the same optical footprint. The percentage keeps the whole set in
+   proportion as the plate narrows; the px cap holds the target size
+   once the plate is wide enough to reach it. */
 .body-plate img {
-  width: 100%;
-  max-width: 210px;
+  width: var(--lw);
+  max-width: var(--lmax);
   height: auto;
 }
+.l-cabe      { --lw: 82.2%; --lmax: 213px; }  /* 2.68:1 */
+.l-rpsa      { --lw: 71.8%; --lmax: 186px; }  /* 2.04:1 */
+.l-tpo       { --lw: 71.8%; --lmax: 186px; }  /* 2.04:1 */
+.l-trustmark { --lw: 100%;  --lmax: 259px; }  /* 3.95:1 */
+.l-elmhurst  { --lw: 73.0%; --lmax: 189px; }  /* 2.11:1 */
+.l-ecmk      { --lw: 98.8%; --lmax: 256px; }  /* 3.87:1 */
 .body-cell h3 {
   margin: 0 0 4px;
   font-family: var(--sans);
