@@ -1345,3 +1345,226 @@ a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
 @media print {
   .wa-float { display: none; }
 }
+
+/* ------------------------------------------------------------------
+   ICALENDAR.APP — founder note
+   The widget below is a reproduction of the iCalendar.app hero, so it
+   keeps that product's own palette and type scale. It is boxed and
+   captioned like a plate so the off-palette artwork reads as a
+   specimen rather than a break in the site's monochrome.
+   ------------------------------------------------------------------ */
+.founder-split {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.08fr);
+  gap: clamp(32px, 5vw, 76px);
+  align-items: center;
+}
+.founder-note h2 {
+  margin: 0 0 28px;
+  font-family: var(--sans);
+  font-weight: 400;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.2;
+  letter-spacing: -0.018em;
+  color: var(--ink);
+  max-width: 26ch;
+}
+.founder-note .kicker {
+  font-family: var(--mono);
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 14px;
+}
+.founder-plate {
+  margin: 0;
+}
+.founder-plate figcaption {
+  margin-top: 14px;
+  padding-top: 10px;
+  border-top: 1px solid var(--rule);
+  font-family: var(--mono);
+  font-size: 10.5px;
+  line-height: 1.5;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+/* ---- the reproduced widget ---- */
+.ic-mock {
+  --ic-accent: #2b59ff;
+  --ic-accent-2: #7c3aed;
+  --ic-ink: #0c1122;
+  --ic-sub: #5a6478;
+  --ic-faint: #8a93a8;
+  --ic-line: #e8ebf4;
+  --ic-soft: #f5f7fd;
+  --ic-tint: #eef2ff;
+  --ic-ok: #12a150;
+
+  position: relative;
+  color: var(--ic-ink);
+  letter-spacing: -0.005em;
+  padding: clamp(26px, 4vw, 44px) clamp(18px, 3vw, 40px);
+  border: 1px solid var(--rule);
+  background:
+    radial-gradient(560px 300px at 84% -6%, rgba(124, 58, 237, 0.13), transparent 60%),
+    radial-gradient(520px 320px at 4% 14%, rgba(43, 89, 255, 0.13), transparent 55%),
+    linear-gradient(180deg, #fbfcff, #f5f7fd);
+}
+
+.ic-browser {
+  background: #fff;
+  border: 1px solid var(--ic-line);
+  border-radius: 14px;
+  box-shadow: 0 20px 56px rgba(30, 40, 90, 0.13);
+  overflow: hidden;
+}
+.ic-bar {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--ic-line);
+  background: #fbfcff;
+}
+.ic-bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: #e2e6f0;
+  flex: none;
+}
+.ic-bar .ic-url {
+  margin-left: 8px;
+  flex: 1;
+  min-width: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  color: var(--ic-faint);
+  background: #f1f3fa;
+  border-radius: 6px;
+  padding: 5px 11px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ic-body { padding: 18px 20px 20px; }
+.ic-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+.ic-meta {
+  margin: 3px 0 14px;
+  font-size: 13px;
+  color: var(--ic-sub);
+}
+
+.ic-days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+.ic-days .ic-dh {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  color: var(--ic-faint);
+  padding-bottom: 2px;
+}
+.ic-days .ic-d {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 500;
+  color: #c3c9da;
+}
+.ic-days .ic-d.on { background: var(--ic-tint); color: var(--ic-ink); }
+.ic-days .ic-d.sel {
+  background: var(--ic-accent);
+  color: #fff;
+  box-shadow: 0 6px 16px rgba(43, 89, 255, 0.34);
+}
+
+.ic-slots {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 16px;
+}
+.ic-slots span {
+  border: 1.5px solid #b6c4ff;
+  color: var(--ic-accent);
+  border-radius: 10px;
+  padding: 7px 13px;
+  font-size: 13px;
+  font-weight: 500;
+}
+.ic-slots span.hot {
+  background: var(--ic-accent);
+  border-color: var(--ic-accent);
+  color: #fff;
+}
+
+.ic-note {
+  margin-top: 16px;
+  padding: 10px 12px;
+  font-size: 12.5px;
+  line-height: 1.5;
+  color: var(--ic-sub);
+  background: var(--ic-soft);
+  border: 1px solid var(--ic-line);
+  border-left: 3px solid var(--ic-ok);
+  border-radius: 10px;
+}
+
+.ic-pill {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  background: #fff;
+  border: 1px solid var(--ic-line);
+  border-radius: 12px;
+  box-shadow: 0 12px 34px rgba(20, 28, 60, 0.12);
+  padding: 10px 14px;
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: -0.008em;
+  white-space: nowrap;
+}
+.ic-pill .ic-ic {
+  width: 28px;
+  height: 28px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex: none;
+}
+.ic-pill.a { top: 8px; left: clamp(-16px, -1vw, 0px); }
+.ic-pill.b { bottom: 10px; right: clamp(-14px, -1vw, 0px); }
+
+/* Side by side only while the plate still has room for the widget. */
+@media (max-width: 1180px) {
+  .founder-split {
+    grid-template-columns: minmax(0, 1fr);
+    gap: clamp(32px, 4vw, 44px);
+  }
+  .founder-note h2 { max-width: 34ch; }
+  /* Cap the plate so the square day cells don't balloon when stacked. */
+  .founder-plate { max-width: 480px; }
+}
+@media (max-width: 560px) {
+  .ic-pill { display: none; }
+  .ic-mock { padding: 18px 14px; }
+  .ic-slots span { padding: 6px 11px; font-size: 12px; }
+}

@@ -17,7 +17,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="assets/site.css?v=20260722" />
+  <link rel="stylesheet" href="assets/site.css?v=20260730" />
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Dominic Bowkett — Independent Practice" />
@@ -113,6 +113,34 @@
           { "@type": "EducationalOccupationalCredential", "credentialCategory": "Certification", "name": "Quidos accredited" },
           { "@type": "EducationalOccupationalCredential", "credentialCategory": "Certification", "name": "MEP accredited tester" }
         ]
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://icalendar.app/#organisation",
+        "name": "iCalendar.app",
+        "url": "https://icalendar.app/",
+        "legalName": "EMS-2 Ltd",
+        "vatID": "GB476836441",
+        "email": "hello@icalendar.app",
+        "founder": { "@id": "https://www.dominicbowkett.com/#dominic" },
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "128 City Road",
+          "addressLocality": "London",
+          "postalCode": "EC1V 2NX",
+          "addressCountry": "GB"
+        }
+      },
+      {
+        "@type": "SoftwareApplication",
+        "@id": "https://icalendar.app/#software",
+        "name": "iCalendar.app",
+        "url": "https://icalendar.app/",
+        "applicationCategory": "BusinessApplication",
+        "operatingSystem": "Web browser",
+        "description": "Travel-time-aware online booking for surveyors, energy assessors and mobile trades. Checks real driving times against the day's existing jobs before offering a client an appointment, takes card payment, invoices and logs mileage.",
+        "author": { "@id": "https://www.dominicbowkett.com/#dominic" },
+        "publisher": { "@id": "https://icalendar.app/#organisation" }
       },
       {
         "@type": "WebSite",
@@ -479,10 +507,55 @@
       </div>
     </section>
 
+    <!-- ===============  ICALENDAR.APP  =============== -->
+    <section class="std" aria-labelledby="ical-h">
+      <div class="section-grid">
+        <div class="section-label">008 / Software</div>
+        <div class="section-content">
+          <div class="founder-split">
+            <div class="founder-note">
+              <p class="kicker">Founder &mdash; iCalendar.app</p>
+              <h2 id="ical-h">I also build the booking software I use to run this practice.</h2>
+              <p>Surveying is a driving job. Two appointments can sit an hour apart on paper and be impossible in practice. Every booking tool I tried only asked whether the diary was empty &mdash; never whether I could actually get there. So I built one that does.</p>
+              <p><a href="https://icalendar.app/" target="_blank" rel="noopener">iCalendar.app</a> checks real driving times before it offers a client a slot &mdash; around the day&rsquo;s existing jobs, the school run and being home for dinner. It takes card payments, raises the invoice and logs the mileage for the tax return. It runs my own diary, and it&rsquo;s now used by other surveyors, energy assessors and mobile trades.</p>
+              <p><a href="https://icalendar.app/" target="_blank" rel="noopener">icalendar.app &rarr;</a></p>
+            </div>
+
+            <figure class="founder-plate">
+              <div class="ic-mock">
+                <div class="ic-pill a"><span class="ic-ic" style="background:#eafff2">&#128663;</span> 24 min drive &mdash; fits your route</div>
+                <div class="ic-browser">
+                  <div class="ic-bar">
+                    <i></i><i></i><i></i>
+                    <span class="ic-url">app.icalendar.app/book/your-name</span>
+                  </div>
+                  <div class="ic-body">
+                    <div class="ic-title">Property Survey &mdash; 60 min</div>
+                    <div class="ic-meta">&#128205; Client in Tunbridge Wells &middot; 24 min drive</div>
+                    <div class="ic-days" aria-hidden="true">
+                      <div class="ic-dh">M</div><div class="ic-dh">T</div><div class="ic-dh">W</div><div class="ic-dh">T</div><div class="ic-dh">F</div><div class="ic-dh">S</div><div class="ic-dh">S</div>
+                      <div class="ic-d on">6</div><div class="ic-d on">7</div><div class="ic-d sel">8</div><div class="ic-d on">9</div><div class="ic-d on">10</div><div class="ic-d">11</div><div class="ic-d">12</div>
+                      <div class="ic-d on">13</div><div class="ic-d on">14</div><div class="ic-d on">15</div><div class="ic-d on">16</div><div class="ic-d on">17</div><div class="ic-d">18</div><div class="ic-d">19</div>
+                    </div>
+                    <div class="ic-slots" aria-hidden="true">
+                      <span>09:30</span><span class="hot">11:00</span><span>13:30</span><span>15:00</span>
+                    </div>
+                    <div class="ic-note">&#10003; 08:00 hidden &mdash; you can&rsquo;t get there from your 7:30 school run. 16:30 hidden &mdash; you&rsquo;d miss dinner.</div>
+                  </div>
+                </div>
+                <div class="ic-pill b"><span class="ic-ic" style="background:#eef2ff">&#128183;</span> Paid &amp; invoiced automatically</div>
+              </div>
+              <figcaption>iCalendar.app &mdash; client booking page. Only the times the surveyor can genuinely drive to are offered.</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <!-- ===============  WRITING  =============== -->
     <section class="std">
       <div class="section-grid">
-        <div class="section-label">008 / Writing</div>
+        <div class="section-label">009 / Writing</div>
         <div class="section-content">
           <h2>Selected writing.</h2>
           <div class="index-list" style="margin-top: 48px;">
@@ -503,7 +576,7 @@
     <!-- ===============  CONTACT  =============== -->
     <section class="std">
       <div class="section-grid">
-        <div class="section-label">009 / Contact</div>
+        <div class="section-label">010 / Contact</div>
         <div class="section-content">
           <h2>Tell me about the property and I&rsquo;ll come back the same day.</h2>
           <p style="margin-top: 32px;">Postcode, age, what you&rsquo;re trying to do. You&rsquo;ll have a fixed fee, a date and a clear scope inside one working day &mdash; usually within hours.</p>
