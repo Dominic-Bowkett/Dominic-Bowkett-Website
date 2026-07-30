@@ -18,7 +18,7 @@ noted per topic.
 - [x] damp-proofing-cost — damp proofing cost (1,000) + damp proof course cost (1,000) — what's fair, what's a rip-off, "you may not need a chemical DPC" — published /journal/damp-proofing-cost/ on 2026-07-27
 - [x] new-roof-cost — new roof cost (800) + roof replacement cost uk (350) + flat roof (1,100) — tiles vs slate vs flat — published /journal/new-roof-cost/ on 2026-07-28
 - [x] house-rewiring-cost — cost of rewiring a house (500) + rewiring a house cost (500) — telling if a 1970s consumer unit needs it; EICR — published /journal/house-rewiring-cost/ on 2026-07-29
-- [ ] solar-panels-cost — solar panels cost (1,700) + solar panel installation cost uk — payback maths, SEG, roof suitability
+- [x] solar-panels-cost — solar panels cost (1,700) + solar panel installation cost uk — payback maths, SEG, roof suitability — published /journal/solar-panels-cost/ on 2026-07-30
 - [ ] double-glazing-cost — double glazing cost (800) + new windows cost (1,300) — per window, per house, EPC points bought
 - [ ] rising-damp-treatment-cost — rising damp treatment cost (600) — and why much of it is misdiagnosed condensation
 - [ ] repointing-cost — repointing cost (450) — per m², why cement mortar ruins old brick
@@ -42,6 +42,7 @@ noted per topic.
 - damp-proofing-cost — 2026-07-27 — /journal/damp-proofing-cost/
 - new-roof-cost — 2026-07-28 — /journal/new-roof-cost/
 - house-rewiring-cost — 2026-07-29 — /journal/house-rewiring-cost/
+- solar-panels-cost — 2026-07-30 — /journal/solar-panels-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
