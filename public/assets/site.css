@@ -1392,6 +1392,73 @@ a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
   color: var(--muted);
 }
 
+/* ------------------------------------------------------------------
+   MEMBERSHIP BODIES — logo row
+   Each logo sits in an identically sized plate and is scaled to a
+   common height, so no mark reads as larger than another whatever its
+   own aspect ratio or artboard padding.
+   ------------------------------------------------------------------ */
+.bodies {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: clamp(20px, 2.6vw, 36px);
+}
+.body-cell {
+  display: flex;
+  flex-direction: column;
+}
+.body-plate {
+  /* Must clear the tallest normalised logo (210 x 103) plus padding. */
+  height: clamp(138px, 11vw, 158px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: clamp(14px, 1.6vw, 22px);
+  background: var(--paper-2);
+  border: 1px solid var(--rule);
+  margin-bottom: 22px;
+}
+/* Normalise on WIDTH, not height: all three are horizontal lockups, and
+   equal width is what reads as "equal size". Their artboards carry
+   different amounts of padding, so a common max-height would leave the
+   wider mark looking a third bigger than the others. */
+.body-plate img {
+  width: 100%;
+  max-width: 210px;
+  height: auto;
+}
+.body-cell h3 {
+  margin: 0 0 4px;
+  font-family: var(--sans);
+  font-weight: 500;
+  font-size: 16px;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+}
+.body-cell .body-role {
+  display: block;
+  margin-bottom: 12px;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.body-cell p {
+  margin: 0;
+  font-size: 14.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  max-width: none;
+}
+@media (max-width: 900px) {
+  .bodies { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 620px) {
+  .bodies { grid-template-columns: 1fr; gap: 32px; }
+  .body-plate { height: 138px; }
+}
+
 /* ---- laptop: line-drawn chrome, real screenshot inside ---- */
 .laptop { display: block; }
 .laptop-lid {
@@ -1430,6 +1497,32 @@ a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
 .laptop-deck .hinge {
   fill: none;
   stroke: var(--rule-strong);
+}
+
+/* ---- tablet: uniform bezel, no deck ---- */
+.tablet {
+  position: relative;
+  margin: 0 2%;
+  padding: clamp(9px, 1.2vw, 15px) clamp(16px, 2.2vw, 28px);
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: clamp(12px, 1.6vw, 20px);
+}
+.tablet::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  right: clamp(6px, 0.85vw, 11px);
+  transform: translateY(-50%);
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  border: 1px solid var(--rule-strong);
+}
+.tablet img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
 }
 
 /* ---- the reproduced widget ---- */
