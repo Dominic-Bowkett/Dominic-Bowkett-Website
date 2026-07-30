@@ -1392,6 +1392,46 @@ a.review-card:hover { opacity: 1; border-color: var(--rule-strong); }
   color: var(--muted);
 }
 
+/* ---- laptop: line-drawn chrome, real screenshot inside ---- */
+.laptop { display: block; }
+.laptop-lid {
+  position: relative;
+  margin: 0 4%;
+  padding: clamp(13px, 1.7vw, 20px) clamp(7px, 0.9vw, 11px) clamp(7px, 0.9vw, 11px);
+  background: var(--paper-2);
+  border: 1px solid var(--rule-strong);
+  border-radius: 9px 9px 2px 2px;
+}
+.laptop-lid::before {
+  content: "";
+  position: absolute;
+  top: clamp(5px, 0.7vw, 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--rule-strong);
+}
+.laptop-lid img {
+  width: 100%;
+  height: auto;
+  border: 1px solid var(--rule);
+}
+.laptop-deck {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.laptop-deck .deck {
+  fill: var(--paper-deep);
+  stroke: var(--rule-strong);
+}
+.laptop-deck .hinge {
+  fill: none;
+  stroke: var(--rule-strong);
+}
+
 /* ---- the reproduced widget ---- */
 .ic-mock {
   --ic-accent: #2b59ff;
