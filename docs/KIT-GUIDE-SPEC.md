@@ -105,10 +105,14 @@ url = affiliate link). NEVER Review/Product markup with ratings.
 - 1,800–2,600 words of body copy. No images other than the product figures.
 
 ## Publishing (only when told to publish — e.g. the daily routine)
-1. Add the post row to `public/journal/index.html` (`.posts` section, date order, newest
-   first; renumber `num` spans so 001 is the oldest post by date) and add its @id to the
-   Blog JSON-LD blogPost array.
+1. Run `python scripts/rebuild-journal.py`. It picks the new guide up from disk, files it
+   under Field kit, gives it the next `num` in the site-wide sequence, refreshes the Blog
+   JSON-LD blogPost array, and rebuilds `/journal/` (newest three per category). Do NOT
+   hand-edit the row into `public/journal/index.html` — the front page only carries the
+   three newest kit guides now, so a hand-added row will be dropped on the next rebuild.
 2. Add a row to the right category group on `public/kit/index.html` (same num as journal).
+   `/kit/` is the full field-kit archive and is still curated by hand — the rebuild script
+   reads it but never writes it.
 3. Add the URL to `public/sitemap.xml` (lastmod = publish date) and bump the journal
    index lastmod.
 4. Tick the topic in `docs/KIT-CALENDAR.md` (mark `[x]`, add slug + date).

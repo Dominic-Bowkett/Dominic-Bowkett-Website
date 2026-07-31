@@ -88,11 +88,14 @@ and the nav exactly as found (no Kit item). Asset paths from a post are `../../`
 
 ## Publishing steps
 
-1. Add the post row to `public/journal/index.html` — newest first, next `num` in the
-   site-wide sequence (check the highest existing `num` and increment), and add its @id to
-   the Blog JSON-LD blogPost array. Do NOT touch `public/kit/index.html`.
+1. Run `python scripts/rebuild-journal.py`. It picks the new post up from disk, files it
+   under Costs, gives it the next `num` in the site-wide sequence, refreshes the Blog
+   JSON-LD blogPost array, and rebuilds `/journal/` (newest three per category) plus the
+   `/journal/costs/` archive. Do NOT hand-edit the row into `public/journal/index.html` —
+   the front page only carries the three newest cost guides now, so a hand-added row will
+   be dropped on the next rebuild. Do NOT touch `public/kit/index.html`.
 2. Add the URL to `public/sitemap.xml` (lastmod = today, changefreq monthly, priority 0.7)
-   and bump the journal index lastmod to today.
+   and bump the lastmod on `/journal/` and `/journal/costs/` to today.
 3. Tick the topic in `docs/COST-CALENDAR.md` (mark `[x]`, add slug + today's date).
 4. Self-verify: every source link opened and read during research; two-source cross-check
    on headline figures; JSON-LD parses; internal links resolve; date consistent across

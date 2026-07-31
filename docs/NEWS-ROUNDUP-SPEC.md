@@ -90,12 +90,14 @@ are fine when flagged as opinion ("my bet is…"). No exclamation marks, no emoj
 
 ## Publishing steps
 
-1. Add the post row to `public/journal/index.html` — newest first, next `num` in the
-   site-wide sequence (check the highest existing `num` on that page and increment),
-   and add its @id to the Blog JSON-LD blogPost array.
-   Do NOT add news posts to `public/kit/index.html` — that page is kit guides only.
+1. Run `python scripts/rebuild-journal.py`. It picks the new post up from disk, files it
+   under Surveyor's notes, gives it the next `num` in the site-wide sequence, refreshes the
+   Blog JSON-LD blogPost array, and rebuilds `/journal/` (newest three per category) plus
+   the `/journal/notes/` archive. Do NOT hand-edit the row into `public/journal/index.html`
+   — the front page only carries the three newest notes now, so a hand-added row will be
+   dropped on the next rebuild. Do NOT touch `public/kit/index.html` — kit guides only.
 2. Add the URL to `public/sitemap.xml` (lastmod = today, changefreq monthly) and bump
-   the journal index lastmod to today.
+   the lastmod on `/journal/` and `/journal/notes/` to today.
 3. Self-verify: every external link fetched and returning 200 during research; JSON-LD
    parses; internal links resolve; date in title/meta/JSON-LD/hero all match today.
 4. Commit "Add surveyor's notes: DD Mon YYYY" with the
