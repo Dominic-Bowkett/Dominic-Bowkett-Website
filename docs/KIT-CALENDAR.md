@@ -54,9 +54,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-cordless-screwdrivers — access panels, meter cupboards — 29 Jul 2026
 - [x] best-multitools-surveyors — pocket multitools — 30 Jul 2026
 - [x] best-label-printers — sample/photo labelling, report workflow — 31 Jul 2026
+- [x] best-sack-trucks — kit hauling for flats/stairs — 1 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
-- [ ] best-sack-trucks — kit hauling for flats/stairs
 - [ ] best-padlocks — site and van padlocks
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
