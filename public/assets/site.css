@@ -1156,7 +1156,10 @@ h2.kit-cat:first-child { padding-top: 0; }
   align-items: baseline;
   padding: clamp(64px, 7.5vw, 104px) 0 26px;
 }
-.posts.first .cat-head { padding-top: 0; }
+/* The page hero's rule sits directly above the first category head, so it
+   still needs breathing room below the line — just less than a mid-list
+   head, since the hero already supplies the space above. */
+.posts.first .cat-head { padding-top: clamp(44px, 5.5vw, 80px); }
 .posts .cat-head h2 {
   grid-column: 1;
   grid-row: 1;
