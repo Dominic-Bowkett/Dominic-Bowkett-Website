@@ -20,7 +20,7 @@ noted per topic.
 - [x] house-rewiring-cost — cost of rewiring a house (500) + rewiring a house cost (500) — telling if a 1970s consumer unit needs it; EICR — published /journal/house-rewiring-cost/ on 2026-07-29
 - [x] solar-panels-cost — solar panels cost (1,700) + solar panel installation cost uk — payback maths, SEG, roof suitability — published /journal/solar-panels-cost/ on 2026-07-30
 - [x] double-glazing-cost — double glazing cost (800) + new windows cost (1,300) — per window, per house, EPC points bought — published /journal/double-glazing-cost/ on 2026-07-31
-- [ ] rising-damp-treatment-cost — rising damp treatment cost (600) — and why much of it is misdiagnosed condensation
+- [x] rising-damp-treatment-cost — rising damp treatment cost (600) — and why much of it is misdiagnosed condensation — published /journal/rising-damp-treatment-cost/ on 2026-08-01
 - [ ] repointing-cost — repointing cost (450) — per m², why cement mortar ruins old brick
 - [ ] underpinning-cost — underpinning cost (400) + subsidence repair cost (200) — read before you panic; insurance route
 - [ ] survey-defect-costs — woodworm (450) + japanese knotweed removal (500) + asbestos removal (800) — what scary survey findings actually cost to fix
@@ -44,6 +44,7 @@ noted per topic.
 - house-rewiring-cost — 2026-07-29 — /journal/house-rewiring-cost/
 - solar-panels-cost — 2026-07-30 — /journal/solar-panels-cost/
 - double-glazing-cost — 2026-07-31 — /journal/double-glazing-cost/
+- rising-damp-treatment-cost — 2026-08-01 — /journal/rising-damp-treatment-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
