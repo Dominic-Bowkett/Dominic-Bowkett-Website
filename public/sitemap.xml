@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/costs/</loc>
-    <lastmod>2026-08-01</lastmod>
+    <lastmod>2026-08-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -579,6 +579,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/rising-damp-treatment-cost/</loc>
     <lastmod>2026-08-01</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/repointing-cost/</loc>
+    <lastmod>2026-08-02</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
