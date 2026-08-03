@@ -22,7 +22,7 @@ noted per topic.
 - [x] double-glazing-cost — double glazing cost (800) + new windows cost (1,300) — per window, per house, EPC points bought — published /journal/double-glazing-cost/ on 2026-07-31
 - [x] rising-damp-treatment-cost — rising damp treatment cost (600) — and why much of it is misdiagnosed condensation — published /journal/rising-damp-treatment-cost/ on 2026-08-01
 - [x] repointing-cost — repointing cost (450) — per m², why cement mortar ruins old brick — published /journal/repointing-cost/ on 2026-08-02
-- [ ] underpinning-cost — underpinning cost (400) + subsidence repair cost (200) — read before you panic; insurance route
+- [x] underpinning-cost — underpinning cost (400) + subsidence repair cost (200) — read before you panic; insurance route — published /journal/underpinning-cost/ on 2026-08-03
 - [ ] survey-defect-costs — woodworm (450) + japanese knotweed removal (500) + asbestos removal (800) — what scary survey findings actually cost to fix
 - [ ] external-wall-insulation-cost — external wall insulation cost (800) — solid-wall homes, grants, the render-failure risk
 - [ ] underfloor-heating-cost — underfloor heating cost (4,600) — wet vs electric, retrofit vs new build, works with heat pumps
@@ -46,6 +46,7 @@ noted per topic.
 - double-glazing-cost — 2026-07-31 — /journal/double-glazing-cost/
 - rising-damp-treatment-cost — 2026-08-01 — /journal/rising-damp-treatment-cost/
 - repointing-cost — 2026-08-02 — /journal/repointing-cost/
+- underpinning-cost — 2026-08-03 — /journal/underpinning-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
