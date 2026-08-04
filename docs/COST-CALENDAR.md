@@ -23,7 +23,7 @@ noted per topic.
 - [x] rising-damp-treatment-cost — rising damp treatment cost (600) — and why much of it is misdiagnosed condensation — published /journal/rising-damp-treatment-cost/ on 2026-08-01
 - [x] repointing-cost — repointing cost (450) — per m², why cement mortar ruins old brick — published /journal/repointing-cost/ on 2026-08-02
 - [x] underpinning-cost — underpinning cost (400) + subsidence repair cost (200) — read before you panic; insurance route — published /journal/underpinning-cost/ on 2026-08-03
-- [ ] survey-defect-costs — woodworm (450) + japanese knotweed removal (500) + asbestos removal (800) — what scary survey findings actually cost to fix
+- [x] survey-defect-costs — woodworm (450) + japanese knotweed removal (500) + asbestos removal (800) — what scary survey findings actually cost to fix — published /journal/survey-defect-cost/ on 2026-08-04 (slug singularised to -cost to match rebuild-journal.py's classify())
 - [ ] external-wall-insulation-cost — external wall insulation cost (800) — solid-wall homes, grants, the render-failure risk
 - [ ] underfloor-heating-cost — underfloor heating cost (4,600) — wet vs electric, retrofit vs new build, works with heat pumps
 - [ ] structural-engineer-cost — structural engineer cost (350) — when a surveyor refers you on, what a report costs
@@ -47,6 +47,7 @@ noted per topic.
 - rising-damp-treatment-cost — 2026-08-01 — /journal/rising-damp-treatment-cost/
 - repointing-cost — 2026-08-02 — /journal/repointing-cost/
 - underpinning-cost — 2026-08-03 — /journal/underpinning-cost/
+- survey-defect-cost — 2026-08-04 — /journal/survey-defect-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
