@@ -58,13 +58,13 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-padlocks — site and van padlocks — 2 Aug 2026
 - [x] best-roof-ladders — roof ladder (6,000, KD 1) — dedicated ladders vs ridge-hook conversion kits — 3 Aug 2026
 - [x] best-socket-testers — socket tester (2,600, KD 0) — void/EICR-adjacent socket checks — 4 Aug 2026
+- [x] best-multimeters — multimeter (17,000, KD 0) — continuity/RCD/appliance testing — 5 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
 
-- [ ] best-multimeters — multimeter (17,000, KD 0) — continuity/RCD/appliance testing
 - [ ] best-tool-belts — tool belt (5,600, KD 0) — complements tool bag/van storage guides
 - [ ] best-hi-vis-vests — hi vis vest (6,300, KD 0) — site PPE
 - [ ] best-work-gloves — work gloves (6,700, KD 1) — handling insulation/damp materials, cut protection
