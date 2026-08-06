@@ -178,6 +178,15 @@ FOOTER = foot_m.group(1).replace('"../', '"../../')
 PAGE = '''<!doctype html>
 <html lang="en-GB">
 <head>
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-2PL73TP2PN"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){{dataLayer.push(arguments);}}
+    gtag('js', new Date());
+
+    gtag('config', 'G-2PL73TP2PN');
+  </script>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>{title} — Dominic Bowkett · Building Surveyor</title>
