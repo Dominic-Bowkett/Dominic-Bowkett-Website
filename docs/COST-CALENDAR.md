@@ -28,7 +28,21 @@ noted per topic.
 - [x] underfloor-heating-cost — underfloor heating cost (4,600) — wet vs electric, retrofit vs new build, works with heat pumps — published /journal/underfloor-heating-cost/ on 2026-08-06
 - [x] structural-engineer-cost — structural engineer cost (350) — when a surveyor refers you on, what a report costs — published /journal/structural-engineer-cost/ on 2026-08-07
 - [x] chimney-removal-cost — chimney removal cost (400) — Building Regs, the gable-support point, party wall — published /journal/chimney-removal-cost/ on 2026-08-08
-- [ ] guttering-replacement-cost — guttering replacement cost (100, TP 2,000) — cast iron vs uPVC, the damp link
+- [x] guttering-replacement-cost — guttering replacement cost (100, TP 2,000) — cast iron vs uPVC, the damp link — published /journal/guttering-replacement-cost/ on 2026-08-09
+- [ ] loft-conversion-cost — loft conversion cost (5,400, TP 8,200) — headroom, structural, building regs and party wall before you commit
+- [ ] conservatory-cost — conservatory cost (2,200, TP 7,400) — permitted development limits, thermal performance, the EPC trap
+- [ ] garage-conversion-cost — garage conversion cost (2,000, TP 2,300) — building regs, damp and insulation on the ones done without sign-off
+- [ ] eicr-cost — EICR cost (1,300, TP 2,400) — landlord duty, what a fail actually means; cross-link house-rewiring-cost
+- [ ] asbestos-survey-cost — asbestos survey cost (1,200, TP 1,100) — refurb/demolition survey vs management survey; distinct from removal cost in survey-defect-cost
+- [ ] gas-safety-certificate-cost — gas safety certificate cost (1,100, TP 1,800) — landlord compliance cluster alongside EICR and EPC
+- [ ] damp-survey-cost — damp survey cost (900, TP 1,200) — the diagnosis fee itself, before any treatment quote; this is Dom's own service — MUST cross-link damp-proofing-cost and rising-damp-treatment-cost
+- [ ] single-storey-extension-cost — single storey extension cost (700, TP 6,100) — per m&sup2; pricing, party wall, planning vs permitted development
+- [ ] drainage-survey-cost — drainage survey cost (500, TP 2,200) — CCTV drain survey before buying, especially older houses
+- [ ] party-wall-surveyor-cost — party wall surveyor cost (450, TP 600) — when you need one, agreed surveyor vs two, ties into chimney/loft-conversion posts
+- [ ] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one
+- [ ] snagging-survey-cost — snagging survey cost (250, TP 450) — new build inspection; cross-link Home Insight Survey
+- [ ] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost
+- [ ] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings
 
 ## Published
 
@@ -52,6 +66,7 @@ noted per topic.
 - underfloor-heating-cost — 2026-08-06 — /journal/underfloor-heating-cost/
 - structural-engineer-cost — 2026-08-07 — /journal/structural-engineer-cost/
 - chimney-removal-cost — 2026-08-08 — /journal/chimney-removal-cost/
+- guttering-replacement-cost — 2026-08-09 — /journal/guttering-replacement-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
