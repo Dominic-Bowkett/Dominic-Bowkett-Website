@@ -62,13 +62,13 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-tool-belts — tool belt (5,600, KD 0) — complements tool bag/van storage guides — 6 Aug 2026
 - [x] best-hi-vis-vests — hi vis vest (6,300, KD 0) — site PPE — 7 Aug 2026
 - [x] best-work-gloves — work gloves (6,700, KD 1) — handling insulation/damp materials, cut protection — 8 Aug 2026
+- [x] best-wellington-boots — wellington boots (15,000, KD 3) — wet crawl spaces/site conditions, complements safety boots guide — 9 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
 
-- [ ] best-wellington-boots — wellington boots (15,000, KD 3) — wet crawl spaces/site conditions, complements safety boots guide
 - [ ] best-waterproof-jackets — waterproof jacket (30,000, KD 10) — external inspections in UK weather
 - [ ] best-uv-torches — uv torch (2,900, KD 0) — leak/stain/pest evidence detection
 - [ ] best-plumb-bobs — plumb bob (1,400, KD 1) — checking wall plumb/bow
