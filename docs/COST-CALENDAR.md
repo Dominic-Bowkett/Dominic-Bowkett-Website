@@ -30,7 +30,7 @@ noted per topic.
 - [x] chimney-removal-cost — chimney removal cost (400) — Building Regs, the gable-support point, party wall — published /journal/chimney-removal-cost/ on 2026-08-08
 - [x] guttering-replacement-cost — guttering replacement cost (100, TP 2,000) — cast iron vs uPVC, the damp link — published /journal/guttering-replacement-cost/ on 2026-08-09
 - [x] loft-conversion-cost — loft conversion cost (5,400, TP 8,200) — headroom, structural, building regs and party wall before you commit — published /journal/loft-conversion-cost/ on 2026-08-10
-- [ ] conservatory-cost — conservatory cost (2,200, TP 7,400) — permitted development limits, thermal performance, the EPC trap
+- [x] conservatory-cost — conservatory cost (2,200, TP 7,400) — permitted development limits, thermal performance, the EPC trap — published /journal/conservatory-cost/ on 2026-08-11
 - [ ] garage-conversion-cost — garage conversion cost (2,000, TP 2,300) — building regs, damp and insulation on the ones done without sign-off
 - [ ] eicr-cost — EICR cost (1,300, TP 2,400) — landlord duty, what a fail actually means; cross-link house-rewiring-cost
 - [ ] asbestos-survey-cost — asbestos survey cost (1,200, TP 1,100) — refurb/demolition survey vs management survey; distinct from removal cost in survey-defect-cost
@@ -68,6 +68,7 @@ noted per topic.
 - chimney-removal-cost — 2026-08-08 — /journal/chimney-removal-cost/
 - guttering-replacement-cost — 2026-08-09 — /journal/guttering-replacement-cost/
 - loft-conversion-cost — 2026-08-10 — /journal/loft-conversion-cost/
+- conservatory-cost — 2026-08-11 — /journal/conservatory-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
