@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/costs/</loc>
-    <lastmod>2026-08-11</lastmod>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -759,6 +759,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/conservatory-cost/</loc>
     <lastmod>2026-08-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/garage-conversion-cost/</loc>
+    <lastmod>2026-08-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
