@@ -33,7 +33,7 @@ noted per topic.
 - [x] conservatory-cost — conservatory cost (2,200, TP 7,400) — permitted development limits, thermal performance, the EPC trap — published /journal/conservatory-cost/ on 2026-08-11
 - [x] garage-conversion-cost — garage conversion cost (2,000, TP 2,300) — building regs, damp and insulation on the ones done without sign-off — published /journal/garage-conversion-cost/ on 2026-08-12
 - [x] eicr-cost — EICR cost (1,300, TP 2,400) — landlord duty, what a fail actually means; cross-link house-rewiring-cost — published /journal/eicr-cost/ on 2026-08-16
-- [ ] asbestos-survey-cost — asbestos survey cost (1,200, TP 1,100) — refurb/demolition survey vs management survey; distinct from removal cost in survey-defect-cost
+- [x] asbestos-survey-cost — asbestos survey cost (1,200, TP 1,100) — refurb/demolition survey vs management survey; distinct from removal cost in survey-defect-cost — published /journal/asbestos-survey-cost/ on 2026-08-17
 - [ ] gas-safety-certificate-cost — gas safety certificate cost (1,100, TP 1,800) — landlord compliance cluster alongside EICR and EPC
 - [ ] damp-survey-cost — damp survey cost (900, TP 1,200) — the diagnosis fee itself, before any treatment quote; this is Dom's own service — MUST cross-link damp-proofing-cost and rising-damp-treatment-cost
 - [ ] single-storey-extension-cost — single storey extension cost (700, TP 6,100) — per m&sup2; pricing, party wall, planning vs permitted development
@@ -71,6 +71,7 @@ noted per topic.
 - conservatory-cost — 2026-08-11 — /journal/conservatory-cost/
 - garage-conversion-cost — 2026-08-12 — /journal/garage-conversion-cost/
 - eicr-cost — 2026-08-16 — /journal/eicr-cost/
+- asbestos-survey-cost — 2026-08-17 — /journal/asbestos-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
