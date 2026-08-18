@@ -68,10 +68,10 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-plumb-bobs — plumb bob (1,400, KD 1) — checking wall plumb/bow — 12 Aug 2026
 - [x] best-chalk-lines — chalk line (2,700, KD 0) — marking datum lines, damp reading grids — 16 Aug 2026
 - [x] best-measuring-wheels — measuring wheel (1,800, KD 1) — room/plot distance measuring — 17 Aug 2026
+- [x] best-gps-trackers-van — gps tracker (11,000, KD 15) — complements van security locks guide — 18 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-- [ ] best-gps-trackers-van — gps tracker (11,000, KD 15) — complements van security locks guide
 - [ ] best-podium-steps — podium steps (1,700, KD 0) — safe site access
