@@ -74,7 +74,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/notes/</loc>
-    <lastmod>2026-08-18</lastmod>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -639,6 +639,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/news-18-08-2026/</loc>
     <lastmod>2026-08-18</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/news-19-08-2026/</loc>
+    <lastmod>2026-08-19</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
