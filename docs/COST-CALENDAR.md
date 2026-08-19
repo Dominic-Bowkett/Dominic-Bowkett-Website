@@ -35,7 +35,7 @@ noted per topic.
 - [x] eicr-cost — EICR cost (1,300, TP 2,400) — landlord duty, what a fail actually means; cross-link house-rewiring-cost — published /journal/eicr-cost/ on 2026-08-16
 - [x] asbestos-survey-cost — asbestos survey cost (1,200, TP 1,100) — refurb/demolition survey vs management survey; distinct from removal cost in survey-defect-cost — published /journal/asbestos-survey-cost/ on 2026-08-17
 - [x] gas-safety-certificate-cost — gas safety certificate cost (1,100, TP 1,800) — landlord compliance cluster alongside EICR and EPC — published /journal/gas-safety-certificate-cost/ on 2026-08-18
-- [ ] damp-survey-cost — damp survey cost (900, TP 1,200) — the diagnosis fee itself, before any treatment quote; this is Dom's own service — MUST cross-link damp-proofing-cost and rising-damp-treatment-cost
+- [x] damp-survey-cost — damp survey cost (900, TP 1,200) — the diagnosis fee itself, before any treatment quote; this is Dom's own service — MUST cross-link damp-proofing-cost and rising-damp-treatment-cost — published /journal/damp-survey-cost/ on 2026-08-19
 - [ ] single-storey-extension-cost — single storey extension cost (700, TP 6,100) — per m&sup2; pricing, party wall, planning vs permitted development
 - [ ] drainage-survey-cost — drainage survey cost (500, TP 2,200) — CCTV drain survey before buying, especially older houses
 - [ ] party-wall-surveyor-cost — party wall surveyor cost (450, TP 600) — when you need one, agreed surveyor vs two, ties into chimney/loft-conversion posts
@@ -73,6 +73,7 @@ noted per topic.
 - eicr-cost — 2026-08-16 — /journal/eicr-cost/
 - asbestos-survey-cost — 2026-08-17 — /journal/asbestos-survey-cost/
 - gas-safety-certificate-cost — 2026-08-18 — /journal/gas-safety-certificate-cost/
+- damp-survey-cost — 2026-08-19 — /journal/damp-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
