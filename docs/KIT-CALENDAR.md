@@ -70,12 +70,12 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-measuring-wheels — measuring wheel (1,800, KD 1) — room/plot distance measuring — 17 Aug 2026
 - [x] best-gps-trackers-van — gps tracker (11,000, KD 15) — complements van security locks guide — 18 Aug 2026
 - [x] best-podium-steps — podium steps (1,700, KD 0) — safe site access — 19 Aug 2026
+- [x] best-loft-ladders — loft ladder (15,000, KD 2) — fixed loft hatch ladders vs telescopic, EPC/retrofit loft access — 20 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-- [ ] best-loft-ladders — loft ladder (15,000, KD 2) — fixed loft hatch ladders vs telescopic, EPC/retrofit loft access
 - [ ] best-infrared-thermometers — infrared thermometer (2,600, KD 4) — spot surface temps for cold bridging/damp, complements thermal imaging guide
 - [ ] best-tool-trolleys — tool trolley (2,600, KD 0) — mobile site trolley vs static van storage
 - [ ] best-safety-harnesses — safety harness (1,400, KD 0) — fall arrest for roof and podium work

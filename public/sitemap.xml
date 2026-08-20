@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/</loc>
-    <lastmod>2026-08-19</lastmod>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -837,6 +837,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/damp-survey-cost/</loc>
     <lastmod>2026-08-19</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-loft-ladders/</loc>
+    <lastmod>2026-08-20</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
