@@ -37,7 +37,7 @@ noted per topic.
 - [x] gas-safety-certificate-cost — gas safety certificate cost (1,100, TP 1,800) — landlord compliance cluster alongside EICR and EPC — published /journal/gas-safety-certificate-cost/ on 2026-08-18
 - [x] damp-survey-cost — damp survey cost (900, TP 1,200) — the diagnosis fee itself, before any treatment quote; this is Dom's own service — MUST cross-link damp-proofing-cost and rising-damp-treatment-cost — published /journal/damp-survey-cost/ on 2026-08-19
 - [x] single-storey-extension-cost — single storey extension cost (700, TP 6,100) — per m&sup2; pricing, party wall, planning vs permitted development — published /journal/single-storey-extension-cost/ on 2026-08-20
-- [ ] drainage-survey-cost — drainage survey cost (500, TP 2,200) — CCTV drain survey before buying, especially older houses
+- [x] drainage-survey-cost — drainage survey cost (500, TP 2,200) — CCTV drain survey before buying, especially older houses — published /journal/drainage-survey-cost/ on 2026-08-25
 - [ ] party-wall-surveyor-cost — party wall surveyor cost (450, TP 600) — when you need one, agreed surveyor vs two, ties into chimney/loft-conversion posts
 - [ ] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one
 - [ ] snagging-survey-cost — snagging survey cost (250, TP 450) — new build inspection; cross-link Home Insight Survey
@@ -75,6 +75,7 @@ noted per topic.
 - gas-safety-certificate-cost — 2026-08-18 — /journal/gas-safety-certificate-cost/
 - damp-survey-cost — 2026-08-19 — /journal/damp-survey-cost/
 - single-storey-extension-cost — 2026-08-20 — /journal/single-storey-extension-cost/
+- drainage-survey-cost — 2026-08-25 — /journal/drainage-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
