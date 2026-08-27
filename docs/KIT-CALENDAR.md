@@ -72,12 +72,12 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-podium-steps — podium steps (1,700, KD 0) — safe site access — 19 Aug 2026
 - [x] best-loft-ladders — loft ladder (15,000, KD 2) — fixed loft hatch ladders vs telescopic, EPC/retrofit loft access — 20 Aug 2026
 - [x] best-infrared-thermometers — infrared thermometer (2,600, KD 4) — spot surface temps for cold bridging/damp, complements thermal imaging guide — 26 Aug 2026
+- [x] best-tool-trolleys — tool trolley (2,600, KD 0) — mobile site trolley vs static van storage — 27 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-- [ ] best-tool-trolleys — tool trolley (2,600, KD 0) — mobile site trolley vs static van storage
 - [ ] best-safety-harnesses — safety harness (1,400, KD 0) — fall arrest for roof and podium work
 - [ ] best-gutter-vacuums — gutter vacuum (1,900, KD 14) — gutter inspection and clearing from ground level
 - [ ] best-site-radios — site radio (1,100, KD 1) — jobsite audio and comms
