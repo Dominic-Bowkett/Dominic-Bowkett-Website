@@ -39,7 +39,7 @@ noted per topic.
 - [x] single-storey-extension-cost — single storey extension cost (700, TP 6,100) — per m&sup2; pricing, party wall, planning vs permitted development — published /journal/single-storey-extension-cost/ on 2026-08-20
 - [x] drainage-survey-cost — drainage survey cost (500, TP 2,200) — CCTV drain survey before buying, especially older houses — published /journal/drainage-survey-cost/ on 2026-08-25
 - [x] party-wall-surveyor-cost — party wall surveyor cost (450, TP 600) — when you need one, agreed surveyor vs two, ties into chimney/loft-conversion posts — published /journal/party-wall-surveyor-cost/ on 2026-08-26
-- [ ] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one
+- [x] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one — published /journal/measured-building-survey-cost/ on 2026-08-27
 - [ ] snagging-survey-cost — snagging survey cost (250, TP 450) — new build inspection; cross-link Home Insight Survey
 - [ ] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost
 - [ ] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings
@@ -77,6 +77,7 @@ noted per topic.
 - single-storey-extension-cost — 2026-08-20 — /journal/single-storey-extension-cost/
 - drainage-survey-cost — 2026-08-25 — /journal/drainage-survey-cost/
 - party-wall-surveyor-cost — 2026-08-26 — /journal/party-wall-surveyor-cost/
+- measured-building-survey-cost — 2026-08-27 — /journal/measured-building-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
