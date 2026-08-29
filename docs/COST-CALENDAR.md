@@ -41,7 +41,7 @@ noted per topic.
 - [x] party-wall-surveyor-cost — party wall surveyor cost (450, TP 600) — when you need one, agreed surveyor vs two, ties into chimney/loft-conversion posts — published /journal/party-wall-surveyor-cost/ on 2026-08-26
 - [x] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one — published /journal/measured-building-survey-cost/ on 2026-08-27
 - [x] snagging-survey-cost — snagging survey cost (250, TP 450) — new build inspection; cross-link Home Insight Survey — published /journal/snagging-survey-cost/ on 2026-08-28 (cross-linked building-surveys/ instead, since that's the service that actually lists new-build snagging — Home Insight Survey is the seller's pre-marketing product, unrelated to new-build defects)
-- [ ] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost
+- [x] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost — published /journal/japanese-knotweed-survey-cost/ on 2026-08-29
 - [ ] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings
 
 ## Published
@@ -79,6 +79,7 @@ noted per topic.
 - party-wall-surveyor-cost — 2026-08-26 — /journal/party-wall-surveyor-cost/
 - measured-building-survey-cost — 2026-08-27 — /journal/measured-building-survey-cost/
 - snagging-survey-cost — 2026-08-28 — /journal/snagging-survey-cost/
+- japanese-knotweed-survey-cost — 2026-08-29 — /journal/japanese-knotweed-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
