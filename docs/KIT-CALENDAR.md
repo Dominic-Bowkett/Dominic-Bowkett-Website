@@ -75,10 +75,10 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-tool-trolleys — tool trolley (2,600, KD 0) — mobile site trolley vs static van storage — 27 Aug 2026
 - [x] best-safety-harnesses — safety harness (1,400, KD 0) — fall arrest for roof and podium work — 28 Aug 2026
 - [x] best-gutter-vacuums — gutter vacuum (1,900, KD 14) — gutter inspection and clearing from ground level — 29 Aug 2026
+- [x] best-site-radios — site radio (1,100, KD 1) — jobsite audio and comms — 30 Aug 2026
 
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-- [ ] best-site-radios — site radio (1,100, KD 1) — jobsite audio and comms
 - [ ] best-digital-calipers — digital calipers (1,000, KD 1) — precise measurements, crack widths, timber/masonry dimensions
