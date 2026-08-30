@@ -42,7 +42,24 @@ noted per topic.
 - [x] measured-building-survey-cost — measured building survey cost (350, TP 600) — what it is vs a condition survey, who actually needs one — published /journal/measured-building-survey-cost/ on 2026-08-27
 - [x] snagging-survey-cost — snagging survey cost (250, TP 450) — new build inspection; cross-link Home Insight Survey — published /journal/snagging-survey-cost/ on 2026-08-28 (cross-linked building-surveys/ instead, since that's the service that actually lists new-build snagging — Home Insight Survey is the seller's pre-marketing product, unrelated to new-build defects)
 - [x] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost — published /journal/japanese-knotweed-survey-cost/ on 2026-08-29
-- [ ] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings
+- [x] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings — published /journal/topographical-survey-cost/ on 2026-08-30
+- [ ] drone-survey-cost — drone survey cost (200, TP 150) — your own service; roof/aerial vs scaffold vs traditional survey cost compared
+- [ ] retrofit-assessment-cost — retrofit assessment cost (150, TP 90) — the PAS 2035 assessment fee itself; your own service, distinct from the retrofit works it recommends
+- [ ] sap-calculation-cost — SAP calculation cost (150, TP 100) — new-build/extension energy calc; your own service alongside EPC
+- [ ] mvhr-installation-cost — MVHR installation cost (100, TP 300) — whole-house ventilation; ties to your ventilation service and the damp/condensation posts
+- [ ] scaffolding-cost — scaffolding cost (600, TP 3,100) — per week/per job; relevant to almost every roof, render or extension project in this series
+- [ ] fire-risk-assessment-cost — fire risk assessment cost (600, TP 80) — landlord/HMO/commercial compliance cluster alongside EICR and gas safety
+- [ ] legionella-risk-assessment-cost — legionella risk assessment cost (450, TP 150) — landlord compliance cluster alongside EICR/gas safety/EPC
+- [ ] listed-building-consent-cost — listed building consent cost (90, TP 600) — application vs professional fees; cross-link listed-buildings-epc
+- [ ] basement-conversion-cost — basement conversion cost (200, TP 300) — structural and waterproofing risk; cross-link structural-engineer-cost and underpinning-cost
+- [ ] tree-survey-cost — tree survey cost (200, TP 50) — BS 5837; cross-link topographical-survey-cost and loft-conversion/extension posts
+- [ ] boundary-survey-cost — boundary survey cost (150, TP 150) — disputes vs design use; cross-link topographical-survey-cost
+- [ ] hmo-licence-cost — HMO licence cost (250, TP 20) — landlord compliance, ties to the EICR/gas safety/fire risk cluster
+- [ ] ews1-cost — EWS1 cost (100, TP 100) — cladding fire safety form for flats/leaseholders
+- [ ] environmental-search-cost — environmental search cost (150, TP 60) — conveyancing search a buyer commissions alongside a survey
+- [ ] septic-tank-survey-cost — septic tank survey cost (90, TP 150) — rural property niche, Dom's Kent/Sussex/Surrey patch
+- [ ] flood-risk-assessment-cost — flood risk assessment cost (100, TP 30) — planning-adjacent; relevant to Sussex/Kent flood zones
+- [ ] soakaway-cost — soakaway cost (30, TP 100) — drainage design cost; cross-link drainage-survey-cost
 
 ## Published
 
@@ -80,6 +97,7 @@ noted per topic.
 - measured-building-survey-cost — 2026-08-27 — /journal/measured-building-survey-cost/
 - snagging-survey-cost — 2026-08-28 — /journal/snagging-survey-cost/
 - japanese-knotweed-survey-cost — 2026-08-29 — /journal/japanese-knotweed-survey-cost/
+- topographical-survey-cost — 2026-08-30 — /journal/topographical-survey-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
