@@ -77,8 +77,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 - [x] best-gutter-vacuums — gutter vacuum (1,900, KD 14) — gutter inspection and clearing from ground level — 29 Aug 2026
 - [x] best-site-radios — site radio (1,100, KD 1) — jobsite audio and comms — 30 Aug 2026
 
+- [x] best-digital-calipers — digital calipers (1,000, KD 1) — precise measurements, crack widths, timber/masonry dimensions — 31 Aug 2026
+
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-- [ ] best-digital-calipers — digital calipers (1,000, KD 1) — precise measurements, crack widths, timber/masonry dimensions
