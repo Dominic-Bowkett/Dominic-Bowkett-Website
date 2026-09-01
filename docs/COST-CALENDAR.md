@@ -44,7 +44,7 @@ noted per topic.
 - [x] japanese-knotweed-survey-cost — japanese knotweed survey cost (200, TP 250) — the survey itself, distinct from the removal cost in survey-defect-cost — published /journal/japanese-knotweed-survey-cost/ on 2026-08-29
 - [x] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings — published /journal/topographical-survey-cost/ on 2026-08-30
 - [x] drone-survey-cost — drone survey cost (200, TP 150) — your own service; roof/aerial vs scaffold vs traditional survey cost compared — published /journal/drone-survey-cost/ on 2026-08-31
-- [ ] retrofit-assessment-cost — retrofit assessment cost (150, TP 90) — the PAS 2035 assessment fee itself; your own service, distinct from the retrofit works it recommends
+- [x] retrofit-assessment-cost — retrofit assessment cost (150, TP 90) — the PAS 2035 assessment fee itself; your own service, distinct from the retrofit works it recommends — published /journal/retrofit-assessment-cost/ on 2026-09-01
 - [ ] sap-calculation-cost — SAP calculation cost (150, TP 100) — new-build/extension energy calc; your own service alongside EPC
 - [ ] mvhr-installation-cost — MVHR installation cost (100, TP 300) — whole-house ventilation; ties to your ventilation service and the damp/condensation posts
 - [ ] scaffolding-cost — scaffolding cost (600, TP 3,100) — per week/per job; relevant to almost every roof, render or extension project in this series
@@ -99,6 +99,7 @@ noted per topic.
 - japanese-knotweed-survey-cost — 2026-08-29 — /journal/japanese-knotweed-survey-cost/
 - topographical-survey-cost — 2026-08-30 — /journal/topographical-survey-cost/
 - drone-survey-cost — 2026-08-31 — /journal/drone-survey-cost/
+- retrofit-assessment-cost — 2026-09-01 — /journal/retrofit-assessment-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
