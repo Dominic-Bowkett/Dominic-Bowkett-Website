@@ -45,7 +45,7 @@ noted per topic.
 - [x] topographical-survey-cost — topographical survey cost (100, TP 900) — needed before planning/extension drawings — published /journal/topographical-survey-cost/ on 2026-08-30
 - [x] drone-survey-cost — drone survey cost (200, TP 150) — your own service; roof/aerial vs scaffold vs traditional survey cost compared — published /journal/drone-survey-cost/ on 2026-08-31
 - [x] retrofit-assessment-cost — retrofit assessment cost (150, TP 90) — the PAS 2035 assessment fee itself; your own service, distinct from the retrofit works it recommends — published /journal/retrofit-assessment-cost/ on 2026-09-01
-- [ ] sap-calculation-cost — SAP calculation cost (150, TP 100) — new-build/extension energy calc; your own service alongside EPC
+- [x] sap-calculation-cost — SAP calculation cost (150, TP 100) — new-build/extension energy calc — published /journal/sap-calculation-cost/ on 2026-09-02 (NOT Dom's own service after checking /about/ credentials: he holds CertDEA/Elmhurst for RdSAP on existing dwellings, not the separate OCDEA accreditation new-build SAP requires — written as an adjacent-explainer/referral piece instead, cross-linked to EPC service + extension/conversion cost guides)
 - [ ] mvhr-installation-cost — MVHR installation cost (100, TP 300) — whole-house ventilation; ties to your ventilation service and the damp/condensation posts
 - [ ] scaffolding-cost — scaffolding cost (600, TP 3,100) — per week/per job; relevant to almost every roof, render or extension project in this series
 - [ ] fire-risk-assessment-cost — fire risk assessment cost (600, TP 80) — landlord/HMO/commercial compliance cluster alongside EICR and gas safety
@@ -100,6 +100,7 @@ noted per topic.
 - topographical-survey-cost — 2026-08-30 — /journal/topographical-survey-cost/
 - drone-survey-cost — 2026-08-31 — /journal/drone-survey-cost/
 - retrofit-assessment-cost — 2026-09-01 — /journal/retrofit-assessment-cost/
+- sap-calculation-cost — 2026-09-02 — /journal/sap-calculation-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
