@@ -83,9 +83,9 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 
 - [x] best-dictaphones — dictaphone (2,500, KD 6) — on-site voice notes for report dictation, complements rugged tablets/label printers guides — 3 Sep 2026
 
+- [x] best-respirator-masks — respirator mask (2,100, KD 2) — FFP3 dust protection for loft insulation, timber and demolition dust — 6 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-
-- [ ] best-respirator-masks — respirator mask (2,100, KD 2) — FFP3 dust protection for loft insulation, timber and demolition dust
