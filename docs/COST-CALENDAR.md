@@ -49,7 +49,7 @@ noted per topic.
 - [x] mvhr-installation-cost — MVHR installation cost (100, TP 300) — whole-house ventilation; ties to your ventilation service and the damp/condensation posts — published /journal/mvhr-installation-cost/ on 2026-09-03 (NOT installation, that's Dom's ventilation testing service; framed as adjacent-explainer + fabric-first honest-broker angle, cross-linked ventilation testing, retrofit assessment and rising-damp-treatment-cost)
 - [x] scaffolding-cost — scaffolding cost (600, TP 3,100) — per week/per job; relevant to almost every roof, render or extension project in this series — published /journal/scaffolding-cost/ on 2026-09-04
 - [x] fire-risk-assessment-cost — fire risk assessment cost (600, TP 80) — landlord/HMO/commercial compliance cluster alongside EICR and gas safety — published /journal/fire-risk-assessment-cost/ on 2026-09-06 (not Dom's own service; written as honest-broker adjacent-explainer, key differentiator is that single-let ASTs with no common parts don't need one under the FSO at all — cross-linked buy-to-let-survey, eicr-cost, gas-safety-certificate-cost)
-- [ ] legionella-risk-assessment-cost — legionella risk assessment cost (450, TP 150) — landlord compliance cluster alongside EICR/gas safety/EPC
+- [x] legionella-risk-assessment-cost — legionella risk assessment cost (450, TP 150) — landlord compliance cluster alongside EICR/gas safety/EPC — published /journal/legionella-risk-assessment-cost/ on 2026-09-07 (unlike fire-risk-assessment-cost, no small-let exemption — every landlord has the duty; honest-broker angle is that HSE explicitly says most can self-assess for free on simple mains-fed systems, a paid assessment earns its fee mainly where there's a cold water tank/calorifier or an HMO)
 - [ ] listed-building-consent-cost — listed building consent cost (90, TP 600) — application vs professional fees; cross-link listed-buildings-epc
 - [ ] basement-conversion-cost — basement conversion cost (200, TP 300) — structural and waterproofing risk; cross-link structural-engineer-cost and underpinning-cost
 - [ ] tree-survey-cost — tree survey cost (200, TP 50) — BS 5837; cross-link topographical-survey-cost and loft-conversion/extension posts
@@ -104,6 +104,7 @@ noted per topic.
 - mvhr-installation-cost — 2026-09-03 — /journal/mvhr-installation-cost/
 - scaffolding-cost — 2026-09-04 — /journal/scaffolding-cost/
 - fire-risk-assessment-cost — 2026-09-06 — /journal/fire-risk-assessment-cost/
+- legionella-risk-assessment-cost — 2026-09-07 — /journal/legionella-risk-assessment-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
