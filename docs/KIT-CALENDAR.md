@@ -85,7 +85,21 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 
 - [x] best-respirator-masks — respirator mask (2,100, KD 2) — FFP3 dust protection for loft insulation, timber and demolition dust — 6 Sep 2026
 
+- [x] best-decibel-meters — decibel meter (5,700, KD 16) — noise nuisance/party wall/tenant complaint checks, MVHR fan noise — 7 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
+
+- [ ] best-crowbars — crowbar (6,600, KD 0, TP 1,300) — lifting floorboards and floor coverings for inspection
+- [ ] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks
+- [ ] best-drain-inspection-cameras — drain inspection camera (600, KD 0, TP 1,000) — CCTV drainage checks, pairs with drain rods guide
+- [ ] best-dust-sheets — dust sheets (8,100, KD 3) — protecting client floors/furniture during invasive inspection
+- [ ] best-first-aid-kits — first aid kit (13,000, KD 0, TP 10,000) — lone-working safety compliance
+- [ ] best-laptop-rucksacks — laptop rucksack (3,700, KD 1, TP 5,200) — carrying rugged tablet/camera/laptop kit, complements rugged tablets guide
+- [ ] best-power-banks — power bank (43,000, KD 21, TP 4,500) — keeping tablet/torch/camera charged through a full day on site
+- [ ] best-thermal-socks — thermal socks (7,600, KD 0, TP 3,100) — cold lofts, crawl spaces and winter external inspections
+- [ ] best-anti-vibration-gloves — anti vibration gloves (1,400, KD 0, TP 350) — HAVS protection for SDS drill/percussive tool use
+- [ ] best-tick-removers — tick remover (1,400, KD 2, TP 600) — rural sites and overgrown gardens
+- [ ] best-warning-triangles — warning triangle (2,700, KD 0, TP 400) — van breakdown safety kit
