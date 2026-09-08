@@ -87,12 +87,13 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 
 - [x] best-decibel-meters — decibel meter (5,700, KD 16) — noise nuisance/party wall/tenant complaint checks, MVHR fan noise — 7 Sep 2026
 
+- [x] best-crowbars — crowbar (6,600, KD 0, TP 1,300) — lifting floorboards and floor coverings for inspection — 8 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
 
-- [ ] best-crowbars — crowbar (6,600, KD 0, TP 1,300) — lifting floorboards and floor coverings for inspection
 - [ ] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks
 - [ ] best-drain-inspection-cameras — drain inspection camera (600, KD 0, TP 1,000) — CCTV drainage checks, pairs with drain rods guide
 - [ ] best-dust-sheets — dust sheets (8,100, KD 3) — protecting client floors/furniture during invasive inspection
