@@ -50,7 +50,7 @@ noted per topic.
 - [x] scaffolding-cost — scaffolding cost (600, TP 3,100) — per week/per job; relevant to almost every roof, render or extension project in this series — published /journal/scaffolding-cost/ on 2026-09-04
 - [x] fire-risk-assessment-cost — fire risk assessment cost (600, TP 80) — landlord/HMO/commercial compliance cluster alongside EICR and gas safety — published /journal/fire-risk-assessment-cost/ on 2026-09-06 (not Dom's own service; written as honest-broker adjacent-explainer, key differentiator is that single-let ASTs with no common parts don't need one under the FSO at all — cross-linked buy-to-let-survey, eicr-cost, gas-safety-certificate-cost)
 - [x] legionella-risk-assessment-cost — legionella risk assessment cost (450, TP 150) — landlord compliance cluster alongside EICR/gas safety/EPC — published /journal/legionella-risk-assessment-cost/ on 2026-09-07 (unlike fire-risk-assessment-cost, no small-let exemption — every landlord has the duty; honest-broker angle is that HSE explicitly says most can self-assess for free on simple mains-fed systems, a paid assessment earns its fee mainly where there's a cold water tank/calorifier or an HMO)
-- [ ] listed-building-consent-cost — listed building consent cost (90, TP 600) — application vs professional fees; cross-link listed-buildings-epc
+- [x] listed-building-consent-cost — listed building consent cost (90, TP 600) — application vs professional fees; cross-link listed-buildings-epc — published /journal/listed-building-consent-cost/ on 2026-09-08 (the application itself is free in England — the real cost is heritage statement/survey/architect fees plus a linked planning fee if one's also needed; differentiator is that unauthorised works are a criminal offence under s9 of the 1990 Act with no enforcement time limit, unlike ordinary planning breaches; cross-linked listed-buildings-epc and building-surveys, which specialises in listed/traditionally-built stock)
 - [ ] basement-conversion-cost — basement conversion cost (200, TP 300) — structural and waterproofing risk; cross-link structural-engineer-cost and underpinning-cost
 - [ ] tree-survey-cost — tree survey cost (200, TP 50) — BS 5837; cross-link topographical-survey-cost and loft-conversion/extension posts
 - [ ] boundary-survey-cost — boundary survey cost (150, TP 150) — disputes vs design use; cross-link topographical-survey-cost
@@ -105,6 +105,7 @@ noted per topic.
 - scaffolding-cost — 2026-09-04 — /journal/scaffolding-cost/
 - fire-risk-assessment-cost — 2026-09-06 — /journal/fire-risk-assessment-cost/
 - legionella-risk-assessment-cost — 2026-09-07 — /journal/legionella-risk-assessment-cost/
+- listed-building-consent-cost — 2026-09-08 — /journal/listed-building-consent-cost/
 
 When the list runs dry, research new "cost of X" topics with Ahrefs (UK volumes, KD ≤ 30,
 surveyor/property-relevant, commercial or high-traffic-potential) and append here.
