@@ -89,12 +89,12 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 
 - [x] best-crowbars — crowbar (6,600, KD 0, TP 1,300) — lifting floorboards and floor coverings for inspection — 8 Sep 2026
 
+- [x] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks — 9 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked)
 
 When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
 Amazon-available, surveyor-relevant) and append them here.
-
-- [ ] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks
 - [ ] best-drain-inspection-cameras — drain inspection camera (600, KD 0, TP 1,000) — CCTV drainage checks, pairs with drain rods guide
 - [ ] best-dust-sheets — dust sheets (8,100, KD 3) — protecting client floors/furniture during invasive inspection
 - [ ] best-first-aid-kits — first aid kit (13,000, KD 0, TP 10,000) — lone-working safety compliance
