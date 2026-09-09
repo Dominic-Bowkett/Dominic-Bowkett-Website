@@ -91,10 +91,58 @@ pushes to main. Primary keyword and UK monthly volume (Ahrefs) noted per topic.
 
 - [x] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks — 9 Sep 2026
 
-## Upcoming (daily routine takes the first unticked)
+## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
-When the backlog runs dry, research new topics with Ahrefs (UK volumes, KD ≤ 25,
-Amazon-available, surveyor-relevant) and append them here.
+Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
+standard ranked guide — hub group on /kit/. The daily script emails Dom when three or
+fewer topics remain; it does NOT research its own topics. New topics are added here by hand.
+
+Season one — homeowners, condensation and heating (publish before the October peak):
+- [ ] best-piv-units — piv unit (3,200, KD 54) / positive input ventilation (660, KD 9) — Nuaire Drimaster Eco, Vent-Axia PoziDry Pro, Envirovent Atmos; the whole-house condensation fix, when it works and when the house is wrong for it; link damp-proofing-cost, rising-damp-treatment-cost, mvhr-installation-cost and the ventilation service — group: Home: condensation, heating &amp; energy
+- [ ] best-smart-radiator-valves — smart radiator valves (500, KD 13) / smart trv (1,000) / trv valves (740, KD 7) — Tado, Drayton Wiser, Hive, Bosch, Aqara; room-by-room control, heat-pump readiness; link air-source-heat-pump-cost, new-boiler-cost — group: Home: condensation, heating &amp; energy
+- [ ] best-bathroom-extractor-fans — bathroom extractor fan (20,100, KD 69); target "best extractor fan for bathroom" (October peak) — humidistat and continuous dMEV fans: Envirovent Silent 100, Vent-Axia Svara and Lo-Carbon, Manrose, Xpelair; Part F extract rates in plain words — group: Home: condensation, heating &amp; energy
+- [ ] best-heated-clothes-airers — heated clothes airer (22,200, KD 91) / best heated airer (290, KD 23) — indoor drying is the condensation Dom gets called to; Dry:Soon, VonHaus, Minky, Status; running cost per load vs tumble dryer — group: Home: condensation, heating &amp; energy
+- [ ] draught-proofing-kit — draught excluder (8,100, KD 57) + chimney balloon (660, KD 8) + radiator reflector foil (270, KD 7) + hot water cylinder jacket (480, KD 7) + letterbox, keyhole and loft-hatch seals + secondary glazing film (390, KD 10) — ROUNDUP: the kit an EPC assessor would actually buy, grouped by job (doors, windows, chimney, loft hatch, hot water); link epc-cost, double-glazing-cost — group: Home: condensation, heating &amp; energy
+- [ ] best-home-energy-monitors — energy monitor (920, KD 32) / smart energy monitor (320) / plug in energy meter (50, KD 8) — Tapo P110, Emporia Vue, Owl Intuition, Shelly EM, Efergy; what the smart meter display can't tell you; link solar-panels-cost, epc-cost — group: Home: condensation, heating &amp; energy
+- [ ] best-electric-heaters-for-one-room — oil filled radiator (9,900, KD 54; December peak) / infrared heater (5,400, KD 48) / best electric heater (480, KD 17) — the cheapest way to heat one room, costed per kWh honestly (they all cost the same to run; the difference is how the heat is delivered); De'Longhi, Dimplex, Herschel, Pro Breeze — group: Home: condensation, heating &amp; energy
+- [ ] best-woodworm-treatments — woodworm treatment (8,000, KD 47) — Cuprinol 5 Star, Barrettine Premier, Sika; active vs historic holes, timber moisture as the real risk; a survey finding that is often a £30 fix; link survey-defect-cost, best-damp-meters — group: Damp, air &amp; diagnostics
+- [ ] best-co2-monitors — co2 monitor (1,100, KD 46) / carbon dioxide monitor (390, KD 13) — Aranet4, Airthings View Plus, Qingping, Inkbird; CO2 as the honest measure of ventilation, 1,000ppm overnight; link mvhr-installation-cost and the ventilation service — group: Damp, air &amp; diagnostics
+- [ ] best-water-leak-detectors — water leak detector (610, KD 13; May peak) — Aqara, Tapo T315, Grohe Sense, Honeywell Lyric, plus a plain non-smart alarm; escape-of-water is the most common home insurance claim; link house-survey-cost — group: Home: condensation, heating &amp; energy
+- [ ] damp-proof-paint-does-it-work — damp proof paint (6,600, KD 41) / anti mould paint (10,800, KD 74) — honest verdict: it hides more than it fixes, and where it's legitimate (cellar walls, a decorated finish after the cause is fixed); Ronseal, Zinsser, Dryzone, Polar; must link rising-damp-treatment-cost, damp-proofing-cost, best-dehumidifiers — group: Damp, air &amp; diagnostics
+
+Landlord compliance:
+- [ ] best-smoke-and-heat-alarms — smoke alarm (19,100) / interlinked smoke alarms (2,400, KD 48) / heat alarm (2,400, KD 48) — FireAngel Pro Connected, Kidde, X-Sense, Aico Ei3000 series; the 2022 Smoke and CO Alarm Regulations and the Scottish interlink rule; link fire-risk-assessment-cost, gas-safety-certificate-cost, best-carbon-monoxide-detectors — group: Landlord compliance
+- [ ] best-key-safes — key safe (14,800, KD 65) — Master Lock 5401D and 5403, Supra C500 (police-preferred), Burton Keyguard, Yale; landlords, agents, contractors, carers; what "police approved" means — group: Landlord compliance
+- [ ] best-fire-blankets-and-home-extinguishers — fire blanket (8,000, KD 59) / fire extinguisher for home (440, KD 10; September spike) — BS EN 1869 blankets, 1kg and 2kg powder, foam and water-mist for HMO common parts; link fire-risk-assessment-cost — group: Landlord compliance
+- [ ] first-time-landlord-kit — first time landlord checklist (20) — ROUNDUP hub: CO alarm, smoke and heat alarms, key safe, fire blanket, inventory kit, thermo-hygrometer for the tenant, energy monitor; cross-links to eicr-cost, gas-safety-certificate-cost, fire-risk-assessment-cost, legionella-risk-assessment-cost, epc-cost and the buy-to-let survey service — group: Landlord compliance
+
+Buyers and movers:
+- [ ] house-viewing-kit — house viewing checklist (390, KD 21) — ROUNDUP: what to take to a second viewing (pinless damp meter, torch, laser measure, phone compass, binoculars, tape, notebook) and what each finds; ends on the survey CTA; link house-survey-cost — group: Buyers &amp; movers
+- [ ] best-home-tool-kits — tool kit for home (590, KD 9) / basic tool kit (320, KD 9) / tool set (4,400, KD 47) — the first-home tool kit; Stanley, Draper, Bosch, Makita boxed sets; cross-link best-socket-testers, best-stud-finders, best-tape-measures — group: Buyers &amp; movers
+- [ ] best-books-on-old-houses-and-surveying — old house handbook (50, KD 5) / building surveying books (40, KD 11) — Hunt &amp; Suhr Old House Handbook and Eco-House Manual, Marshall Understanding Housing Defects, Glover Building Surveys, Oxley Damp; books pay 5% — group: Buyers &amp; movers
+
+Trade and surveyor tools:
+- [ ] best-safety-trainers — safety trainers (14,800, KD 57) / best safety trainers uk (320, KD 6) — footwear pays 6%; complements best-safety-boots; composite vs steel toe, S1P vs S3 — group: Wear &amp; carry
+- [ ] best-rechargeable-torches — rechargeable torch (2,400, KD 58) / best torch (330, KD 8; December peak) — Olight, Ledlenser, Fenix, Nitecore; handheld complement to best-head-torches — group: Access, light &amp; lofts
+- [ ] best-combination-ladders — combination ladder (3,200, KD 49) / 3 way ladder (390, KD 5) / stair ladder (1,300; December peak) — Werner, Youngman, TB Davies; completes the ladder cluster — group: Access, light &amp; lofts
+- [ ] best-ladder-accessories — ladder clamps (660, KD 5) / ladder leveller (590, KD 5) / ladder stand off bracket (390, KD 5) / ladder mat (260, KD 7) — stand-offs, levellers, mats, van roof clamps and racks; automotive pays 5% — group: Access, light &amp; lofts
+- [ ] best-van-racking — van racking (5,400, KD 34) / van shelving (240, KD 7; November peak) — Van Guard, Bott, Sortimo-style, plywood kits; complements best-tool-boxes-van and best-van-security-locks — group: Site tech &amp; data
+- [ ] best-clamp-meters — clamp meter (2,400, KD 55) / best clamp meter (50, KD 8) — Fluke 323, Kewtech, Klein, UNI-T; electrical cluster with best-multimeters and best-socket-testers — group: Measurement &amp; detection
+- [ ] best-vde-screwdriver-sets — vde screwdriver set (500, KD 5; July peak) — Wera, Wiha, Bahco, Draper, CK; the only screwdrivers that belong near a consumer unit — group: Measurement &amp; detection
+- [ ] best-thermal-cameras-for-phones — thermal camera for phone (480, KD 12) / flir one (370, KD 11) — FLIR One Edge Pro, Seek Thermal, InfiRay P2 Pro, TOPDON TC001; the cheaper entry to best-thermal-imaging-cameras — group: Damp, air &amp; diagnostics
+- [ ] best-bluetooth-laser-measures — laser tape measure (740, KD 7) / bluetooth laser measure (70, KD 5) / leica disto (270, KD 5) / bosch glm 50 c (140, KD 7) — the floor-plan workflow: Disto D2 and D110, Bosch GLM 50 C, Hilti PD-S; complements best-laser-measures — group: Measurement &amp; detection
+- [ ] protimeter-surveymaster-explained — protimeter surveymaster (480, KD 5) / protimeter (660, KD 8) — model page: modes, WME scale, probes and accessories, alternatives (Aquant, Mini, MMS3); features-only wording, no testing claims — group: Damp, air &amp; diagnostics
+- [ ] best-waterproof-notebooks — waterproof notebook (590, KD 7) — Rite in the Rain, Field Notes Expedition, Aquanotes, Stormproof; complements best-dictaphones and best-label-printers — group: Site tech &amp; data
+- [ ] best-disposable-coveralls — disposable coveralls (590, KD 4) — DuPont Tyvek 500 and 600, Portwest, 3M 4510; loft, crawl-space and asbestos-adjacent work; complements best-respirator-masks — group: Wear &amp; carry
+- [ ] best-inspection-camera-poles — telescopic camera pole (210, KD 5) / inspection camera pole (20, KD 7) — phone-on-a-pole for gutters, parapets and flat roofs; complements best-drones-roof-inspections and best-binoculars-roof-inspections — group: Access, light &amp; lofts
+- [ ] best-flue-gas-analysers — flue gas analyser (1,300, KD 44) — Testo 310 and 300, Kane 458s, Anton Sprint Pro; gas-engineer audience, £300–£700 kit; link gas-safety-certificate-cost — group: Measurement &amp; detection
+- [ ] best-manometers — manometer (2,400, KD 57) — Testo 510, Kane 3500, TPI 621; gas tightness and ventilation pressure testing; link the ventilation service — group: Measurement &amp; detection
+- [ ] best-gutter-guards — gutter guard (170, KD 5) / leaf guard gutter (290; September peak) — Hedgehog brush, mesh guards, Gutter Angel; honest verdict on which ones make clearing harder; link guttering-replacement-cost, best-gutter-vacuums — group: Drainage
+- [ ] best-sump-pumps — sump pump (5,700, KD 37) — Clarke, Draper, Einhell, Wilo; cellars and basements, float switches, Type C waterproofing; link basement-conversion-cost — group: Drainage
+- [ ] best-asbestos-test-kits — asbestos test kit (3,600, KD 35; April peak) — lab-analysed sampling kits; careful compliance angle (what a kit can and cannot tell you; when a survey is required by law); link asbestos-survey-cost — group: Damp, air &amp; diagnostics
+- [ ] best-lux-meters — light meter (1,800, KD 65) / lux meter (70, KD 16) — Extech, Dr.meter, UNI-T, Testo 540; daylight and lighting assessments, BS EN 12464 in plain words — group: Measurement &amp; detection
+
+Carried over from the previous queue:
 - [ ] best-drain-inspection-cameras — drain inspection camera (600, KD 0, TP 1,000) — CCTV drainage checks, pairs with drain rods guide
 - [ ] best-dust-sheets — dust sheets (8,100, KD 3) — protecting client floors/furniture during invasive inspection
 - [ ] best-first-aid-kits — first aid kit (13,000, KD 0, TP 10,000) — lone-working safety compliance

@@ -40,12 +40,30 @@ emoji, hype, fake precision. No claim that Dom personally carried out installati
 - NO invented figures. If a number can't be sourced, omit it or say it varies too widely
   to quote.
 
-## No affiliate links
+## Kit box — the only affiliate element (added 9 Sep 2026)
 
-Cost guides carry NO Amazon or affiliate links and NO product images — they are editorial
-authority pieces. The commercial payoff is the service cross-link and the phone/email CTA,
-not a click-out. (Cost guides may link a relevant kit guide inline where genuinely useful,
-e.g. a damp guide → `../best-damp-meters/`, but that is editorial, not the point.)
+Cost guides are editorial authority pieces; the commercial payoff is still the service
+cross-link and the phone/email CTA. The ONE affiliate element is a "Kit for this job"
+`<aside class="kit-box">` placed immediately before the closing `<hr/>`. Copy the markup
+from `public/journal/damp-proofing-cost/index.html` exactly (the `.kit-box` CSS shipped in
+`site.css?v=20260909`; use that `?v=` or later in the page head).
+
+- 3–5 items. Each item: `.kit-name` (exact product name), `.kit-why` (one short sentence in
+  Dom's voice on why it earns its place for THIS job), and an `a.buy` button
+  "Check price on Amazon".
+- Prefer products that already have a Field Kit guide: use that guide's TOP PICK name and
+  its Amazon search link verbatim, add `<a class="kit-guide" href="../best-<slug>/">Full
+  guide</a>` and the guide's `.price-note` text inside `<span class="kit-price">`. Only where
+  no guide exists, use a plain Amazon search link for a named product (no price, no guide
+  link). `scripts/kit-boxes.py` shows the mapping used for the first 44 guides.
+- Amazon links follow KIT-GUIDE-SPEC exactly: search URL with `tag=opeconltd-21`,
+  `linkCode=ll2`, `linkId=82f351c719c3e9b898aac4324778e6cd`, `&amp;` in hrefs,
+  `target="_blank" rel="sponsored nofollow noopener"`.
+- One-sentence `.kit-intro` above the list, and the `.kit-disc` disclosure paragraph below it
+  (Amazon Associates statement + "I haven't lab-tested these products myself"), both copied
+  from the reference page and adapted.
+- NO product images, NO affiliate links anywhere else in the body, NO testing/ownership
+  claims. A relevant kit guide may still be linked inline where genuinely useful.
 
 ## Page structure
 
@@ -74,11 +92,13 @@ and the nav exactly as found (no Kit item). Asset paths from a post are `../../`
   5. `<h2>What I'd watch for in a quote</h2>` — red flags, what a fair quote includes,
      questions to ask. A short list is good here.
   6. `<h2>Questions I get asked</h2>` — 3-4 FAQs targeting long-tail variants, one para each.
-  7. `<hr/>` + closing paragraph linking the most relevant service page
+  7. `<aside class="kit-box">` "Kit for this job" — see the Kit box section above. Sits
+     immediately before the `<hr/>`.
+  8. `<hr/>` + closing paragraph linking the most relevant service page
      (`../../services/epc|retrofit|building-surveys|ventilation/`) and `../../contact/`,
      with the phone (07946 618203) mentioned. The natural CTA: an independent survey/
      assessment tells you which of these you actually need before you spend.
-  8. Small-print para (same style as other posts): general-guidance disclaimer + "Prices
+  9. Small-print para (same style as other posts): general-guidance disclaimer + "Prices
      were researched and correct to the best of my knowledge on DATE; costs move and vary
      by region and property. Always get at least three written quotes."
 - 1,300–2,200 words. No images. No `<style>`/`<script>` beyond the footer year script.
@@ -99,7 +119,9 @@ and the nav exactly as found (no Kit item). Asset paths from a post are `../../`
 3. Tick the topic in `docs/COST-CALENDAR.md` (mark `[x]`, add slug + today's date).
 4. Self-verify: every source link opened and read during research; two-source cross-check
    on headline figures; JSON-LD parses; internal links resolve; date consistent across
-   title/meta/JSON-LD/hero/small print; no affiliate links; no images.
+   title/meta/JSON-LD/hero/small print; kit box present with 3–5 items and the disclosure,
+   every Amazon href carrying `tag=opeconltd-21` and `rel="sponsored nofollow noopener"`,
+   every `../best-*/` link resolving to a file; no affiliate links outside the box; no images.
 5. Commit "Add cost guide: <slug>" with the
    Co-Authored-By: Claude <noreply@anthropic.com> trailer, push to main; on failure retry
    once after `git pull --rebase origin main`.

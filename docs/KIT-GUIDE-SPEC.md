@@ -31,6 +31,38 @@ value picks, UK models, GBP prices). Verify model names are current. Prices alwa
 ranges/approximations ("typically £X–£Y"), never exact. Pick ONE winner, one budget pick,
 one premium/professional pick.
 
+## Audiences, formats and hub groups (added 9 Sep 2026)
+
+The calendar entry for each topic names its audience/angle, its format and its hub group.
+Follow them.
+
+**Audiences.** Guides now serve four readers, all in Dom's own practitioner voice:
+1. Surveyors and trades — the original field-kit series.
+2. Homeowners dealing with condensation, damp, heating and energy bills. Dom writes as the
+   surveyor who gets called in after the problem, not as a retailer: say when the product is
+   the wrong answer for the house, and link the relevant cost guide(s) inline
+   (`../<slug>-cost/`) plus the matching service page.
+3. Landlords meeting compliance duties (smoke/heat/CO alarms, key safes, fire kit). Cite the
+   actual regulation in plain words; link the compliance cost guides (eicr-cost,
+   gas-safety-certificate-cost, fire-risk-assessment-cost, legionella-risk-assessment-cost).
+4. Home buyers and movers (viewing kit, first-home tool kit, books). Close with the survey CTA.
+
+**ROUNDUP format.** Calendar entries flagged ROUNDUP group products by job rather than ranking
+one category: `<h2>` per job (e.g. Doors, Windows, Chimney, Loft hatch) with `.pick` blocks
+beneath (rank numbers still run 01, 02… through the whole page). Everything else stands:
+`.affil-note`, intro, ONE `.top-pick` block ("the one I'd buy first"), the comparison table of
+every product, buying advice, FAQs, closing. 8–12 products in a roundup.
+
+**Hub groups on `/kit/`.** Six existing: Damp, air &amp; diagnostics · Measurement &amp;
+detection · Access, light &amp; lofts · Drainage · Site tech &amp; data · Wear &amp; carry.
+Three new: `Home: condensation, heating &amp; energy` · `Landlord compliance` · `Buyers &amp;
+movers`. If the calendar names a group whose `<h2 class="kit-cat">` isn't on `/kit/` yet, add
+it after the last existing group with that exact text, then add the row under it. Bump the
+"N guides" count in the hub hero each time.
+
+**Research source.** Ahrefs is no longer available. Volumes and difficulty in the calendar are
+SE Ranking UK figures; when Dom adds topics he uses that.
+
 ## Affiliate links — exact format, no deviation
 Amazon SEARCH links for the exact model name (never ASIN product links — search never 404s):
 

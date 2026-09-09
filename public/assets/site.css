@@ -1096,6 +1096,58 @@ figure.prod-shot img { width: 100%; height: auto; }
   margin: 0 0 18px;
 }
 
+/* Kit box — the "Kit for this job" aside at the foot of a cost guide.
+   Three to five products from the Field Kit guides, one buy button each. */
+.kit-box {
+  border-top: 1px solid var(--rule-strong);
+  border-bottom: 1px solid var(--rule-strong);
+  padding: 26px 0 18px;
+  margin: 48px 0 8px;
+}
+.prose .kit-box .kit-label {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 12px;
+}
+.prose .kit-box .kit-intro { font-size: 16px; line-height: 1.6; margin: 0 0 6px; }
+.prose .kit-box ul { list-style: none; margin: 0; padding: 0; font-size: 15px; }
+.prose .kit-box li {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 6px 24px;
+  align-items: center;
+  padding: 14px 0;
+  margin: 0;
+  border-top: 1px solid var(--rule);
+}
+.kit-box .kit-name { display: block; font-weight: 500; color: var(--ink); }
+.kit-box .kit-why { display: block; font-size: 14px; line-height: 1.5; color: var(--ink-soft); margin-top: 2px; }
+.kit-box .kit-why a.kit-guide { border-bottom: 1px solid var(--rule-strong); white-space: nowrap; }
+.kit-box .kit-price {
+  font-family: var(--mono);
+  font-size: 10px;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: 6px;
+}
+.prose .kit-box li a.buy { font-size: 13px; padding: 8px 16px; white-space: nowrap; }
+@media (max-width: 560px) {
+  .prose .kit-box li { grid-template-columns: 1fr; }
+}
+.prose .kit-box .kit-disc {
+  font-family: var(--mono);
+  font-size: 11px;
+  line-height: 1.6;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+  margin: 16px 0 0;
+}
+
 /* Comparison table */
 .compare-wrap {
   overflow-x: auto;
