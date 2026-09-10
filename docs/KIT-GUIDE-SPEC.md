@@ -84,8 +84,20 @@ Hotlink from Amazon's CDN. Insert immediately after the `.flag` line (top-pick) 
 Find the image id on the product's amazon.co.uk listing (amazon.com works too — shared CDN).
 Prefer the `._AC_SL500_` size variant. VERIFY every URL returns 200 + Content-Type image/*
 (PowerShell: `Invoke-WebRequest -Uri <url> -Method Head -UseBasicParsing`). Visually confirm
-it shows the correct brand and model. Fallback: manufacturer's official image URL (verified).
-If neither verifies, omit the figure rather than ship a broken/wrong image.
+it shows the correct brand and model.
+
+**Host rules — `m.media-amazon.com` or nothing.** The only permitted fallback is the
+**manufacturer's or brand owner's own domain**, and it must already be listed in
+`docs/IMAGE-HOSTS-ALLOWED.txt` (add the host there, with the brand named in a comment, as
+part of the same change). NEVER hotlink an image from a **retailer**: Screwfix, Toolstation,
+B&Q/diy.com, Wickes, Arco, City Plumbing, Rapid Online, eBay, or any other shop, marketplace,
+reseller or review site. It is their bandwidth and their licensed photography, they
+hotlink-block without notice, and it puts a competitor's shopfront on a page whose buy
+buttons go to Amazon. If there is no usable Amazon image and no manufacturer image, **omit
+the figure** — a missing photo is much cheaper than a broken or wrong one.
+
+Run `python scripts/check-kit-images.py <slug>` before committing; it must report no broken
+images and no unapproved hosts for the new guide.
 
 ## Page structure
 Copy the head/header/footer skeleton from any existing guide (e.g.

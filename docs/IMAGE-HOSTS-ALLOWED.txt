@@ -1,0 +1,69 @@
+# Image hosts a Field Kit product photo may be hotlinked from, besides Amazon's own
+# CDN (m.media-amazon.com), which is always preferred.
+#
+# ONLY a manufacturer's or brand owner's own domain belongs here. A retailer's site
+# (Screwfix, Toolstation, B&Q, Wickes, Arco, City Plumbing, Rapid Online, any tool
+# shop) does NOT: it is their bandwidth and their licensed photography, and they
+# hotlink-block without warning. If a product has no usable Amazon image and no
+# manufacturer image, omit the figure — see docs/KIT-GUIDE-SPEC.md.
+#
+# One host per line. Checked by scripts/check-kit-images.py.
+
+# --- brand/manufacturer domains in use as at 10 Sep 2026 ---
+archy-arctichayes-gob2b.b-cdn.net   # Arctic Hayes
+assets.dewalt.co.uk                 # DeWalt
+assets.keter.com                    # Keter
+bafxpro.com                         # BAFX Products
+blackvue.com                        # BlackVue
+chimneysheep.co.uk                  # Chimney Sheep
+cdn.relaxdays.com                   # Relaxdays
+centurionsafety.co.uk               # Centurion Safety
+connect.na.panasonic.com            # Panasonic
+content.regatta.com                 # Regatta
+damprid.com                         # DampRid
+disklokuk.co.uk                     # Disklok
+etekcity.com                        # Etekcity
+gerbergear.com                      # Gerber
+generaltools.com                    # General Tools
+huepar.com                          # Huepar
+imageengine.victorinox.com          # Victorinox
+img.vevorstatic.com                 # VEVOR
+media.kleintools.io                 # Klein Tools
+meters.uni-trend.com                # UNI-T
+mymilenco.co.uk                     # Milenco
+muckbootcompany.co.uk               # Muck Boot
+neoteck.cn                          # Neoteck
+niimbots.com                        # NIIMBOT
+pingi.com                           # Pingi
+probreeze.com                       # Pro Breeze
+redtigercam.com                     # REDTIGER
+regin.com                           # Regin
+res.garmin.com                      # Garmin
+scruffs.com                         # Scruffs
+store.blackview.hk                  # Blackview
+thinkwaredashcam.eu                 # Thinkware
+uk.leatherman.com                   # Leatherman
+uvbeast.com                         # UV Beast
+www.bosch-professional.com          # Bosch Professional
+www.boschtools.com                  # Bosch
+www.ck-tools.com                    # C.K Tools
+www.faithfulltools.com              # Faithfull
+www.ideaengineering.us              # Idea Engineering
+www.jspsafety.com                   # JSP Safety
+www.lepro.com                       # Lepro
+www.loftzone.co.uk                  # LoftZone
+www.maxblast.co.uk                  # MaxBlast
+www.nitecore.com                    # Nitecore
+www.prolabinc.com                   # PRO-LAB
+www.rewiresecurity.co.uk            # Rewire Security
+www.securikey.co.uk                 # Securikey
+www.streamlight.com                 # Streamlight
+www.trumeter.com                    # Trumeter
+www.ultrafire.com                   # UltraFire
+www.vantrue.com                     # Vantrue
+www.viofo.com                       # VIOFO
+www.vonhaus.com                     # VonHaus
+www.vortice.com                     # Vortice
+www.wernerco.com                    # Werner
+www.wixey.com                       # Wixey
+wernerco.widen.net                  # Werner
