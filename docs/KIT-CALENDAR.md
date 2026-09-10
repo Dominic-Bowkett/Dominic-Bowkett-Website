@@ -95,6 +95,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-piv-units — piv unit (3,200, KD 54) / positive input ventilation (660, KD 9) — whole-house condensation fix, when it works and when the house is wrong for it — group: Home: condensation, heating &amp; energy — 10 Sep 2026
 
+- [x] best-smart-radiator-valves — smart radiator valves (500, KD 13) / smart trv (1,000) / trv valves (740, KD 7) — Tado, Drayton Wiser, Hive, Bosch, Aqara; room-by-room control, heat-pump readiness; link air-source-heat-pump-cost, new-boiler-cost — group: Home: condensation, heating &amp; energy — 10 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -102,7 +104,6 @@ standard ranked guide — hub group on /kit/. The daily script emails Dom when t
 fewer topics remain; it does NOT research its own topics. New topics are added here by hand.
 
 Season one — homeowners, condensation and heating (publish before the October peak):
-- [ ] best-smart-radiator-valves — smart radiator valves (500, KD 13) / smart trv (1,000) / trv valves (740, KD 7) — Tado, Drayton Wiser, Hive, Bosch, Aqara; room-by-room control, heat-pump readiness; link air-source-heat-pump-cost, new-boiler-cost — group: Home: condensation, heating &amp; energy
 - [ ] best-bathroom-extractor-fans — bathroom extractor fan (20,100, KD 69); target "best extractor fan for bathroom" (October peak) — humidistat and continuous dMEV fans: Envirovent Silent 100, Vent-Axia Svara and Lo-Carbon, Manrose, Xpelair; Part F extract rates in plain words — group: Home: condensation, heating &amp; energy
 - [ ] best-heated-clothes-airers — heated clothes airer (22,200, KD 91) / best heated airer (290, KD 23) — indoor drying is the condensation Dom gets called to; Dry:Soon, VonHaus, Minky, Status; running cost per load vs tumble dryer — group: Home: condensation, heating &amp; energy
 - [ ] draught-proofing-kit — draught excluder (8,100, KD 57) + chimney balloon (660, KD 8) + radiator reflector foil (270, KD 7) + hot water cylinder jacket (480, KD 7) + letterbox, keyhole and loft-hatch seals + secondary glazing film (390, KD 10) — ROUNDUP: the kit an EPC assessor would actually buy, grouped by job (doors, windows, chimney, loft hatch, hot water); link epc-cost, double-glazing-cost — group: Home: condensation, heating &amp; energy
