@@ -11,6 +11,11 @@
 
 # --- brand/manufacturer domains in use as at 10 Sep 2026 ---
 archy-arctichayes-gob2b.b-cdn.net   # Arctic Hayes
+digitalassets.resideo.com           # Resideo / Honeywell Home
+shop.tado.com                       # tado
+wiser.draytoncontrols.co.uk         # Drayton Wiser
+www.aqara-shop.co.uk                # Aqara
+www.evehome.com                     # Eve
 assets.dewalt.co.uk                 # DeWalt
 assets.keter.com                    # Keter
 bafxpro.com                         # BAFX Products
