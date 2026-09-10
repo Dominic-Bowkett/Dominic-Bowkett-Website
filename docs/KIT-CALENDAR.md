@@ -93,6 +93,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-bolster-chisels — bolster chisel (1,900, KD 0, TP 1,200) — opening up masonry/mortar joints, lifting skirting for damp checks — 9 Sep 2026
 
+- [x] best-piv-units — piv unit (3,200, KD 54) / positive input ventilation (660, KD 9) — whole-house condensation fix, when it works and when the house is wrong for it — group: Home: condensation, heating &amp; energy — 10 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -100,7 +102,6 @@ standard ranked guide — hub group on /kit/. The daily script emails Dom when t
 fewer topics remain; it does NOT research its own topics. New topics are added here by hand.
 
 Season one — homeowners, condensation and heating (publish before the October peak):
-- [ ] best-piv-units — piv unit (3,200, KD 54) / positive input ventilation (660, KD 9) — Nuaire Drimaster Eco, Vent-Axia PoziDry Pro, Envirovent Atmos; the whole-house condensation fix, when it works and when the house is wrong for it; link damp-proofing-cost, rising-damp-treatment-cost, mvhr-installation-cost and the ventilation service — group: Home: condensation, heating &amp; energy
 - [ ] best-smart-radiator-valves — smart radiator valves (500, KD 13) / smart trv (1,000) / trv valves (740, KD 7) — Tado, Drayton Wiser, Hive, Bosch, Aqara; room-by-room control, heat-pump readiness; link air-source-heat-pump-cost, new-boiler-cost — group: Home: condensation, heating &amp; energy
 - [ ] best-bathroom-extractor-fans — bathroom extractor fan (20,100, KD 69); target "best extractor fan for bathroom" (October peak) — humidistat and continuous dMEV fans: Envirovent Silent 100, Vent-Axia Svara and Lo-Carbon, Manrose, Xpelair; Part F extract rates in plain words — group: Home: condensation, heating &amp; energy
 - [ ] best-heated-clothes-airers — heated clothes airer (22,200, KD 91) / best heated airer (290, KD 23) — indoor drying is the condensation Dom gets called to; Dry:Soon, VonHaus, Minky, Status; running cost per load vs tumble dryer — group: Home: condensation, heating &amp; energy
