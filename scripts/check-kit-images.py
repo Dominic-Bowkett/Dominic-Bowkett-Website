@@ -55,7 +55,8 @@ def host_of(url: str) -> str:
 
 
 def collect(slugs=None):
-    paths = sorted(glob.glob(os.path.join(JOURNAL, "best-*", "index.html")))
+    paths = sorted(set(glob.glob(os.path.join(JOURNAL, "best-*", "index.html")) +
+                        glob.glob(os.path.join(JOURNAL, "*-kit", "index.html"))))
     if slugs:
         want = set(slugs)
         paths = [p for p in paths if os.path.basename(os.path.dirname(p)) in want]

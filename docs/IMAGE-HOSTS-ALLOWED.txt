@@ -20,6 +20,7 @@ assets.dewalt.co.uk                 # DeWalt
 assets.keter.com                    # Keter
 bafxpro.com                         # BAFX Products
 blackvue.com                        # BlackVue
+chimneyballoon.co.uk                # Chimney Balloon
 chimneysheep.co.uk                  # Chimney Sheep
 cdn.relaxdays.com                   # Relaxdays
 centurionsafety.co.uk               # Centurion Safety
@@ -41,6 +42,7 @@ neoteck.cn                          # Neoteck
 niimbots.com                        # NIIMBOT
 pingi.com                           # Pingi
 probreeze.com                       # Pro Breeze
+www.radflek.com                     # Radflek
 redtigercam.com                     # REDTIGER
 regin.com                           # Regin
 res.garmin.com                      # Garmin
@@ -62,6 +64,7 @@ www.nitecore.com                    # Nitecore
 www.prolabinc.com                   # PRO-LAB
 www.rewiresecurity.co.uk            # Rewire Security
 www.securikey.co.uk                 # Securikey
+www.stormguard.co.uk                # Stormguard
 www.streamlight.com                 # Streamlight
 www.trumeter.com                    # Trumeter
 www.ultrafire.com                   # UltraFire

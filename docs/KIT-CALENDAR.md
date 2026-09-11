@@ -101,6 +101,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-heated-clothes-airers — heated clothes airer (22,200, KD 91) / best heated airer (290, KD 23) — indoor drying is the condensation Dom gets called to; Dry:Soon, VonHaus, Minky, Status; running cost per load vs tumble dryer — group: Home: condensation, heating &amp; energy — 11 Sep 2026
 
+- [x] draught-proofing-kit — draught excluder (8,100, KD 57) + chimney balloon (660, KD 8) + radiator reflector foil (270, KD 7) + hot water cylinder jacket (480, KD 7) + letterbox, keyhole and loft-hatch seals + secondary glazing film (390, KD 10) — ROUNDUP: the kit an EPC assessor would actually buy, grouped by job (doors, windows, chimney, loft hatch, hot water); link epc-cost, double-glazing-cost — group: Home: condensation, heating &amp; energy — 11 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -108,7 +110,6 @@ standard ranked guide — hub group on /kit/. The daily script emails Dom when t
 fewer topics remain; it does NOT research its own topics. New topics are added here by hand.
 
 Season one — homeowners, condensation and heating (publish before the October peak):
-- [ ] draught-proofing-kit — draught excluder (8,100, KD 57) + chimney balloon (660, KD 8) + radiator reflector foil (270, KD 7) + hot water cylinder jacket (480, KD 7) + letterbox, keyhole and loft-hatch seals + secondary glazing film (390, KD 10) — ROUNDUP: the kit an EPC assessor would actually buy, grouped by job (doors, windows, chimney, loft hatch, hot water); link epc-cost, double-glazing-cost — group: Home: condensation, heating &amp; energy
 - [ ] best-home-energy-monitors — energy monitor (920, KD 32) / smart energy monitor (320) / plug in energy meter (50, KD 8) — Tapo P110, Emporia Vue, Owl Intuition, Shelly EM, Efergy; what the smart meter display can't tell you; link solar-panels-cost, epc-cost — group: Home: condensation, heating &amp; energy
 - [ ] best-electric-heaters-for-one-room — oil filled radiator (9,900, KD 54; December peak) / infrared heater (5,400, KD 48) / best electric heater (480, KD 17) — the cheapest way to heat one room, costed per kWh honestly (they all cost the same to run; the difference is how the heat is delivered); De'Longhi, Dimplex, Herschel, Pro Breeze — group: Home: condensation, heating &amp; energy
 - [ ] best-woodworm-treatments — woodworm treatment (8,000, KD 47) — Cuprinol 5 Star, Barrettine Premier, Sika; active vs historic holes, timber moisture as the real risk; a survey finding that is often a £30 fix; link survey-defect-cost, best-damp-meters — group: Damp, air &amp; diagnostics

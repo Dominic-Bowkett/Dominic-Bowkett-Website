@@ -13,7 +13,7 @@
 # Category comes from the slug:
 #     news-*        -> Surveyor's notes  -> /journal/notes/
 #     *-cost        -> Costs             -> /journal/costs/
-#     best-*        -> Field kit         -> /kit/  (hand-curated, not written here)
+#     best-*/*-kit  -> Field kit         -> /kit/  (hand-curated, not written here)
 #     anything else -> Selected writing  (kept in full on the front page)
 
 import re, html, pathlib, sys
@@ -46,7 +46,7 @@ def classify(slug):
         return 'notes'
     if slug.endswith('-cost'):
         return 'costs'
-    if slug.startswith('best-'):
+    if slug.startswith('best-') or slug.endswith('-kit'):
         return 'kit'
     return 'writing'
 
