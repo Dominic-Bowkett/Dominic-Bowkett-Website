@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/costs/</loc>
-    <lastmod>2026-09-11</lastmod>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1155,6 +1155,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/tree-survey-cost/</loc>
     <lastmod>2026-09-11</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/boundary-survey-cost/</loc>
+    <lastmod>2026-09-12</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

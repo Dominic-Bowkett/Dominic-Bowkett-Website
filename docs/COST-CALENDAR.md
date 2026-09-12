@@ -53,7 +53,7 @@ noted per topic.
 - [x] listed-building-consent-cost — listed building consent cost (90, TP 600) — application vs professional fees; cross-link listed-buildings-epc — published /journal/listed-building-consent-cost/ on 2026-09-08 (the application itself is free in England — the real cost is heritage statement/survey/architect fees plus a linked planning fee if one's also needed; differentiator is that unauthorised works are a criminal offence under s9 of the 1990 Act with no enforcement time limit, unlike ordinary planning breaches; cross-linked listed-buildings-epc and building-surveys, which specialises in listed/traditionally-built stock)
 - [x] basement-conversion-cost — basement conversion cost (200, TP 300) — structural and waterproofing risk; cross-link structural-engineer-cost and underpinning-cost — published /journal/basement-conversion-cost/ on 2026-09-09
 - [x] tree-survey-cost — tree survey cost (200, TP 50) — BS 5837; cross-link topographical-survey-cost and loft-conversion/extension posts — published /journal/tree-survey-cost/ on 2026-09-11
-- [ ] boundary-survey-cost — boundary survey cost (150, TP 150) — disputes vs design use; cross-link topographical-survey-cost
+- [x] boundary-survey-cost — boundary survey cost (150, TP 150) — disputes vs design use; cross-link topographical-survey-cost — published /journal/boundary-survey-cost/ on 2026-09-12
 - [ ] hmo-licence-cost — HMO licence cost (250, TP 20) — landlord compliance, ties to the EICR/gas safety/fire risk cluster
 - [ ] ews1-cost — EWS1 cost (100, TP 100) — cladding fire safety form for flats/leaseholders
 - [ ] environmental-search-cost — environmental search cost (150, TP 60) — conveyancing search a buyer commissions alongside a survey
@@ -108,6 +108,7 @@ noted per topic.
 - listed-building-consent-cost — 2026-09-08 — /journal/listed-building-consent-cost/
 - basement-conversion-cost — 2026-09-09 — /journal/basement-conversion-cost/
 - tree-survey-cost — 2026-09-11 — /journal/tree-survey-cost/
+- boundary-survey-cost — 2026-09-12 — /journal/boundary-survey-cost/
 
 Wave two (researched with SE Ranking, 10 Sep 2026; UK volume, KD). Surveyor-authority and
 money-maker topics first. Every guide carries the kit box per the spec.
