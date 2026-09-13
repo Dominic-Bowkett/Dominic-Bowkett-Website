@@ -105,6 +105,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-home-energy-monitors — energy monitor (920, KD 32) / smart energy monitor (320) / plug in energy meter (50, KD 8) — Tapo P110, Emporia Vue, Owl Intuition, Shelly EM, Efergy; what the smart meter display can't tell you; link solar-panels-cost, epc-cost — group: Home: condensation, heating &amp; energy — 13 Sep 2026
 
+- [x] best-electric-heaters-for-one-room — oil filled radiator (9,900, KD 54; December peak) / infrared heater (5,400, KD 48) / best electric heater (480, KD 17) — the cheapest way to heat one room, costed per kWh honestly (they all cost the same to run; the difference is how the heat is delivered); De'Longhi, Dimplex, Herschel, Pro Breeze — group: Home: condensation, heating &amp; energy — 13 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -112,7 +114,6 @@ standard ranked guide — hub group on /kit/. The daily script emails Dom when t
 fewer topics remain; it does NOT research its own topics. New topics are added here by hand.
 
 Season one — homeowners, condensation and heating (publish before the October peak):
-- [ ] best-electric-heaters-for-one-room — oil filled radiator (9,900, KD 54; December peak) / infrared heater (5,400, KD 48) / best electric heater (480, KD 17) — the cheapest way to heat one room, costed per kWh honestly (they all cost the same to run; the difference is how the heat is delivered); De'Longhi, Dimplex, Herschel, Pro Breeze — group: Home: condensation, heating &amp; energy
 - [ ] best-woodworm-treatments — woodworm treatment (8,000, KD 47) — Cuprinol 5 Star, Barrettine Premier, Sika; active vs historic holes, timber moisture as the real risk; a survey finding that is often a £30 fix; link survey-defect-cost, best-damp-meters — group: Damp, air &amp; diagnostics
 - [ ] best-co2-monitors — co2 monitor (1,100, KD 46) / carbon dioxide monitor (390, KD 13) — Aranet4, Airthings View Plus, Qingping, Inkbird; CO2 as the honest measure of ventilation, 1,000ppm overnight; link mvhr-installation-cost and the ventilation service — group: Damp, air &amp; diagnostics
 - [ ] best-water-leak-detectors — water leak detector (610, KD 13; May peak) — Aqara, Tapo T315, Grohe Sense, Honeywell Lyric, plus a plain non-smart alarm; escape-of-water is the most common home insurance claim; link house-survey-cost — group: Home: condensation, heating &amp; energy
