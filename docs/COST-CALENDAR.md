@@ -55,7 +55,7 @@ noted per topic.
 - [x] tree-survey-cost — tree survey cost (200, TP 50) — BS 5837; cross-link topographical-survey-cost and loft-conversion/extension posts — published /journal/tree-survey-cost/ on 2026-09-11
 - [x] boundary-survey-cost — boundary survey cost (150, TP 150) — disputes vs design use; cross-link topographical-survey-cost — published /journal/boundary-survey-cost/ on 2026-09-12
 - [x] hmo-licence-cost — HMO licence cost (250, TP 20) — landlord compliance, ties to the EICR/gas safety/fire risk cluster — published /journal/hmo-licence-cost/ on 2026-09-13
-- [ ] ews1-cost — EWS1 cost (100, TP 100) — cladding fire safety form for flats/leaseholders
+- [x] ews1-cost — EWS1 cost (100, TP 100) — cladding fire safety form for flats/leaseholders — published /journal/ews1-cost/ on 2026-09-14 (not Dom's own service — EWS1 assessor is a distinct RICS-trained/fire-engineer qualification; honest-broker angle is that it's not a legal requirement at all, just an industry lending tool, and the height/cladding scope has narrowed a lot since 2019-2020; cross-linked fire-risk-assessment-cost, homebuyer-survey, building-surveys)
 - [ ] environmental-search-cost — environmental search cost (150, TP 60) — conveyancing search a buyer commissions alongside a survey
 - [ ] septic-tank-survey-cost — septic tank survey cost (90, TP 150) — rural property niche, Dom's Kent/Sussex/Surrey patch
 - [ ] flood-risk-assessment-cost — flood risk assessment cost (100, TP 30) — planning-adjacent; relevant to Sussex/Kent flood zones
@@ -110,6 +110,7 @@ noted per topic.
 - tree-survey-cost — 2026-09-11 — /journal/tree-survey-cost/
 - boundary-survey-cost — 2026-09-12 — /journal/boundary-survey-cost/
 - hmo-licence-cost — 2026-09-13 — /journal/hmo-licence-cost/
+- ews1-cost — 2026-09-14 — /journal/ews1-cost/
 
 Wave two (researched with SE Ranking, 10 Sep 2026; UK volume, KD). Surveyor-authority and
 money-maker topics first. Every guide carries the kit box per the spec.
