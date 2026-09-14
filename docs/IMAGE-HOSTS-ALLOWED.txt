@@ -64,6 +64,7 @@ www.nitecore.com                    # Nitecore
 www.prolabinc.com                   # PRO-LAB
 www.rewiresecurity.co.uk            # Rewire Security
 www.securikey.co.uk                 # Securikey
+www.grohe.us                        # Grohe
 www.stormguard.co.uk                # Stormguard
 www.streamlight.com                 # Streamlight
 www.trumeter.com                    # Trumeter
