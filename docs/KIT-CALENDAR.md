@@ -115,7 +115,7 @@ fewer topics remain; it does NOT research its own topics. New topics are added h
 
 Season one — homeowners, condensation and heating (publish before the October peak):
 - [x] best-woodworm-treatments — woodworm treatment (8,000, KD 47) — Cuprinol 5 Star, Barrettine Premier, Sika; active vs historic holes, timber moisture as the real risk; a survey finding that is often a £30 fix; link survey-defect-cost, best-damp-meters — group: Damp, air &amp; diagnostics — 14 Sep 2026
-- [ ] best-co2-monitors — co2 monitor (1,100, KD 46) / carbon dioxide monitor (390, KD 13) — Aranet4, Airthings View Plus, Qingping, Inkbird; CO2 as the honest measure of ventilation, 1,000ppm overnight; link mvhr-installation-cost and the ventilation service — group: Damp, air &amp; diagnostics
+- [x] best-co2-monitors — co2 monitor (1,100, KD 46) / carbon dioxide monitor (390, KD 13) — Aranet4, Airthings View Plus, Qingping, Inkbird; CO2 as the honest measure of ventilation, 1,000ppm overnight; link mvhr-installation-cost and the ventilation service — group: Damp, air &amp; diagnostics — 14 Sep 2026
 - [ ] best-water-leak-detectors — water leak detector (610, KD 13; May peak) — Aqara, Tapo T315, Grohe Sense, Honeywell Lyric, plus a plain non-smart alarm; escape-of-water is the most common home insurance claim; link house-survey-cost — group: Home: condensation, heating &amp; energy
 - [ ] damp-proof-paint-does-it-work — damp proof paint (6,600, KD 41) / anti mould paint (10,800, KD 74) — honest verdict: it hides more than it fixes, and where it's legitimate (cellar walls, a decorated finish after the cause is fixed); Ronseal, Zinsser, Dryzone, Polar; must link rising-damp-treatment-cost, damp-proofing-cost, best-dehumidifiers — group: Damp, air &amp; diagnostics
 
