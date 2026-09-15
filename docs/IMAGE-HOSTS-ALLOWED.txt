@@ -76,3 +76,6 @@ www.vortice.com                     # Vortice
 www.wernerco.com                    # Werner
 www.wixey.com                       # Wixey
 wernerco.widen.net                  # Werner
+media.safeguardeurope.com           # Dryzone / Safeguard Europe
+polarcoatings.co.uk                 # Polar Specialist Coatings
+zinsseruk.builtbybeluga.com         # Zinsser UK
