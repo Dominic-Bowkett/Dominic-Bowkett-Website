@@ -110,7 +110,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/kit/</loc>
-    <lastmod>2026-09-14</lastmod>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -1131,6 +1131,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/best-water-leak-detectors/</loc>
     <lastmod>2026-09-14</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-smoke-and-heat-alarms/</loc>
+    <lastmod>2026-09-15</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>

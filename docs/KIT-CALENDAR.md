@@ -107,6 +107,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-electric-heaters-for-one-room — oil filled radiator (9,900, KD 54; December peak) / infrared heater (5,400, KD 48) / best electric heater (480, KD 17) — the cheapest way to heat one room, costed per kWh honestly (they all cost the same to run; the difference is how the heat is delivered); De'Longhi, Dimplex, Herschel, Pro Breeze — group: Home: condensation, heating &amp; energy — 13 Sep 2026
 
+- [x] best-smoke-and-heat-alarms — smoke alarm (19,100) / interlinked smoke alarms (2,400, KD 48) / heat alarm (2,400, KD 48) — Aico Ei650iRF/Ei3016/Ei630iRF, FireAngel Pro Connected FP2620W2-R/FP1720W2-R, X-Sense XS01-WR (no Kidde — no usable manufacturer-domain image found for it); corrected the calendar's own framing in the draft: England's 2022 Alarm Regulations do not mandate interlink or a heat alarm, that's Scotland's tolerable standard — the real English trigger for interlink is usually an HMO licence condition against BS 5839-6; links fire-risk-assessment-cost, gas-safety-certificate-cost, best-carbon-monoxide-detectors — group: Landlord compliance — 15 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -120,7 +122,6 @@ Season one — homeowners, condensation and heating (publish before the October 
 - [x] best-damp-proof-paint — damp proof paint (6,600, KD 41) / anti mould paint (10,800, KD 74) — honest verdict: it hides more than it fixes, and where it's legitimate (cellar walls, a decorated finish after the cause is fixed); Zinsser Perma-White + Watertite, Dryzone Anti-Mould + Damp & Stain Seal, Ronseal, Polar (calendar slug "damp-proof-paint-does-it-work" renamed to "best-damp-proof-paint" — the rebuild/image-checker scripts classify Field Kit posts by a best-*/*-kit slug pattern); links rising-damp-treatment-cost, damp-proofing-cost, best-dehumidifiers — group: Damp, air &amp; diagnostics — 15 Sep 2026
 
 Landlord compliance:
-- [ ] best-smoke-and-heat-alarms — smoke alarm (19,100) / interlinked smoke alarms (2,400, KD 48) / heat alarm (2,400, KD 48) — FireAngel Pro Connected, Kidde, X-Sense, Aico Ei3000 series; the 2022 Smoke and CO Alarm Regulations and the Scottish interlink rule; link fire-risk-assessment-cost, gas-safety-certificate-cost, best-carbon-monoxide-detectors — group: Landlord compliance
 - [ ] best-key-safes — key safe (14,800, KD 65) — Master Lock 5401D and 5403, Supra C500 (police-preferred), Burton Keyguard, Yale; landlords, agents, contractors, carers; what "police approved" means — group: Landlord compliance
 - [ ] best-fire-blankets-and-home-extinguishers — fire blanket (8,000, KD 59) / fire extinguisher for home (440, KD 10; September spike) — BS EN 1869 blankets, 1kg and 2kg powder, foam and water-mist for HMO common parts; link fire-risk-assessment-cost — group: Landlord compliance
 - [ ] first-time-landlord-kit — first time landlord checklist (20) — ROUNDUP hub: CO alarm, smoke and heat alarms, key safe, fire blanket, inventory kit, thermo-hygrometer for the tenant, energy monitor; cross-links to eicr-cost, gas-safety-certificate-cost, fire-risk-assessment-cost, legionella-risk-assessment-cost, epc-cost and the buy-to-let survey service — group: Landlord compliance

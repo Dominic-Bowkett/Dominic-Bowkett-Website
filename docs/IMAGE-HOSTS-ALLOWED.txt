@@ -79,3 +79,6 @@ wernerco.widen.net                  # Werner
 media.safeguardeurope.com           # Dryzone / Safeguard Europe
 polarcoatings.co.uk                 # Polar Specialist Coatings
 zinsseruk.builtbybeluga.com         # Zinsser UK
+www.aico.co.uk                      # Aico (Ei Electronics)
+www.fireangel.co.uk                 # FireAngel
+www.x-sense.com                     # X-Sense
