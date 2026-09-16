@@ -128,7 +128,7 @@ Landlord compliance:
 - [x] first-time-landlord-kit — first time landlord checklist (20) — ROUNDUP hub: CO alarm, smoke and heat alarms, key safe, fire blanket, inventory kit, thermo-hygrometer for the tenant, energy monitor; cross-links to eicr-cost, gas-safety-certificate-cost, fire-risk-assessment-cost, legionella-risk-assessment-cost, epc-cost and the buy-to-let survey service — group: Landlord compliance — 16 Sep 2026
 
 Buyers and movers:
-- [ ] house-viewing-kit — house viewing checklist (390, KD 21) — ROUNDUP: what to take to a second viewing (pinless damp meter, torch, laser measure, phone compass, binoculars, tape, notebook) and what each finds; ends on the survey CTA; link house-survey-cost — group: Buyers &amp; movers
+- [x] house-viewing-kit — house viewing checklist (390, KD 21) — ROUNDUP: what to take to a second viewing — Brennenstuhl MD damp meter, Bosch Zamo laser measure + Stanley FatMax tape, Energizer Vision Ultra HD head torch, Occer 12x25 binoculars, Suunto A-10 NH compass, Draper 34279 socket tester, Rite in the Rain No. 135 notebook; ends on the HomeBuyer Survey CTA; links house-survey-cost — group: Buyers &amp; movers — 16 Sep 2026
 - [ ] best-home-tool-kits — tool kit for home (590, KD 9) / basic tool kit (320, KD 9) / tool set (4,400, KD 47) — the first-home tool kit; Stanley, Draper, Bosch, Makita boxed sets; cross-link best-socket-testers, best-stud-finders, best-tape-measures — group: Buyers &amp; movers
 - [ ] best-books-on-old-houses-and-surveying — old house handbook (50, KD 5) / building surveying books (40, KD 11) — Hunt &amp; Suhr Old House Handbook and Eco-House Manual, Marshall Understanding Housing Defects, Glover Building Surveys, Oxley Damp; books pay 5% — group: Buyers &amp; movers
 
