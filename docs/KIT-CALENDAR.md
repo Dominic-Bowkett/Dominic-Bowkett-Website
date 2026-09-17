@@ -131,7 +131,7 @@ Landlord compliance:
 
 Buyers and movers:
 - [x] house-viewing-kit — house viewing checklist (390, KD 21) — ROUNDUP: what to take to a second viewing — Brennenstuhl MD damp meter, Bosch Zamo laser measure + Stanley FatMax tape, Energizer Vision Ultra HD head torch, Occer 12x25 binoculars, Suunto A-10 NH compass, Draper 34279 socket tester, Rite in the Rain No. 135 notebook; ends on the HomeBuyer Survey CTA; links house-survey-cost — group: Buyers &amp; movers — 16 Sep 2026
-- [ ] best-books-on-old-houses-and-surveying — old house handbook (50, KD 5) / building surveying books (40, KD 11) — Hunt &amp; Suhr Old House Handbook and Eco-House Manual, Marshall Understanding Housing Defects, Glover Building Surveys, Oxley Damp; books pay 5% — group: Buyers &amp; movers
+- [x] best-books-on-old-houses-and-surveying — old house handbook (50, KD 5) / building surveying books (40, KD 11) — 7 verified picks: Hunt &amp; Suhr Old House Handbook (top pick) and Old House Eco Handbook, Ian Rock Period Property Manual and The Victorian House Manual (with Ian R MacMillan), Glover Building Surveys (9th ed, real author &mdash; not "Jack Glover" as the calendar guessed), Marshall/Worthing/Heath/Dann Understanding Housing Defects (4th ed, real co-authors), Watt Building Pathology (3rd ed); dropped Oxley Dampness in Buildings (temporarily out of stock on amazon.co.uk); links best-damp-meters, homebuyer-survey and building-surveys services — group: Buyers &amp; movers — 17 Sep 2026
 
 Trade and surveyor tools:
 - [ ] best-safety-trainers — safety trainers (14,800, KD 57) / best safety trainers uk (320, KD 6) — footwear pays 6%; complements best-safety-boots; composite vs steel toe, S1P vs S3 — group: Wear &amp; carry
