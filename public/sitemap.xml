@@ -74,7 +74,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/notes/</loc>
-    <lastmod>2026-09-16</lastmod>
+    <lastmod>2026-09-17</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
   </url>
@@ -781,6 +781,12 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://www.dominicbowkett.com/journal/news-17-09-2026/</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://www.dominicbowkett.com/journal/double-glazing-cost/</loc>
     <lastmod>2026-09-09</lastmod>
     <changefreq>monthly</changefreq>
@@ -1184,6 +1190,12 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/best-books-on-old-houses-and-surveying/</loc>
+    <lastmod>2026-09-17</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-safety-trainers/</loc>
     <lastmod>2026-09-17</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
