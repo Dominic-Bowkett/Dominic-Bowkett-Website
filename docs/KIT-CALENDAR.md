@@ -111,6 +111,8 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-key-safes — key safe (14,800, KD 65) — Supra C500 Pro (LPS 1175 Issue 8 A5, Secured by Design Police Preferred — top pick), Burton Keyguard Digital XL (same certification tier), Master Lock 5403EURD and 5401EURD, Yale Y500, KCT budget safe (Kidde-style generic caveat: shares a shell design with other cheap listings, worth a live-listing check before repeat use); landlords/agents/carers audience; explained LPS 1175 and Secured by Design as the real (non-statutory) differentiator, the NRLA's warning that some home insurance policies are voided by an unlocked/uncertified key safe, and a listed-building/conservation-officer angle for drilling fixings; dropped a smart/Bluetooth pick (Master Lock 5441EURD) — no clean Amazon product image existed, all gallery shots were marketing composites, and it's priced/positioned for fleet property-management use, not a single landlord; links hmo-licence-cost, best-smoke-and-heat-alarms, best-padlocks — group: Landlord compliance — 15 Sep 2026
 
+- [x] best-home-tool-kits — tool kit for home (590, KD 9) / basic tool kit (320, KD 9) / tool set (4,400, KD 47) — the first-home tool kit; VonHaus Ultimate 120pc (top pick — broadest genuinely useful contents, spirit level/torch/voltage probe/crimping tool), Makita E-10899 76pc (premium/trade-grade pick — 3/8" ratchet and socket set), Draper Redline 70382 43pc, Amazon Basics 131pc, Hi-Spec 71pc, Stanley STMT0-74101 38pc (canvas bag, not a hard case; price volatile), Hi-Spec 39pc (budget pick); dropped Bosch (no confirmed current amazon.co.uk listing found), Tacklife (no verifiable current UK listing) and a 142pc Stanley aluminium case (reseller-inflated to £264 on Amazon, not a sane primary offer); links best-socket-testers, best-stud-finders, best-tape-measures, homebuyer-survey service — group: Buyers &amp; movers — 17 Sep 2026
+
 ## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
@@ -129,7 +131,6 @@ Landlord compliance:
 
 Buyers and movers:
 - [x] house-viewing-kit — house viewing checklist (390, KD 21) — ROUNDUP: what to take to a second viewing — Brennenstuhl MD damp meter, Bosch Zamo laser measure + Stanley FatMax tape, Energizer Vision Ultra HD head torch, Occer 12x25 binoculars, Suunto A-10 NH compass, Draper 34279 socket tester, Rite in the Rain No. 135 notebook; ends on the HomeBuyer Survey CTA; links house-survey-cost — group: Buyers &amp; movers — 16 Sep 2026
-- [ ] best-home-tool-kits — tool kit for home (590, KD 9) / basic tool kit (320, KD 9) / tool set (4,400, KD 47) — the first-home tool kit; Stanley, Draper, Bosch, Makita boxed sets; cross-link best-socket-testers, best-stud-finders, best-tape-measures — group: Buyers &amp; movers
 - [ ] best-books-on-old-houses-and-surveying — old house handbook (50, KD 5) / building surveying books (40, KD 11) — Hunt &amp; Suhr Old House Handbook and Eco-House Manual, Marshall Understanding Housing Defects, Glover Building Surveys, Oxley Damp; books pay 5% — group: Buyers &amp; movers
 
 Trade and surveyor tools:
