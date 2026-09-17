@@ -57,7 +57,7 @@ noted per topic.
 - [x] hmo-licence-cost — HMO licence cost (250, TP 20) — landlord compliance, ties to the EICR/gas safety/fire risk cluster — published /journal/hmo-licence-cost/ on 2026-09-13
 - [x] ews1-cost — EWS1 cost (100, TP 100) — cladding fire safety form for flats/leaseholders — published /journal/ews1-cost/ on 2026-09-14 (not Dom's own service — EWS1 assessor is a distinct RICS-trained/fire-engineer qualification; honest-broker angle is that it's not a legal requirement at all, just an industry lending tool, and the height/cladding scope has narrowed a lot since 2019-2020; cross-linked fire-risk-assessment-cost, homebuyer-survey, building-surveys)
 - [x] environmental-search-cost — environmental search cost (150, TP 60) — conveyancing search a buyer commissions alongside a survey — published /journal/environmental-search-cost/ on 2026-09-16
-- [ ] septic-tank-survey-cost — septic tank survey cost (90, TP 150) — rural property niche, Dom's Kent/Sussex/Surrey patch
+- [x] septic-tank-survey-cost — septic tank survey cost (90, TP 150) — rural property niche, Dom's Kent/Sussex/Surrey patch — published /journal/septic-tank-survey-cost/ on 2026-09-17 (not Dom's own service — a specialist drainage/wastewater job, not a general building surveyor's — honest-broker angle is the General Binding Rules compliance point, since the 1 Jan 2020 deadline for watercourse discharges has already passed; cross-linked drainage-survey-cost, building-surveys, homebuyer-survey)
 - [ ] flood-risk-assessment-cost — flood risk assessment cost (100, TP 30) — planning-adjacent; relevant to Sussex/Kent flood zones
 - [ ] soakaway-cost — soakaway cost (30, TP 100) — drainage design cost; cross-link drainage-survey-cost
 
@@ -112,6 +112,7 @@ noted per topic.
 - hmo-licence-cost — 2026-09-13 — /journal/hmo-licence-cost/
 - ews1-cost — 2026-09-14 — /journal/ews1-cost/
 - environmental-search-cost — 2026-09-16 — /journal/environmental-search-cost/
+- septic-tank-survey-cost — 2026-09-17 — /journal/septic-tank-survey-cost/
 
 Wave two (researched with SE Ranking, 10 Sep 2026; UK volume, KD). Surveyor-authority and
 money-maker topics first. Every guide carries the kit box per the spec.
