@@ -80,7 +80,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/costs/</loc>
-    <lastmod>2026-09-22</lastmod>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1449,6 +1449,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/wall-tie-replacement-cost/</loc>
     <lastmod>2026-09-22</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/building-control-fees/</loc>
+    <lastmod>2026-09-24</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
