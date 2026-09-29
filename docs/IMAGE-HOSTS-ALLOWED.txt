@@ -85,3 +85,4 @@ www.x-sense.com                     # X-Sense
 ecostrad.com                        # Ecostrad
 elnur.co.uk                         # Elnur
 product-portal.gdhv.com             # Creda / Glen Dimplex Heating & Ventilation
+saluscontrols.com                   # Salus Controls
