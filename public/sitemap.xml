@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/</loc>
-    <lastmod>2026-10-03</lastmod>
+    <lastmod>2026-10-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -1689,6 +1689,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/boiler-service-cost/</loc>
     <lastmod>2026-09-25</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-moss-killers-for-roofs/</loc>
+    <lastmod>2026-10-04</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
