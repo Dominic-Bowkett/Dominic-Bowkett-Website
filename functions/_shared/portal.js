@@ -97,7 +97,7 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;
 .login{max-width:420px;margin:8vh auto}
 @media (max-width:700px){.hide-m{display:none}}
 </style></head><body>
-<header class="bar"><span class="brand">Dominic Bowkett · Partner portal</span>${user ? `<div class="right"><span>${esc(user.display_name || user.business_name || "")} · ${esc(user.email)}</span><form method="post" action="/partner/logout" style="margin:0"><button class="btn secondary" type="submit" style="padding:6px 12px;font-size:13px">Sign out</button></form></div>` : ""}</header>
+<header class="bar"><span class="brand">Dominic Bowkett · Partner portal</span>${user ? `<nav style="margin-left:18px"><a href="/partner" style="margin-right:14px;color:var(--ink);text-decoration:none;font-weight:500">Invoices</a><a href="/partner/jobs" style="color:var(--ink);text-decoration:none;font-weight:500">Jobs</a></nav><div class="right"><span>${esc(user.display_name || user.business_name || "")} · ${esc(user.email)}</span><form method="post" action="/partner/logout" style="margin:0"><button class="btn secondary" type="submit" style="padding:6px 12px;font-size:13px">Sign out</button></form></div>` : ""}</header>
 <main>${body}</main></body></html>`;
 }
 

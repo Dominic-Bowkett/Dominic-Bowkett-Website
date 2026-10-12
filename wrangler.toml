@@ -7,6 +7,11 @@ MAIL_FROM = "Dominic Bowkett <info@dominicbowkett.com>"
 # Invoicing: platform identity printed on invoices (see functions/_shared/business.js for defaults)
 FEE_VAT_RATE = "20"
 # REVIEW_URL = "https://g.page/r/.../review"   # when set, the paid-confirmation email invites the client to rate the service
+SMS_RELAY_URL = "https://ecoweald-call-agent.silent-star-877f.workers.dev/send-sms"
+
+# Workers AI: extracts job details from forwarded enquiry emails and customer texts (functions/_shared/jobs.js)
+[ai]
+binding = "AI"
 
 # --- Invoicing database (Stripe Connect invoices), created 12 Oct 2026 with `wrangler d1 create dominicbowkett-invoices` ---
 [[d1_databases]]
@@ -30,3 +35,4 @@ database_id = "34d87068-e4c9-4978-8a5d-1a4949ad9fda"
 #   ADMIN_PASSWORD          password for /admin
 #   ADMIN_SECRET            any long random string (signs the admin session cookie)
 #   CRON_SECRET             shared with workers/invoice-reminders (daily reminder run)
+#   RELAY_SECRET            shared with ecoweald-call-agent (SMS in/out), workers/jobs-inbox (email in) and the Checkatrade watcher

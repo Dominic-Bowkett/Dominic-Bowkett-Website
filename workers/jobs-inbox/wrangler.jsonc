@@ -1,0 +1,10 @@
+{
+  "name": "dbk-jobs-inbox",
+  "main": "src/index.js",
+  // info@dominicbowkett.com's account; receives mail for in@jobs.dominicbowkett.com via Email Routing
+  "account_id": "e2bdf844902d43c877a78ddd56a4e5ad",
+  "compatibility_date": "2026-05-10",
+  "vars": { "TARGET_URL": "https://www.dominicbowkett.com/api/inbound/email" },
+  // secret: RELAY_SECRET (same value as the Pages project)
+  "observability": { "enabled": true }
+}

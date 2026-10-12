@@ -42,6 +42,23 @@ which emails a 72-hour set-password link (`/partner/setup/<token>`). Passwords a
 (100k iterations); sessions are a signed cookie that includes the password hash, so a reset logs
 other sessions out. "Forgotten your password" on the sign-in page emails the same link.
 
+## Jobs (enquiries -> partner -> booking -> invoice)
+
+`jobs` + `job_messages` tables (functions/_shared/jobs.js). Ways in: **forward any enquiry email to
+in@jobs.dominicbowkett.com** (Email Routing on the `jobs.` subdomain -> `workers/jobs-inbox` Email Worker
+-> `/api/inbound/email`; Workers AI extracts name/contact/address/service, signatures and quoted text
+are dropped; only mail from Dom's addresses creates jobs), the Checkatrade watcher (`/api/inbound/lead`),
+or New job in the admin. Texts to the office number are relayed by ecoweald-call-agent to
+`/api/inbound/sms`: a partner's YES/NO (matched by mobile) answers an offer; a customer's text is filed
+on their open job and, when the job is waiting for an address, the address is extracted automatically.
+Admin: Send job to partner (nearest first by coverage postcode; email + text "Interested? Reply YES or NO"),
+Ask customer for address, I'll take it myself, Mark booked, Create invoice (pre-filled with price and the
+partner's commission). Partners with dispatch mode `auto` get jobs within 25 miles offered automatically.
+When a partner accepts, they receive the customer's contact details and the customer is told who will be
+in touch. All customer messages go through the system (from Dom's number / info@, Reply-To the jobs inbox,
+subject tagged `[DB-JOB-000001]`) so every reply is logged on the job. Partners see only their own jobs
+at `/partner/jobs` and can accept/decline, message the customer, and confirm date/time/price.
+
 ## Partner self-registration
 
 `/partner/register` -> verification email (48 h link, `partner_signups`) -> `/partner/register/verify/<token>`

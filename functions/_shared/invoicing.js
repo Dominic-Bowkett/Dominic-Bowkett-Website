@@ -54,7 +54,7 @@ export async function listPartners(env) {
   return r.results || [];
 }
 
-const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct"];
+const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct", "dispatch_mode"];
 export async function updatePartner(env, id, fields) {
   const d = await db(env);
   const keys = Object.keys(fields).filter((k) => PARTNER_EDITABLE.includes(k));
@@ -66,6 +66,7 @@ export async function updatePartner(env, id, fields) {
     if (!Number.isFinite(pct) || pct < 0 || pct > 50) throw new UserError("Commission must be between 0 and 50 percent");
     fields.commission_pct = Math.round(pct * 100) / 100;
   }
+  if (keys.includes("dispatch_mode") && !["hold", "auto"].includes(fields.dispatch_mode)) throw new UserError("Dispatch mode must be hold or auto");
   if (keys.includes("coverage_postcode")) {
     const pc = normalisePostcode(fields.coverage_postcode);
     if (fields.coverage_postcode && !pc) throw new UserError("That doesn't look like a UK postcode");

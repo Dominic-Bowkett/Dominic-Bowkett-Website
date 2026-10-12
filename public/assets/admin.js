@@ -298,6 +298,124 @@
     app.querySelectorAll("[data-copy]").forEach((b) => b.addEventListener("click", async () => { await navigator.clipboard.writeText(b.dataset.copy); b.textContent = "Copied"; }));
   }
 
+  // ------------------------------------------------------------ jobs
+  const jbadge = (j) => `<span class="badge ${j.status === "booked" || j.status === "invoiced" ? "paid" : j.status === "offered" || j.status === "accepted" ? "sent" : j.status === "declined" || j.status === "awaiting_address" ? "failed" : j.status === "new" ? "draft" : ""}">${esc(j.status_label || j.status)}</span>`;
+  async function viewJobs() {
+    setNav("jobs");
+    const status = sessionStorage.getItem("job.status") || "open";
+    app.innerHTML = `<div class="card"><div class="toolbar">
+      <select id="j-status">${[["open", "Open jobs"], ["new", "New"], ["awaiting_address", "Waiting for address"], ["offered", "Offered"], ["accepted", "Accepted"], ["booked", "Booked"], ["invoiced", "Invoiced"], ["taken", "Taken by me"], ["declined", "Declined"], ["closed", "Closed"], ["all", "Everything"]].map(([v, l]) => `<option value="${v}" ${v === status ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <input id="j-q" placeholder="Search name, address, phone, ref…" />
+      <a class="btn small" href="#newjob">New job</a>
+      <span class="muted small">Forward any enquiry email to <strong>in@jobs.dominicbowkett.com</strong> and it appears here.</span></div>
+      <div id="jlist"><p class="muted">Loading…</p></div></div>`;
+    const load = async () => {
+      const s = document.getElementById("j-status").value, q = document.getElementById("j-q").value.trim();
+      sessionStorage.setItem("job.status", s);
+      const { jobs } = await api(`jobs?status=${encodeURIComponent(s)}&q=${encodeURIComponent(q)}`);
+      const list = document.getElementById("jlist");
+      if (!jobs.length) { list.innerHTML = `<p class="muted">No jobs here.</p>`; return; }
+      list.innerHTML = `<table><thead><tr><th>Ref</th><th>Last activity</th><th>Customer</th><th>Job</th><th>Partner</th><th>Status</th></tr></thead><tbody>
+        ${jobs.map((j) => `<tr class="click" data-id="${j.id}"><td class="mono">${esc(j.ref)}</td><td>${when(j.last_activity_at)}</td>
+          <td>${esc(j.customer_name || "")}<br/><span class="muted small">${esc(j.customer_phone || "")}${j.customer_phone && j.customer_email ? " · " : ""}${esc(j.customer_email || "")}</span></td>
+          <td>${esc(j.service)}<br/><span class="muted small">${esc(j.property_address || (j.postcode ? `postcode ${j.postcode} (address not confirmed)` : "address not confirmed"))}</span></td>
+          <td>${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}</td></tr>`).join("")}</tbody></table>`;
+      list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#job/" + tr.dataset.id)));
+    };
+    document.getElementById("j-status").addEventListener("change", load);
+    let t; document.getElementById("j-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(load, 250); });
+    await load();
+  }
+
+  async function viewJobForm() {
+    setNav("jobs");
+    app.innerHTML = `<div class="card"><h1>New job</h1><div id="jf-msg"></div>
+    <form id="job-form"><div class="grid"><div>
+      <label>Customer name</label><input name="customer_name" />
+      <label>Mobile</label><input name="customer_phone" placeholder="07…" />
+      <label>Email</label><input name="customer_email" type="email" />
+      <label>Service</label><select name="service">${SERVICES.map((n) => `<option>${esc(n)}</option>`).join("")}</select>
+    </div><div>
+      <label>Property address (leave blank if not confirmed yet)</label><textarea name="property_address"></textarea>
+      <label>Postcode (if only the postcode is known)</label><input name="postcode" />
+      <label>What they asked for / timing</label><textarea name="details"></textarea>
+      <label>Requested times</label><input name="requested_times" placeholder="e.g. mornings next week" />
+    </div></div>
+    <div class="actions"><button class="btn" type="submit">Create job</button><a class="btn secondary" href="#jobs">Cancel</a></div></form></div>`;
+    document.getElementById("job-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const body = Object.fromEntries(new FormData(e.target).entries());
+      busy(e.submitter, true);
+      try { const r = await api("jobs", { method: "POST", body }); location.hash = "#job/" + r.job.id; }
+      catch (err) { flash(document.getElementById("jf-msg"), err.message, "err"); busy(e.submitter, false); }
+    });
+  }
+
+  async function viewJob(id) {
+    setNav("jobs");
+    app.innerHTML = `<p class="muted">Loading…</p>`;
+    const { job: j, partner, candidates, messages, invoice_draft } = await api("jobs/" + id);
+    const canOffer = ["new", "declined", "offered", "awaiting_address"].includes(j.status);
+    const partnerName = partner ? partner.display_name || partner.business_name : "";
+    app.innerHTML = `<div class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h1 style="margin:0">${esc(j.ref)} ${jbadge(j)}</h1><a href="#jobs" class="muted small">← All jobs</a></div>
+      <div id="jmsg" style="margin-top:12px"></div>
+      <form id="job-edit" class="grid" style="margin-top:12px"><div>
+        <label>Customer name</label><input name="customer_name" value="${esc(j.customer_name || "")}" />
+        <label>Mobile</label><input name="customer_phone" value="${esc(j.customer_phone || "")}" />
+        <label>Email</label><input name="customer_email" value="${esc(j.customer_email || "")}" />
+        <label>Service</label><input name="service" value="${esc(j.service || "")}" />
+        <label>Requested times</label><input name="requested_times" value="${esc(j.requested_times || "")}" />
+      </div><div>
+        <label>Property address</label><textarea name="property_address">${esc(j.property_address || "")}</textarea>
+        <label>Postcode</label><input name="postcode" value="${esc(j.postcode || "")}" />
+        <label>What they asked for</label><textarea name="details">${esc(j.details || "")}</textarea>
+        <label>Internal notes (never shown to partner or customer)</label><textarea name="internal_notes">${esc(j.internal_notes || "")}</textarea>
+        <p><button class="btn secondary small" type="submit">Save details</button> <span class="muted small">Source: ${esc(j.source || "")}${j.source_ref ? ` ${esc(j.source_ref)}` : ""} · created ${when(j.created_at)}</span></p>
+      </div></form>
+      <div class="totals" style="margin-top:6px">
+        <div><span>Partner</span><span>${partnerName ? `<strong>${esc(partnerName)}</strong> ${j.partner_response ? `(${esc(j.partner_response)})` : ""}` : "<span class='muted'>none yet</span>"}</span></div>
+        ${j.booked_date ? `<div><span>Booked</span><span><strong>${day(j.booked_date)} ${esc(j.booked_time || "")}</strong>${j.price_pence != null ? ` · ${gbp(j.price_pence)}` : ""}</span></div>` : ""}
+        ${j.invoice_id ? `<div><span>Invoice</span><span><a href="#inv/${j.invoice_id}">open invoice</a></span></div>` : ""}
+      </div>
+      <div class="actions">
+        ${canOffer ? `<select id="offer-to" style="width:auto">${candidates.map((c) => `<option value="${esc(c.stripe_account_id)}" ${partner && c.stripe_account_id === partner.stripe_account_id ? "selected" : ""}>${esc(c.name)}${c.miles != null ? ` · ${c.miles} mi` : ""}${c.phone ? "" : " · no mobile"}${c.dispatch_mode === "auto" ? " · auto" : ""}</option>`).join("")}</select>
+        <button class="btn" data-act="offer">${j.status === "offered" ? "Re-send offer" : "Send job to partner"}</button>` : ""}
+        ${!j.property_address ? `<button class="btn secondary" data-act="ask-address">Ask customer for address</button>` : ""}
+        ${j.status === "offered" ? `<button class="btn secondary" data-act="accept">Mark accepted (partner told me)</button><button class="btn secondary" data-act="decline">Mark declined</button>` : ""}
+        ${["new", "awaiting_address", "declined", "offered"].includes(j.status) ? `<button class="btn secondary" data-act="taken">I'll take it myself</button>` : ""}
+        ${["accepted", "booked", "taken", "new"].includes(j.status) ? `<button class="btn secondary" data-act="book">${j.booked_date ? "Change booking" : "Mark booked"}</button>` : ""}
+        ${j.status === "booked" && j.partner_account_id && !j.invoice_id ? `<button class="btn" data-act="invoice">Create invoice (${esc(invoice_draft.amount ? "£" + invoice_draft.amount : "price needed")})</button>` : ""}
+        ${!["closed", "invoiced"].includes(j.status) ? `<button class="btn danger" data-act="closed">Close</button>` : ""}
+        ${["closed", "taken", "declined"].includes(j.status) ? `<button class="btn secondary" data-act="reopen">Reopen as new</button>` : ""}
+      </div>
+    </div>
+    <div class="card"><h2>Send a message</h2>
+      <form id="job-msg" style="display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:end">
+        <div><label>To</label><select name="to" style="width:auto"><option value="customer">Customer</option>${partner ? `<option value="partner">${esc(partnerName)}</option>` : ""}</select></div>
+        <div><label>By</label><select name="channel" style="width:auto"><option value="sms">Text</option><option value="email">Email</option></select></div>
+        <div><label>Message</label><input name="body" placeholder="Type a message… it goes from your number / info@ and replies come back here" /></div>
+        <div><button class="btn" type="submit">Send</button></div></form>
+      <form id="job-note" style="display:flex;gap:10px;align-items:end;margin-top:10px"><div style="flex:1"><label>Private note</label><input name="body" /></div><button class="btn secondary" type="submit">Add note</button></form>
+    </div>
+    <div class="card"><h2>Timeline</h2><ul class="timeline">${messages.map((m) => `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>`;
+    const msg = document.getElementById("jmsg");
+    const act = async (fn) => { try { await fn(); await viewJob(id); } catch (err) { flash(msg, err.message, "err"); window.scrollTo(0, 0); } };
+    document.getElementById("job-edit").addEventListener("submit", (e) => { e.preventDefault(); act(() => api("jobs/" + id, { method: "PUT", body: Object.fromEntries(new FormData(e.target).entries()) })); });
+    document.getElementById("job-msg").addEventListener("submit", (e) => { e.preventDefault(); const b = Object.fromEntries(new FormData(e.target).entries()); if (!b.body.trim()) return; act(() => api(`jobs/${id}/message`, { method: "POST", body: b })); });
+    document.getElementById("job-note").addEventListener("submit", (e) => { e.preventDefault(); const b = Object.fromEntries(new FormData(e.target).entries()); if (!b.body.trim()) return; act(() => api(`jobs/${id}/note`, { method: "POST", body: b })); });
+    app.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => {
+      const a = b.dataset.act;
+      if (a === "offer") { const pid = document.getElementById("offer-to").value; const c = candidates.find((x) => x.stripe_account_id === pid); if (!confirm(`Send this job to ${c?.name}? They get an email and a text asking YES or NO.`)) return; busy(b, true); return act(() => api(`jobs/${id}/offer`, { method: "POST", body: { partner_account_id: pid } })); }
+      if (a === "ask-address") { if (!confirm("Text and email the customer asking for the full address?")) return; busy(b, true); return act(() => api(`jobs/${id}/ask-address`, { method: "POST", body: {} })); }
+      if (a === "accept" || a === "decline") { busy(b, true); return act(() => api(`jobs/${id}/respond`, { method: "POST", body: { accepted: a === "accept" } })); }
+      if (a === "taken" || a === "closed") { if (!confirm(a === "taken" ? "Take this job yourself? No partner will be involved." : "Close this job?")) return; busy(b, true); return act(() => api(`jobs/${id}/status`, { method: "POST", body: { status: a } })); }
+      if (a === "reopen") { busy(b, true); return act(() => api(`jobs/${id}/status`, { method: "POST", body: { status: "new" } })); }
+      if (a === "book") { const d = prompt("Booking date (YYYY-MM-DD)", j.booked_date || new Date().toISOString().slice(0, 10)); if (!d) return; const t = prompt("Time (e.g. 10:00)", j.booked_time || ""); const p = prompt("Price agreed (£)", j.price_pence != null ? (j.price_pence / 100).toFixed(2) : ""); busy(b, true); return act(() => api(`jobs/${id}/book`, { method: "POST", body: { booked_date: d, booked_time: t || "", price: p || "" } })); }
+      if (a === "invoice") { if (!invoice_draft.amount && !confirm("No price on the job yet. Create the invoice anyway and fill the amount in?")) return; busy(b, true); return (async () => { try { const r = await api(`jobs/${id}/invoice`, { method: "POST", body: { overrides: invoice_draft.amount ? {} : { amount: "1.00", fee: "0.10" } } }); location.hash = "#edit/" + r.invoice.id; } catch (err) { flash(msg, err.message, "err"); busy(b, false); } })(); }
+    }));
+  }
+
   // ------------------------------------------------------------ partners
   let showHidden = false;
   async function viewPartners() {
@@ -315,6 +433,7 @@
           <label>Contact name</label><input name="contact_name" value="${esc(p.contact_name || "")}" />
           <label>Commission % (inc VAT, default for new invoices)</label><input name="commission_pct" inputmode="decimal" value="${esc(p.commission_pct ?? 10)}" />
           <label>Coverage postcode (home or centre of area)</label><input name="coverage_postcode" value="${esc(p.coverage_postcode || "")}" placeholder="TN2 5HB" />
+          <label>New jobs near them</label><select name="dispatch_mode"><option value="hold" ${(p.dispatch_mode || "hold") === "hold" ? "selected" : ""}>Hold for me to send</option><option value="auto" ${p.dispatch_mode === "auto" ? "selected" : ""}>Send automatically (within 25 miles)</option></select>
           <div class="check"><input type="checkbox" name="copy_invoices" id="cp-${esc(p.stripe_account_id)}" ${p.copy_invoices ? "checked" : ""} /><label for="cp-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Email them a copy of each invoice sent</label></div>
           <div class="check"><input type="checkbox" name="hidden" id="hd-${esc(p.stripe_account_id)}" ${p.hidden ? "checked" : ""} /><label for="hd-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Hide this account (not offered on new invoices)</label></div></div>
           <div><label>Address (on invoices)</label><textarea name="address">${esc(p.address || "")}</textarea>
@@ -403,7 +522,10 @@
   async function route() {
     const h = location.hash.replace(/^#/, "") || "invoices";
     try {
-      if (h === "invoices") await viewInvoices();
+      if (h === "jobs") await viewJobs();
+      else if (h === "newjob") await viewJobForm();
+      else if (h.startsWith("job/")) await viewJob(h.slice(4));
+      else if (h === "invoices") await viewInvoices();
       else if (h === "new") await viewForm();
       else if (h.startsWith("edit/")) await viewForm(h.slice(5));
       else if (h.startsWith("inv/")) await viewInvoice(h.slice(4));

@@ -7,6 +7,11 @@ import {
 } from "../../_shared/invoicing.js";
 import { partnerOf, supplierName } from "../../_shared/docs.js";
 import { portalStatus, invitePartnerUser, revokePartnerUser, PortalError } from "../../_shared/portal.js";
+import {
+  JobError, listJobs, getJob, createJob, editJob, jobMessages, partnersForJob, offerJob, partnerResponds, sendMessage, askForAddress,
+  confirmBooking, updateJob, addMessage, invoiceDraftFromJob, STATUS_LABEL,
+} from "../../_shared/jobs.js";
+import { getPartner as partnerRow } from "../../_shared/db.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -122,6 +127,48 @@ export async function onRequest(context) {
       }
     }
 
+    if (head === "jobs") {
+      if (method === "GET" && !id) {
+        const jobs = await listJobs(env, { status: url.searchParams.get("status") || "open", q: (url.searchParams.get("q") || "").trim() });
+        const partners = await listPartners(env);
+        const names = Object.fromEntries(partners.map((p) => [p.stripe_account_id, p.display_name || p.business_name]));
+        return json({ ok: true, jobs: jobs.map((j) => ({ ...j, partner_name: names[j.partner_account_id] || null, status_label: STATUS_LABEL[j.status] })) });
+      }
+      if (method === "POST" && !id) return json({ ok: true, job: await createJob(env, { ...body, source: "manual" }, origin, { notify: false }) });
+      if (id && method === "GET") {
+        const job = await getJob(env, id);
+        if (!job) return json({ ok: false, error: "Not found" }, 404);
+        const partner = job.partner_account_id ? await partnerRow(env, job.partner_account_id) : null;
+        const candidates = (await partnersForJob(env, job)).map((p) => ({ stripe_account_id: p.stripe_account_id, name: p.display_name || p.business_name, miles: p.miles == null ? null : Math.round(p.miles * 10) / 10, charges_enabled: p.charges_enabled, phone: p.phone, dispatch_mode: p.dispatch_mode, commission_pct: p.commission_pct, coverage_postcode: p.coverage_postcode }));
+        return json({ ok: true, job: { ...job, status_label: STATUS_LABEL[job.status] }, partner, candidates, messages: await jobMessages(env, id), invoice_draft: invoiceDraftFromJob(job, partner) });
+      }
+      if (id && method === "PUT") return json({ ok: true, job: await editJob(env, id, body) });
+      if (id && method === "POST") {
+        if (action === "offer") return json({ ok: true, job: await offerJob(env, id, body.partner_account_id, origin, { by: "admin" }) });
+        if (action === "respond") return json({ ok: true, job: await partnerResponds(env, id, !!body.accepted, origin, { via: "admin", note: body.note || "" }) });
+        if (action === "message") return json({ ok: true, job: await sendMessage(env, id, { to: body.to || "customer", channel: body.channel || "sms", body: body.body, party: "admin", origin }) });
+        if (action === "ask-address") return json({ ok: true, job: await askForAddress(env, id, origin) });
+        if (action === "book") return json({ ok: true, job: await confirmBooking(env, id, { booked_date: body.booked_date, booked_time: body.booked_time, price: body.price, party: "admin" }, origin) });
+        if (action === "note") { await addMessage(env, id, { direction: "in", channel: "note", party: "admin", body: String(body.body || "") }); return json({ ok: true, job: await getJob(env, id) }); }
+        if (action === "status") {
+          if (!["new", "taken", "closed", "declined"].includes(body.status)) throw new JobError("That status can't be set by hand");
+          await updateJob(env, id, { status: body.status, ...(body.status === "new" ? { partner_account_id: null, partner_response: null } : {}) });
+          await addMessage(env, id, { direction: "in", channel: "system", party: "admin", body: `Status set to ${STATUS_LABEL[body.status]}${body.note ? `: ${body.note}` : ""}` });
+          return json({ ok: true, job: await getJob(env, id) });
+        }
+        if (action === "invoice") {
+          const job = await getJob(env, id);
+          if (!job) throw new JobError("Job not found", 404);
+          if (!job.partner_account_id) throw new JobError("Assign a partner first");
+          const partner = await partnerRow(env, job.partner_account_id);
+          const inv = await createInvoice(env, { ...invoiceDraftFromJob(job, partner), ...body.overrides });
+          await updateJob(env, id, { invoice_id: inv.id, status: "invoiced" });
+          await addMessage(env, id, { direction: "in", channel: "system", party: "admin", body: `Invoice ${inv.number} created (draft).` });
+          return json({ ok: true, job: await getJob(env, id), invoice: inv });
+        }
+      }
+    }
+
     if (head === "reminders" && method === "POST") {
       const result = await runReminders(env, origin, { asOf: body.as_of || undefined, dryRun: !!body.dry_run });
       return json({ ok: true, ...result });
@@ -149,7 +196,7 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "Unknown endpoint" }, 404);
   } catch (e) {
-    const status = e instanceof UserError || e instanceof PortalError ? e.status : 500;
+    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError ? e.status : 500;
     if (status === 500) console.error("admin api error", e);
     return json({ ok: false, error: e.message || String(e) }, status);
   }
