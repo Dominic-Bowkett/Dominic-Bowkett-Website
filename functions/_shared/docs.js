@@ -287,6 +287,7 @@ export function clientInvoiceEmail(inv, origin) {
     subject: `Invoice ${inv.number} — ${inv.service_name} — ${gbp(inv.amount_pence)}`,
     html: emailShell(`
 <p>${who}</p>
+${inv.client_message ? `<p style="white-space:pre-wrap;">${esc(inv.client_message)}</p>` : ""}
 <p>Please find your invoice for <strong>${esc(inv.service_name)}</strong>${inv.property_address ? ` at ${esc(inv.property_address)}` : ""}, carried out by ${esc(supplierName(p))}.</p>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0;font-size:15px;">
 <tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Invoice</td><td>${esc(inv.number)}</td></tr>

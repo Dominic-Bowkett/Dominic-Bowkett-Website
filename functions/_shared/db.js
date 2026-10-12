@@ -39,6 +39,7 @@ export const SCHEMA = [
     property_address TEXT,
     service_name TEXT NOT NULL,
     description TEXT,
+    client_message TEXT,
     currency TEXT NOT NULL DEFAULT 'gbp',
     amount_pence INTEGER NOT NULL,
     client_vat_rate INTEGER DEFAULT 0,
@@ -97,7 +98,10 @@ export const SCHEMA = [
 // Statuses: draft -> sent -> paid | failed | void | refunded
 
 // Additive migrations for tables created by earlier versions. Each is safe to re-run.
-const MIGRATIONS = [`ALTER TABLE partners ADD COLUMN hidden INTEGER DEFAULT 0`];
+const MIGRATIONS = [
+  `ALTER TABLE partners ADD COLUMN hidden INTEGER DEFAULT 0`,
+  `ALTER TABLE invoices ADD COLUMN client_message TEXT`,
+];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {
     try {

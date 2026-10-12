@@ -108,6 +108,7 @@
           <select id="svc-select">${SERVICES.map((n) => `<option value="${esc(n)}" ${(inv ? inv.service_name === n : n === "Domestic EPC") ? "selected" : ""}>${esc(n)}</option>`).join("")}<option value="__other" ${inv && !SERVICES.includes(inv.service_name) ? "selected" : ""}>Other (type below)</option></select>
           <input name="service_name" required value="${v("service_name") || "Domestic EPC"}" placeholder="Describe the service" style="margin-top:6px;display:${inv && !SERVICES.includes(inv.service_name) ? "block" : "none"}" />
           <label>Description (optional, shown on the invoice)</label><textarea name="description">${v("description")}</textarea>
+          <label>Message to the client (optional, in the email only)</label><textarea name="client_message" placeholder="e.g. Thanks for booking — Matt will be with you on Thursday at 10am.">${v("client_message")}</textarea>
           <label>Amount charged to the client (£)</label><input name="amount" inputmode="decimal" required value="${inv ? (inv.amount_pence / 100).toFixed(2) : ""}" placeholder="100.00" />
           <div class="check"><input type="checkbox" name="client_vat_inclusive" id="cvat" ${inv?.client_vat_rate ? "checked" : ""} /><label for="cvat" style="margin:0;text-transform:none;letter-spacing:0">Amount includes VAT at 20% (partner is VAT registered)</label></div>
           <label>Your platform fee, inc VAT (£)</label><input name="fee" inputmode="decimal" value="${inv ? (inv.application_fee_pence / 100).toFixed(2) : ""}" placeholder="10.00" />
@@ -185,6 +186,7 @@
           ${i.bill_to_business ? `<dt>Billed to</dt><dd>${esc(i.bill_to_business)}${i.bill_to_address ? `<br/><span class="small muted">${esc(i.bill_to_address).replace(/\n/g, "<br/>")}</span>` : ""}</dd>` : ""}
           ${i.property_address ? `<dt>Property</dt><dd>${esc(i.property_address).replace(/\n/g, "<br/>")}</dd>` : ""}
           <dt>Service</dt><dd>${esc(i.service_name)}${i.description ? `<br/><span class="small muted">${esc(i.description).replace(/\n/g, "<br/>")}</span>` : ""}</dd>
+          ${i.client_message ? `<dt>Message to client</dt><dd class="small">${esc(i.client_message).replace(/\n/g, "<br/>")}</dd>` : ""}
           <dt>Partner</dt><dd>${esc(i.partner_name)} <span class="mono muted">${esc(i.partner_account_id)}</span></dd>
           <dt>Issued / due</dt><dd>${day(i.issued_at)}${i.due_date ? ` / due ${day(i.due_date)}` : ""}</dd>
           ${i.sent_at ? `<dt>Sent</dt><dd>${when(i.sent_at)}</dd>` : ""}
@@ -224,9 +226,12 @@
   }
 
   // ------------------------------------------------------------ partners
+  let showHidden = false;
   async function viewPartners() {
     setNav("partners");
-    const ps = await getPartners();
+    const all = await getPartners();
+    const hiddenCount = all.filter((p) => p.hidden).length;
+    const ps = showHidden ? all : all.filter((p) => !p.hidden);
     app.innerHTML = `<div class="card"><div class="toolbar"><h1 style="margin:0">Connected accounts</h1><button class="btn secondary small" id="sync">Sync from Stripe</button></div><div id="msg"></div>
       <p class="muted small">Pulled from your Stripe Connect platform. Edit the invoice details here: the supplier name and address printed on client invoices, where the partner's copies and fee invoices go, and their VAT number (shown when an invoice is marked VAT-inclusive).</p>
       ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""}</span></summary>
@@ -240,7 +245,9 @@
           <label>VAT number</label><input name="vat_number" value="${esc(p.vat_number || "")}" />
           <label>Notes</label><textarea name="notes">${esc(p.notes || "")}</textarea>
           <p><button class="btn small" type="submit">Save</button></p></div>
-        </form></details>`).join("") || "<p class='muted'>No connected accounts found. Check STRIPE_SECRET_KEY, then sync.</p>"}</div>`;
+        </form></details>`).join("") || "<p class='muted'>No connected accounts found. Check STRIPE_SECRET_KEY, then sync.</p>"}
+      ${hiddenCount ? `<p class="small muted" style="margin-top:12px"><a href="#" id="toggle-hidden">${showHidden ? "Hide" : "Show"} ${hiddenCount} hidden account${hiddenCount === 1 ? "" : "s"}</a></p>` : ""}</div>`;
+    document.getElementById("toggle-hidden")?.addEventListener("click", (e) => { e.preventDefault(); showHidden = !showHidden; viewPartners(); });
     document.getElementById("sync").addEventListener("click", async (e) => {
       busy(e.target, true);
       try { const r = await api("partners/sync", { method: "POST", body: {} }); partners = r.partners; await viewPartners(); flash(document.getElementById("msg"), `Synced ${r.synced} account(s).`); }

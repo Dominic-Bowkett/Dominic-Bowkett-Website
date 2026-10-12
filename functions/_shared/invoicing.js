@@ -80,6 +80,7 @@ export function validateInvoiceInput(env, body) {
   out.service_name = String(body.service_name || "").trim();
   if (!out.service_name) throw new UserError("Service name is required");
   out.description = String(body.description || "").trim() || null;
+  out.client_message = String(body.client_message || "").trim().slice(0, 2000) || null;
   out.amount_pence = toPence(body.amount);
   if (!Number.isInteger(out.amount_pence) || out.amount_pence < 100) throw new UserError("Amount must be at least £1.00");
   if (out.amount_pence > 5_000_000) throw new UserError("Amount is over the £50,000 safety limit");
