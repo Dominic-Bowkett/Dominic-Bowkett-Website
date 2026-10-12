@@ -35,7 +35,29 @@ tr.click{cursor:pointer}tr.click:hover{background:var(--paper)}td.num,th.num{tex
 .kv{display:grid;grid-template-columns:160px 1fr;gap:4px 12px}.kv dt{color:var(--muted)}.kv dd{margin:0}
 .actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .check{display:flex;align-items:center;gap:8px;margin:10px 0}.check input{width:auto}
-@media (max-width:700px){.kv{grid-template-columns:1fr}header.bar{flex-wrap:wrap}}
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch;margin:0 -4px}.hide-d{display:none}
+@media (max-width:760px){.hide-d{display:inline}}
+header.bar nav{display:flex;gap:2px;overflow-x:auto;white-space:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none}header.bar nav::-webkit-scrollbar{display:none}
+@media (max-width:760px){
+  body{font-size:15px}
+  header.bar{padding:10px 12px;gap:10px;flex-wrap:wrap}header.bar .brand{font-size:15px}header.bar nav{order:3;flex-basis:100%;margin:0 -12px;padding:0 12px}header.bar nav a{margin-right:16px;padding:6px 0;display:inline-block}
+  header.bar .right{margin-left:auto}header.bar .right .btn.small{padding:6px 9px;font-size:12px}
+  main{padding:12px 10px 90px}.card{padding:14px 12px;margin-bottom:12px;border-radius:5px}
+  h1{font-size:18px}h2{font-size:14px}
+  .grid{grid-template-columns:1fr;gap:0}
+  .kv{grid-template-columns:1fr;gap:2px 0}.kv dt{margin-top:8px}
+  .hide-m{display:none!important}
+  table{font-size:13px}th,td{padding:7px 5px}th{font-size:11px}td br+span.small{display:block}
+  .toolbar{gap:8px}.toolbar input,.toolbar select{width:100%;flex:1 1 100%}.toolbar .btn{flex:1 1 auto;text-align:center}
+  .actions{gap:8px}.actions .btn{flex:1 1 calc(50% - 8px);text-align:center;padding:11px 10px}.actions select{flex:1 1 100%;width:100%!important;max-width:100%}
+  .badge{white-space:normal;line-height:1.3}td{word-break:break-word}td .mono{white-space:nowrap}
+  select{max-width:100%}
+  .totals{padding:10px 12px}.totals div{font-size:14px}
+  .timeline li{font-size:13px}.timeline .mono{word-break:break-all}
+  .login{margin:6vh 12px;padding:22px 18px}
+  .msgform{grid-template-columns:1fr!important}
+  input,select,textarea{font-size:16px}
+}
 `;
 
 function shell(inner, { title = "Invoicing", app = false } = {}) {
@@ -43,7 +65,7 @@ function shell(inner, { title = "Invoicing", app = false } = {}) {
 <meta name="robots" content="noindex, nofollow" /><title>${title} · Admin · Dominic Bowkett</title>
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
-<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin.js?v=11" defer></script>' : ""}</body></html>`;
+<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin.js?v=14" defer></script>' : ""}</body></html>`;
 }
 
 export async function onRequestGet({ request, env }) {
@@ -66,7 +88,7 @@ export async function onRequestGet({ request, env }) {
   const renewed = { ...headers, "Set-Cookie": await sessionCookie(env) };
   return new Response(
     shell(`<header class="bar"><span class="brand">Invoicing</span>
-<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Connected accounts</a><a href="#setup" data-nav="setup">Setup</a></nav>
+<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Partners</a><a href="#setup" data-nav="setup">Setup</a></nav>
 <div class="right"><a class="btn secondary small" href="/api/admin/export.csv">Export CSV</a><form method="post" action="/admin/logout"><button class="btn secondary small" type="submit">Sign out</button></form></div></header>
 <main id="app"><p class="muted">Loading…</p></main>`, { app: true }),
     { status: 200, headers: renewed }

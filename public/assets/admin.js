@@ -12,6 +12,8 @@
     "Retrofit Assessment",
     "Ventilation Assessment",
   ];
+  const PARTNER_SERVICES = ["Domestic EPC", "Commercial EPC", "Retrofit Assessment", "Home Insight Survey", "HomeBuyer Survey (Level 2)", "Building Survey (Level 3)", "Drone Roof Survey", "Ventilation Assessment"];
+  const parseSvc = (v) => { try { const a = JSON.parse(v || "[]"); return Array.isArray(a) ? a : []; } catch { return []; } };
   const DUE_DAYS = 7; // default payment terms for a new invoice (editable on the form)
   const plusDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
@@ -67,12 +69,12 @@
       if (!invoices.length) { list.innerHTML = `<p class="muted">No invoices yet.</p>`; return; }
       const sum = invoices.reduce((a, i) => a + (i.status === "paid" ? i.amount_pence : 0), 0);
       const fees = invoices.reduce((a, i) => a + (i.status === "paid" ? i.application_fee_pence : 0), 0);
-      list.innerHTML = `<table><thead><tr><th>Number</th><th>Issued</th><th>Client</th><th>Partner</th><th>Service</th><th class="num">Amount</th><th class="num">Fee inc VAT</th><th>Status</th></tr></thead><tbody>
-        ${invoices.map((i) => `<tr class="click" data-id="${i.id}"><td class="mono">${esc(i.number)}</td><td>${day(i.issued_at || i.created_at)}</td>
-          <td>${esc(i.bill_to_business || i.client_name || "")}<br/><span class="muted small">${esc(i.client_email)}</span></td><td>${esc(i.partner_name)}</td>
-          <td>${esc(i.service_name)}${i.property_address ? `<br/><span class="muted small">${esc(i.property_address)}</span>` : ""}</td>
-          <td class="num">${gbp(i.amount_pence)}</td><td class="num">${gbp(i.application_fee_pence)}</td><td>${badge(i.status)}${i.reminders_sent ? `<br/><span class="small muted">${i.reminders_sent} reminder${i.reminders_sent === 1 ? "" : "s"} sent</span>` : ""}${i.last_error ? `<br/><span class="small" style="color:#8a2a2a">${esc(i.last_error)}</span>` : ""}</td></tr>`).join("")}
-        </tbody></table><p class="muted small" style="margin:10px 0 0">${invoices.length} shown · paid in this view ${gbp(sum)} · platform fees ${gbp(fees)}</p>`;
+      list.innerHTML = `<div class="tablewrap"><table><thead><tr><th class="hide-m">Number</th><th class="hide-m">Issued</th><th>Client</th><th class="hide-m">Partner</th><th class="hide-m">Service</th><th class="num">Amount</th><th class="num hide-m">Fee</th><th>Status</th></tr></thead><tbody>
+        ${invoices.map((i) => `<tr class="click" data-id="${i.id}"><td class="mono hide-m">${esc(i.number)}</td><td class="hide-m">${day(i.issued_at || i.created_at)}</td>
+          <td>${esc(i.bill_to_business || i.client_name || i.client_email)}<br/><span class="muted small hide-m">${esc(i.client_email)}</span><span class="muted small hide-d mono">${esc(i.number)} · ${day(i.issued_at || i.created_at)}</span></td><td class="hide-m">${esc(i.partner_name)}</td>
+          <td class="hide-m">${esc(i.service_name)}${i.property_address ? `<br/><span class="muted small">${esc(i.property_address)}</span>` : ""}</td>
+          <td class="num">${gbp(i.amount_pence)}</td><td class="num hide-m">${gbp(i.application_fee_pence)}</td><td>${badge(i.status)}${i.reminders_sent ? `<br/><span class="small muted">${i.reminders_sent} reminder${i.reminders_sent === 1 ? "" : "s"} sent</span>` : ""}${i.last_error ? `<br/><span class="small" style="color:#8a2a2a">${esc(i.last_error)}</span>` : ""}</td></tr>`).join("")}
+        </tbody></table></div><p class="muted small" style="margin:10px 0 0">${invoices.length} shown · paid ${gbp(sum)} · fees ${gbp(fees)}</p>`;
       list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#inv/" + tr.dataset.id)));
     };
     document.getElementById("f-status").addEventListener("change", load);
@@ -134,10 +136,10 @@
       totals.innerHTML = `
         ${vatInc ? `<div><span>Client net</span><span>${gbp(cnet)}</span></div><div><span>Client VAT 20%</span><span>${gbp(amt - cnet)}</span></div>` : ""}
         <div class="big"><span>Client pays</span><span>${gbp(amt)}</span></div>
-        <div><span>Your fee taken from payment (inc VAT)</span><span>${gbp(total)}</span></div>
+        <div><span>Your fee (inc VAT)</span><span>${gbp(total)}</span></div>
         <div class="small muted"><span>of which net</span><span>${gbp(net)}</span></div>
         <div class="small muted"><span>of which VAT 20%</span><span>${gbp(vat)}</span></div>
-        <div class="big"><span>Partner receives (before Stripe's fee)</span><span>${gbp(amt - total)}</span></div>
+        <div class="big"><span>Partner receives</span><span>${gbp(amt - total)}</span></div>
         ${total >= amt && amt ? `<div style="color:#8a2a2a">Fee must be less than the amount.</div>` : ""}`;
     };
     let feeTouched = !!inv;
@@ -271,7 +273,7 @@
           <div><span>Your fee (inc VAT)</span><span>${gbp(i.application_fee_pence)}</span></div>
           <div class="small muted"><span>of which net</span><span>${gbp(i.fee_net_pence)}</span></div>
           <div class="small muted"><span>of which VAT ${i.fee_vat_rate}%</span><span>${gbp(i.fee_vat_pence)}</span></div>
-          <div class="big"><span>Partner (before Stripe fee)</span><span>${gbp(i.amount_pence - i.application_fee_pence)}</span></div>
+          <div class="big"><span>Partner receives</span><span>${gbp(i.amount_pence - i.application_fee_pence)}</span></div>
           ${i.fee_invoice_number ? `<div><span>Fee VAT invoice</span><span class="mono">${esc(i.fee_invoice_number)}</span></div>` : ""}
         </div>
         <p class="small" style="margin-top:12px">
@@ -285,7 +287,7 @@
       <div class="actions">${actions}</div>
     </div>
     <div class="card"><h2>Timeline</h2><ul class="timeline">${events.map((e) => `<li><span class="muted small">${when(e.at)}</span> &nbsp; <strong>${esc(e.type)}</strong> ${e.detail ? `<span class="small muted mono">${esc(e.detail)}</span>` : ""}</li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>
-    <div class="card"><h2>Emails</h2>${emails.length ? `<table><thead><tr><th>When</th><th>Kind</th><th>To</th><th>Subject</th><th>Result</th></tr></thead><tbody>${emails.map((m) => `<tr><td>${when(m.at)}</td><td>${esc(m.kind)}</td><td>${esc(m.to_addr)}</td><td>${esc(m.subject)}</td><td>${m.error ? `<span style="color:#8a2a2a">${esc(m.error)}</span>` : `<span style="color:#1b6b33">sent</span> <span class="mono muted small">${esc(m.resend_id || "")}</span>`}</td></tr>`).join("")}</tbody></table>` : "<p class='muted'>None yet</p>"}</div>`;
+    <div class="card"><h2>Emails</h2>${emails.length ? `<div class="tablewrap"><table><thead><tr><th>When</th><th>Kind</th><th class="hide-m">To</th><th class="hide-m">Subject</th><th>Result</th></tr></thead><tbody>${emails.map((m) => `<tr><td>${when(m.at)}</td><td>${esc(m.kind)}<br/><span class="small muted hide-d">${esc(m.to_addr)}</span></td><td class="hide-m">${esc(m.to_addr)}</td><td class="hide-m">${esc(m.subject)}</td><td>${m.error ? `<span style="color:#8a2a2a">${esc(m.error)}</span>` : `<span style="color:#1b6b33">sent</span> <span class="mono muted small hide-m">${esc(m.resend_id || "")}</span>`}</td></tr>`).join("")}</tbody></table></div>` : "<p class='muted'>None yet</p>"}</div>`;
 
     app.querySelectorAll("[data-action]").forEach((b) =>
       b.addEventListener("click", async () => {
@@ -307,7 +309,7 @@
       <select id="j-status">${[["open", "Open jobs"], ["new", "New"], ["awaiting_address", "Waiting for address"], ["offered", "Offered"], ["accepted", "Accepted"], ["booked", "Booked"], ["invoiced", "Invoiced"], ["taken", "Taken by me"], ["declined", "Declined"], ["closed", "Closed"], ["all", "Everything"]].map(([v, l]) => `<option value="${v}" ${v === status ? "selected" : ""}>${l}</option>`).join("")}</select>
       <input id="j-q" placeholder="Search name, address, phone, ref…" />
       <a class="btn small" href="#newjob">New job</a>
-      <span class="muted small">Forward any enquiry email to <strong>in@jobs.dominicbowkett.com</strong> and it appears here.</span></div>
+      <span class="muted small">Forward enquiries to <strong>in@jobs.dominicbowkett.com</strong>.</span></div>
       <div id="jlist"><p class="muted">Loading…</p></div></div>`;
     const load = async () => {
       const s = document.getElementById("j-status").value, q = document.getElementById("j-q").value.trim();
@@ -315,11 +317,11 @@
       const { jobs } = await api(`jobs?status=${encodeURIComponent(s)}&q=${encodeURIComponent(q)}`);
       const list = document.getElementById("jlist");
       if (!jobs.length) { list.innerHTML = `<p class="muted">No jobs here.</p>`; return; }
-      list.innerHTML = `<table><thead><tr><th>Ref</th><th>Last activity</th><th>Customer</th><th>Job</th><th>Partner</th><th>Status</th></tr></thead><tbody>
-        ${jobs.map((j) => `<tr class="click" data-id="${j.id}"><td class="mono">${esc(j.ref)}</td><td>${when(j.last_activity_at)}</td>
+      list.innerHTML = `<div class="tablewrap"><table><thead><tr><th class="hide-m">Ref</th><th class="hide-m">Last activity</th><th>Customer</th><th>Job</th><th class="hide-m">Partner</th><th>Status</th></tr></thead><tbody>
+        ${jobs.map((j) => `<tr class="click" data-id="${j.id}"><td class="mono hide-m">${esc(j.ref)}</td><td class="hide-m">${when(j.last_activity_at)}</td>
           <td>${esc(j.customer_name || "")}<br/><span class="muted small">${esc(j.customer_phone || "")}${j.customer_phone && j.customer_email ? " · " : ""}${esc(j.customer_email || "")}</span></td>
           <td>${esc(j.service)}<br/><span class="muted small">${esc(j.property_address || (j.postcode ? `postcode ${j.postcode} (address not confirmed)` : "address not confirmed"))}</span></td>
-          <td>${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}</td></tr>`).join("")}</tbody></table>`;
+          <td class="hide-m">${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}${j.partner_name ? `<br/><span class="small muted hide-d">${esc(j.partner_name)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
       list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#job/" + tr.dataset.id)));
     };
     document.getElementById("j-status").addEventListener("change", load);
@@ -379,7 +381,7 @@
         ${j.invoice_id ? `<div><span>Invoice</span><span><a href="#inv/${j.invoice_id}">open invoice</a></span></div>` : ""}
       </div>
       <div class="actions">
-        ${canOffer ? `<select id="offer-to" style="width:auto">${candidates.map((c) => `<option value="${esc(c.stripe_account_id)}" ${partner && c.stripe_account_id === partner.stripe_account_id ? "selected" : ""}>${esc(c.name)}${c.miles != null ? ` · ${c.miles} mi` : ""}${c.phone ? "" : " · no mobile"}${c.dispatch_mode === "auto" ? " · auto" : ""}</option>`).join("")}</select>
+        ${canOffer ? `<select id="offer-to" style="width:auto">${candidates.map((c) => `<option value="${esc(c.stripe_account_id)}" ${partner && c.stripe_account_id === partner.stripe_account_id ? "selected" : ""}>${esc(c.name)}${c.miles != null ? ` · ${c.miles} mi` : ""}${c.offers === false ? " · not their service" : c.offers === true ? " · offers it" : ""}${c.phone ? "" : " · no mobile"}${c.dispatch_mode === "auto" ? " · auto" : ""}</option>`).join("")}</select>
         <button class="btn" data-act="offer">${j.status === "offered" ? "Re-send offer" : "Send job to partner"}</button>` : ""}
         ${!j.property_address ? `<button class="btn secondary" data-act="ask-address">Ask customer for address</button>` : ""}
         ${j.status === "offered" ? `<button class="btn secondary" data-act="accept">Mark accepted (partner told me)</button><button class="btn secondary" data-act="decline">Mark declined</button>` : ""}
@@ -391,10 +393,10 @@
       </div>
     </div>
     <div class="card"><h2>Send a message</h2>
-      <form id="job-msg" style="display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:end">
+      <form id="job-msg" class="msgform" style="display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:end">
         <div><label>To</label><select name="to" style="width:auto"><option value="customer">Customer</option>${partner ? `<option value="partner">${esc(partnerName)}</option>` : ""}</select></div>
         <div><label>By</label><select name="channel" style="width:auto"><option value="sms">Text</option><option value="email">Email</option></select></div>
-        <div><label>Message</label><input name="body" placeholder="Type a message… it goes from your number / info@ and replies come back here" /></div>
+        <div><label>Message</label><input name="body" placeholder="Type a message…" /></div>
         <div><button class="btn" type="submit">Send</button></div></form>
       <form id="job-note" style="display:flex;gap:10px;align-items:end;margin-top:10px"><div style="flex:1"><label>Private note</label><input name="body" /></div><button class="btn secondary" type="submit">Add note</button></form>
     </div>
@@ -425,7 +427,7 @@
     const ps = showHidden ? all : all.filter((p) => !p.hidden);
     app.innerHTML = `<div class="card"><div class="toolbar"><h1 style="margin:0">Connected accounts</h1><button class="btn secondary small" id="sync">Sync from Stripe</button></div><div id="msg"></div>
       <p class="muted small">Pulled from your Stripe Connect platform. Edit the invoice details here: the supplier name and address printed on client invoices, where the partner's copies and fee invoices go, and their VAT number (shown when an invoice is marked VAT-inclusive).</p>
-      ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""} · ${esc(String(p.commission_pct ?? 10))}%${p.coverage_postcode ? ` · ${esc(p.coverage_postcode)}` : ""}${p.registered_at ? " · self-registered" : ""}</span></summary>
+      ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""} · ${esc(String(p.commission_pct ?? 10))}%${p.coverage_postcode ? ` · ${esc(p.coverage_postcode)}` : ""}${parseSvc(p.services).length ? ` · ${esc(parseSvc(p.services).join(", "))}` : ""}${p.registered_at ? " · self-registered" : ""}</span></summary>
         <form data-id="${esc(p.stripe_account_id)}" class="grid" style="margin-top:8px">
           <div><label>Display name (on invoices)</label><input name="display_name" value="${esc(p.display_name || "")}" placeholder="${esc(p.business_name || "")}" />
           <label>Invoice / copy email</label><input name="invoice_email" type="email" value="${esc(p.invoice_email || "")}" placeholder="${esc(p.email || "")}" />
@@ -433,6 +435,7 @@
           <label>Contact name</label><input name="contact_name" value="${esc(p.contact_name || "")}" />
           <label>Commission % (inc VAT, default for new invoices)</label><input name="commission_pct" inputmode="decimal" value="${esc(p.commission_pct ?? 10)}" />
           <label>Coverage postcode (home or centre of area)</label><input name="coverage_postcode" value="${esc(p.coverage_postcode || "")}" placeholder="TN2 5HB" />
+          <label>Services they offer</label><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:4px 10px;margin:4px 0 6px">${PARTNER_SERVICES.map((s) => `<label style="display:flex;align-items:center;gap:6px;margin:0;text-transform:none;letter-spacing:0;font-weight:400;font-size:13px;color:inherit"><input type="checkbox" name="services" value="${esc(s)}" ${parseSvc(p.services).includes(s) ? "checked" : ""} style="width:auto" /> ${esc(s)}</label>`).join("")}</div>
           <label>New jobs near them</label><select name="dispatch_mode"><option value="hold" ${(p.dispatch_mode || "hold") === "hold" ? "selected" : ""}>Hold for me to send</option><option value="auto" ${p.dispatch_mode === "auto" ? "selected" : ""}>Send automatically (within 25 miles)</option></select>
           <div class="check"><input type="checkbox" name="copy_invoices" id="cp-${esc(p.stripe_account_id)}" ${p.copy_invoices ? "checked" : ""} /><label for="cp-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Email them a copy of each invoice sent</label></div>
           <div class="check"><input type="checkbox" name="hidden" id="hd-${esc(p.stripe_account_id)}" ${p.hidden ? "checked" : ""} /><label for="hd-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Hide this account (not offered on new invoices)</label></div></div>
@@ -481,6 +484,7 @@
         const body = Object.fromEntries(new FormData(f).entries());
         body.copy_invoices = f.copy_invoices.checked;
         body.hidden = f.hidden.checked;
+        body.services = [...f.querySelectorAll('input[name="services"]:checked')].map((x) => x.value);
         const btn = f.querySelector("button"); busy(btn, true);
         try { const r = await api("partners/" + f.dataset.id, { method: "PATCH", body }); partners = r.partners; flash(document.getElementById("msg"), "Saved."); }
         catch (err) { flash(document.getElementById("msg"), err.message, "err"); }

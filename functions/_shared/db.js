@@ -26,6 +26,7 @@ export const SCHEMA = [
     commission_pct REAL DEFAULT 10,
     registered_at TEXT,
     dispatch_mode TEXT DEFAULT 'hold',
+    services TEXT,
     notes TEXT,
     stripe_json TEXT,
     synced_at TEXT,
@@ -148,6 +149,7 @@ export const SCHEMA = [
     contact_name TEXT,
     phone TEXT,
     coverage_postcode TEXT,
+    services TEXT,
     expires_at TEXT,
     completed_at TEXT,
     stripe_account_id TEXT,
@@ -195,6 +197,7 @@ const MIGRATIONS = [
   `ALTER TABLE partners ADD COLUMN commission_pct REAL DEFAULT 10`,
   `ALTER TABLE partners ADD COLUMN registered_at TEXT`,
   `ALTER TABLE partners ADD COLUMN dispatch_mode TEXT DEFAULT 'hold'`,
+  `ALTER TABLE partners ADD COLUMN services TEXT`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {

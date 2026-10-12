@@ -5,6 +5,7 @@ import { sendViaResend, OWNER_TO } from "./email.js";
 import { esc } from "./docs.js";
 import { hashPassword, validatePassword, getPartnerUserByEmail } from "./partner-auth.js";
 import { PortalError, portalPage } from "./portal.js";
+import { servicesCheckboxes, servicesJson, PARTNER_SERVICES } from "./services.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const POSTCODE_RE = /^[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}$/i;
@@ -47,6 +48,7 @@ ${error ? `<p class="msg err">${esc(error)}</p>` : ""}
 <label for="email">Email</label><input id="email" name="email" type="email" required value="${v("email")}" autocomplete="email" />
 <label for="phone">Mobile</label><input id="phone" name="phone" type="tel" value="${v("phone")}" autocomplete="tel" />
 <label for="pc">Coverage postcode (your home or the centre of the area you cover)</label><input id="pc" name="coverage_postcode" required value="${v("coverage_postcode")}" autocomplete="postal-code" />
+<label>Services you offer</label>${servicesCheckboxes(values.services)}
 <p style="margin-top:18px"><button class="btn" type="submit">Send verification email</button></p>
 </form>
 <p class="small muted">Already registered? <a href="/partner">Sign in</a>.</p></div>`,
@@ -60,21 +62,24 @@ export async function startRegistration(env, form, origin) {
     email: String(form.get("email") || "").trim().toLowerCase(),
     phone: String(form.get("phone") || "").trim().slice(0, 40),
     coverage_postcode: String(form.get("coverage_postcode") || "").trim(),
+    services: servicesJson(form.getAll("services").map(String)),
   };
+  if (!JSON.parse(values.services).length) throw new PortalError("Tick at least one service you offer");
   if (!values.business_name) throw new PortalError("Business name is required");
   if (!values.contact_name) throw new PortalError("Your name is required");
   if (!EMAIL_RE.test(values.email)) throw new PortalError("A valid email address is required");
   const pc = normalisePostcode(values.coverage_postcode);
   if (!pc) throw new PortalError("That doesn't look like a UK postcode");
   values.coverage_postcode = pc;
+  if (values.phone) { const { e164 } = await import("./sms.js"); values.phone = e164(values.phone); }
   if (await getPartnerUserByEmail(env, values.email)) throw new PortalError("That email already has an account. Sign in, or use 'Forgotten your password'.");
 
   const d = await db(env);
   const token = randomToken(24);
   const expires = new Date(Date.now() + 48 * 3600000).toISOString();
   await d
-    .prepare(`INSERT INTO partner_signups (token, email, business_name, contact_name, phone, coverage_postcode, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?)`)
-    .bind(token, values.email, values.business_name, values.contact_name, values.phone, pc, expires)
+    .prepare(`INSERT INTO partner_signups (token, email, business_name, contact_name, phone, coverage_postcode, services, expires_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)`)
+    .bind(token, values.email, values.business_name, values.contact_name, values.phone, pc, values.services, expires)
     .run();
   const link = `${origin}/partner/register/verify/${token}`;
   const msg = {
@@ -167,12 +172,12 @@ export async function completeRegistration(env, signup, password, origin) {
   await d.batch([
     d
       .prepare(
-        `INSERT INTO partners (stripe_account_id, business_name, display_name, email, invoice_email, phone, contact_name, coverage_postcode, coverage_lat, coverage_lng, commission_pct,
+        `INSERT INTO partners (stripe_account_id, business_name, display_name, email, invoice_email, phone, contact_name, coverage_postcode, coverage_lat, coverage_lng, commission_pct, services,
            charges_enabled, payouts_enabled, account_type, fees_payer, country, default_currency, registered_at, synced_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'standard', 'account', 'GB', 'gbp', datetime('now'), datetime('now'))
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0, 'standard', 'account', 'GB', 'gbp', datetime('now'), datetime('now'))
          ON CONFLICT(stripe_account_id) DO NOTHING`
       )
-      .bind(acct.id, signup.business_name, signup.business_name, signup.email, signup.email, signup.phone || null, signup.contact_name, signup.coverage_postcode, geo?.lat ?? null, geo?.lng ?? null, DEFAULT_COMMISSION_PCT),
+      .bind(acct.id, signup.business_name, signup.business_name, signup.email, signup.email, signup.phone || null, signup.contact_name, signup.coverage_postcode, geo?.lat ?? null, geo?.lng ?? null, DEFAULT_COMMISSION_PCT, servicesJson(signup.services)),
     d.prepare(`INSERT INTO partner_users (id, stripe_account_id, email, password_salt, password_hash, activated_at, last_login_at) VALUES (?, ?, ?, ?, ?, datetime('now'), datetime('now'))`).bind(userId, acct.id, signup.email, salt, hash),
     d.prepare(`UPDATE partner_signups SET completed_at = datetime('now'), stripe_account_id = ? WHERE token = ?`).bind(acct.id, signup.token),
   ]);
@@ -183,7 +188,7 @@ export async function completeRegistration(env, signup, password, origin) {
       subject: `New partner registered — ${signup.business_name}`,
       text:
         `${signup.business_name} has registered as a partner.\n\nContact: ${signup.contact_name} <${signup.email}>${signup.phone ? ` ${signup.phone}` : ""}\n` +
-        `Coverage postcode: ${signup.coverage_postcode}${geo?.district ? ` (${geo.district})` : ""}\nStripe account: ${acct.id} (Standard, onboarding not yet completed)\nCommission: ${DEFAULT_COMMISSION_PCT}% (default)\n\n` +
+        `Coverage postcode: ${signup.coverage_postcode}${geo?.district ? ` (${geo.district})` : ""}\nServices: ${JSON.parse(servicesJson(signup.services)).join(", ") || "none ticked"}\nStripe account: ${acct.id} (Standard, onboarding not yet completed)\nCommission: ${DEFAULT_COMMISSION_PCT}% (default)\n\n` +
         `Admin: ${origin}/admin#partners\n`,
     });
   } catch (e) { console.error("owner notice failed", e.message); }

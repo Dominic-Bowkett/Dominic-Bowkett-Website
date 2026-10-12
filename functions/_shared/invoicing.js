@@ -5,6 +5,8 @@ import { sendViaResend, OWNER_TO } from "./email.js";
 import { toPence, splitGross, todayISO, gbp } from "./money.js";
 import { platform } from "./business.js";
 import { normalisePostcode, geocodePostcode } from "./register.js";
+import { servicesJson } from "./services.js";
+import { e164 } from "./sms.js";
 import {
   clientInvoiceEmail, partnerCopyEmail, clientPaidEmail, partnerPaidEmail, ownerNotice, partnerOf,
   clientReminderEmail, REMINDER_DAYS, REMINDER_MAX, supplierName,
@@ -54,7 +56,7 @@ export async function listPartners(env) {
   return r.results || [];
 }
 
-const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct", "dispatch_mode"];
+const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct", "dispatch_mode", "services"];
 export async function updatePartner(env, id, fields) {
   const d = await db(env);
   const keys = Object.keys(fields).filter((k) => PARTNER_EDITABLE.includes(k));
@@ -67,6 +69,8 @@ export async function updatePartner(env, id, fields) {
     fields.commission_pct = Math.round(pct * 100) / 100;
   }
   if (keys.includes("dispatch_mode") && !["hold", "auto"].includes(fields.dispatch_mode)) throw new UserError("Dispatch mode must be hold or auto");
+  if (keys.includes("services")) fields.services = servicesJson(fields.services);
+  if (keys.includes("phone") && fields.phone) fields.phone = e164(fields.phone);
   if (keys.includes("coverage_postcode")) {
     const pc = normalisePostcode(fields.coverage_postcode);
     if (fields.coverage_postcode && !pc) throw new UserError("That doesn't look like a UK postcode");

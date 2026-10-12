@@ -12,6 +12,7 @@ import {
   confirmBooking, updateJob, addMessage, invoiceDraftFromJob, STATUS_LABEL,
 } from "../../_shared/jobs.js";
 import { getPartner as partnerRow } from "../../_shared/db.js";
+import { PARTNER_SERVICES } from "../../_shared/services.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -49,7 +50,7 @@ export async function onRequest(context) {
         for (const row of r.results || []) counts[row.status] = { n: row.n, total: row.total };
         dbOk = true;
       }
-      return json({ ok: true, checks, dbOk, counts, webhook_url: `${origin}/api/stripe/webhook` });
+      return json({ ok: true, checks, dbOk, counts, webhook_url: `${origin}/api/stripe/webhook`, partner_services: PARTNER_SERVICES });
     }
 
     if (head === "partners") {
@@ -139,7 +140,7 @@ export async function onRequest(context) {
         const job = await getJob(env, id);
         if (!job) return json({ ok: false, error: "Not found" }, 404);
         const partner = job.partner_account_id ? await partnerRow(env, job.partner_account_id) : null;
-        const candidates = (await partnersForJob(env, job)).map((p) => ({ stripe_account_id: p.stripe_account_id, name: p.display_name || p.business_name, miles: p.miles == null ? null : Math.round(p.miles * 10) / 10, charges_enabled: p.charges_enabled, phone: p.phone, dispatch_mode: p.dispatch_mode, commission_pct: p.commission_pct, coverage_postcode: p.coverage_postcode }));
+        const candidates = (await partnersForJob(env, job)).map((p) => ({ stripe_account_id: p.stripe_account_id, name: p.display_name || p.business_name, miles: p.miles == null ? null : Math.round(p.miles * 10) / 10, charges_enabled: p.charges_enabled, phone: p.phone, dispatch_mode: p.dispatch_mode, commission_pct: p.commission_pct, coverage_postcode: p.coverage_postcode, offers: p.offers, services: p.service_list }));
         return json({ ok: true, job: { ...job, status_label: STATUS_LABEL[job.status] }, partner, candidates, messages: await jobMessages(env, id), invoice_draft: invoiceDraftFromJob(job, partner) });
       }
       if (id && method === "PUT") return json({ ok: true, job: await editJob(env, id, body) });

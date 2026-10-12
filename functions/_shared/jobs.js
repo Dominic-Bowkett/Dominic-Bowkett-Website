@@ -6,6 +6,7 @@ import { esc, linkify } from "./docs.js";
 import { gbp, fmtDate } from "./money.js";
 import { geocodePostcode, normalisePostcode } from "./register.js";
 import { platform } from "./business.js";
+import { offersService, parseServices } from "./services.js";
 
 export class JobError extends Error {
   constructor(msg, status = 400) { super(msg); this.status = status; }
@@ -100,7 +101,7 @@ export async function createJob(env, data, origin, { notify = true } = {}) {
   let full = await getJob(env, id);
   if (notify) await notifyDom(env, full, origin, address ? "New job" : "New job — address needed");
   if (full.property_address && full.lat != null) {
-    const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= 25);
+    const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= 25 && p.offers !== false);
     if (near) { try { full = await offerJob(env, id, near.stripe_account_id, origin, { by: "system" }); } catch (e) { await addMessage(env, id, { direction: "out", channel: "system", party: "system", body: `Auto-dispatch failed: ${e.message}` }); } }
   }
   return full;
@@ -136,7 +137,7 @@ export async function partnersForJob(env, job) {
   const d = await db(env);
   const ps = (await d.prepare(`SELECT * FROM partners WHERE COALESCE(hidden, 0) = 0`).all()).results || [];
   return ps
-    .map((p) => ({ ...p, miles: milesBetween(job, { lat: p.coverage_lat, lng: p.coverage_lng }) }))
+    .map((p) => ({ ...p, miles: milesBetween(job, { lat: p.coverage_lat, lng: p.coverage_lng }), offers: offersService(p.services, job.service), service_list: parseServices(p.services) }))
     .sort((a, b) => (a.miles ?? 9999) - (b.miles ?? 9999));
 }
 

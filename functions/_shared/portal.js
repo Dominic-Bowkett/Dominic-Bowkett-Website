@@ -95,9 +95,9 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;
 .msg{padding:10px 12px;border-radius:4px;margin:0 0 14px}.msg.err{background:#f6e4e4;color:var(--bad)}.msg.ok{background:#e4f3e8;color:var(--ok)}
 .tiles{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px;margin-bottom:20px}.tile{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:14px 16px}.tile .v{font-size:20px;font-weight:600}.tile .k{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
 .login{max-width:420px;margin:8vh auto}
-@media (max-width:700px){.hide-m{display:none}}
+@media (max-width:700px){.hide-m{display:none}main{padding:14px 10px 48px}.card{padding:16px 12px}header.bar{padding:10px 12px;gap:8px;flex-wrap:wrap}header.bar .right{flex-basis:100%;margin-left:0;justify-content:space-between}header.bar nav{margin-left:0;flex-basis:100%}h1{font-size:18px}table{font-size:13px}th,td{padding:7px 5px}.tiles{gap:8px}.tile{padding:10px 12px}.tile .v{font-size:17px}input{font-size:16px}}
 </style></head><body>
-<header class="bar"><span class="brand">Dominic Bowkett · Partner portal</span>${user ? `<nav style="margin-left:18px"><a href="/partner" style="margin-right:14px;color:var(--ink);text-decoration:none;font-weight:500">Invoices</a><a href="/partner/jobs" style="color:var(--ink);text-decoration:none;font-weight:500">Jobs</a></nav><div class="right"><span>${esc(user.display_name || user.business_name || "")} · ${esc(user.email)}</span><form method="post" action="/partner/logout" style="margin:0"><button class="btn secondary" type="submit" style="padding:6px 12px;font-size:13px">Sign out</button></form></div>` : ""}</header>
+<header class="bar"><span class="brand">Dominic Bowkett · Partner portal</span>${user ? `<nav style="margin-left:18px"><a href="/partner" style="margin-right:14px;color:var(--ink);text-decoration:none;font-weight:500">Invoices</a><a href="/partner/jobs" style="margin-right:14px;color:var(--ink);text-decoration:none;font-weight:500">Jobs</a><a href="/partner/profile" style="color:var(--ink);text-decoration:none;font-weight:500">Profile</a></nav><div class="right"><span>${esc(user.display_name || user.business_name || "")} · ${esc(user.email)}</span><form method="post" action="/partner/logout" style="margin:0"><button class="btn secondary" type="submit" style="padding:6px 12px;font-size:13px">Sign out</button></form></div>` : ""}</header>
 <main>${body}</main></body></html>`;
 }
 
@@ -114,7 +114,7 @@ ${stripeNote ? `<p class="msg err">${esc(stripeNote)}</p>` : ""}
       ? `<div class="card" style="border-color:#9ccfae;background:#f2faf4"><h2>You're all set</h2><p>Stripe is connected and you can receive payments. Invoices sent on your behalf will appear below.</p></div>`
       : "";
   const profile = partner
-    ? `<p class="muted small">${esc(partner.contact_name || "")}${partner.coverage_postcode ? ` · coverage postcode ${esc(partner.coverage_postcode)}` : ""}${partner.commission_pct != null ? ` · platform commission ${esc(String(partner.commission_pct))}% inc VAT (can differ per invoice)` : ""}</p>`
+    ? `<p class="muted small">${esc(partner.contact_name || "")}${partner.coverage_postcode ? ` · coverage postcode ${esc(partner.coverage_postcode)}` : ""}${partner.commission_pct != null ? ` · platform commission ${esc(String(partner.commission_pct))}% inc VAT (can differ per invoice)` : ""}${partner.services ? ` · services: ${esc(JSON.parse(partner.services).join(", ") || "none set")}` : ""} · <a href="/partner/profile">edit profile</a></p>`
     : "";
   const r = await d.prepare(`SELECT * FROM invoices WHERE partner_account_id = ? AND status != 'draft' ORDER BY COALESCE(sent_at, created_at) DESC LIMIT 500`).bind(user.stripe_account_id).all();
   const invoices = r.results || [];
