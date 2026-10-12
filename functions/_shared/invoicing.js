@@ -181,6 +181,13 @@ export async function sendInvoice(env, id, origin, { resend = false } = {}) {
     await updateInvoice(env, id, { last_error: "Client email failed to send" });
     throw new UserError("The invoice email could not be sent (see timeline). Nothing was marked as sent.", 502);
   }
+  // Dom always gets a copy of exactly what the client received.
+  const clientMsg = clientInvoiceEmail(fresh, origin);
+  await email(env, fresh, "owner_copy", {
+    to: OWNER_TO,
+    subject: `Copy to ${fresh.client_email}: ${clientMsg.subject}`,
+    html: `<p style="font-family:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;font-size:13px;color:#7a7873;border-bottom:1px solid #e2dfd8;padding-bottom:10px;margin-bottom:16px;">Copy of the invoice email ${resend ? "re-sent" : "sent"} to ${fresh.client_email}${fresh.client_name ? ` (${fresh.client_name})` : ""}. Admin: ${origin}/admin#inv/${fresh.id}</p>${clientMsg.html}`,
+  });
   const p = partnerOf(fresh);
   if (p.copy_invoices !== 0 && (p.invoice_email || p.email)) {
     await email(env, fresh, "partner_copy", { to: p.invoice_email || p.email, replyTo: OWNER_TO, ...partnerCopyEmail(fresh, origin) });

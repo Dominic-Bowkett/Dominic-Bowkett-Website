@@ -38,6 +38,7 @@ disallowed in robots.txt.
 | When | To | Content |
 | --- | --- | --- |
 | Invoice sent | client | HTML: summary, **Pay this invoice** button, view/PDF link |
+| Invoice sent | Dom (info@) | exact copy of the client email, subject prefixed "Copy to <client>" |
 | Invoice sent | partner (if "copy invoices" on) | plain text copy incl. fee breakdown |
 | Paid | client | confirmation, "we'll proceed", receipted PDF link, optional review link (`REVIEW_URL`) |
 | Paid | partner | plain text: paid, fee VAT invoice PDF link, "go ahead" |
