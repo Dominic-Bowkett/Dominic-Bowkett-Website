@@ -98,10 +98,17 @@ export function validateInvoiceInput(env, body) {
   return out;
 }
 
+function assertVatAllowed(fields, partner) {
+  if (fields.client_vat_rate && !String(partner.vat_number || "").trim()) {
+    throw new UserError(`"Amount includes VAT" is ticked, but ${partner.display_name || partner.business_name} has no VAT number on file. Add it under Connected accounts first, or untick VAT.`);
+  }
+}
+
 export async function createInvoice(env, body) {
   const fields = validateInvoiceInput(env, body);
   const partner = await getPartner(env, fields.partner_account_id);
   if (!partner) throw new UserError("Unknown partner account. Sync connected accounts first.");
+  assertVatAllowed(fields, partner);
   const d = await db(env);
   const id = randomToken(16);
   const number = await nextNumber(env, "invoice", "DB-INV-");
@@ -124,6 +131,7 @@ export async function editInvoice(env, id, body) {
   const fields = validateInvoiceInput(env, body);
   const partner = await getPartner(env, fields.partner_account_id);
   if (!partner) throw new UserError("Unknown partner account");
+  assertVatAllowed(fields, partner);
   await updateInvoice(env, id, { ...fields, partner_snapshot: JSON.stringify(partner) });
   await logEvent(env, id, "edited");
   return getInvoice(env, id);

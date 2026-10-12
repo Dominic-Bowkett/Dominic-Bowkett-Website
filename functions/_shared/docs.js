@@ -24,6 +24,19 @@ export function links(origin, inv) {
   };
 }
 
+// One plain sentence about VAT, shown wherever the client sees the invoice.
+export function vatStatement(inv) {
+  const p = partnerOf(inv);
+  const name = supplierName(p);
+  if (inv.client_vat_rate) {
+    const { vat } = splitGross(inv.amount_pence, inv.client_vat_rate);
+    return `VAT: ${name} is VAT registered${p.vat_number ? ` (VAT No. ${p.vat_number})` : ""}. This invoice includes VAT at ${inv.client_vat_rate}% (${gbp(vat)}).`;
+  }
+  return p.vat_number
+    ? `VAT: no VAT is charged on this invoice.`
+    : `VAT: ${name} is not VAT registered, so no VAT is charged on this invoice.`;
+}
+
 export function statusLabel(inv) {
   return { draft: "Draft", sent: "Awaiting payment", paid: "Paid", failed: "Payment failed", void: "Cancelled", refunded: "Refunded" }[inv.status] || inv.status;
 }
@@ -127,9 +140,11 @@ export function clientInvoicePdf(inv, env, origin) {
   pdf.space(72);
 
   // Footer
-  pdf.ensure(60);
+  pdf.ensure(80);
   pdf.rule();
   pdf.space(10);
+  pdf.paragraph(vatStatement(inv), { size: 9, bold: true });
+  pdf.space(4);
   pdf.paragraph(
     `Invoice issued on behalf of ${supplierName(p)} and administered by ${biz.legalName}, ${biz.address}. ` +
       `Company No. ${biz.companyNo}. Payments are processed by Stripe; the charge will appear on your statement under the supplier's name. ` +
@@ -261,12 +276,13 @@ export function invoiceSummaryHtml(inv) {
 <p>${billTo(inv).map(esc).join("<br/>")}</p>
 ${inv.property_address ? `<h2>Property</h2><p>${esc(inv.property_address).replace(/\n/g, "<br/>")}</p>` : ""}
 <h2>From</h2>
-<p>${esc(supplierName(p))}${p.address ? `<br/><span class="muted small">${esc(p.address)}</span>` : ""}</p>
+<p>${esc(supplierName(p))}${p.business_name && p.display_name && p.business_name !== p.display_name ? `<br/><span class="small">${esc(p.business_name)}</span>` : ""}${p.address ? `<br/><span class="muted small">${esc(p.address)}</span>` : ""}${p.invoice_email || p.email ? `<br/><span class="muted small">${esc(p.invoice_email || p.email)}</span>` : ""}${p.phone ? `<br/><span class="muted small">${esc(p.phone)}</span>` : ""}${inv.client_vat_rate && p.vat_number ? `<br/><span class="muted small">VAT No. ${esc(p.vat_number)}</span>` : ""}</p>
 <h2>Details</h2>
 ${inv.description ? `<p class="small"><pre>${esc(inv.description)}</pre></p>` : ""}
 <div class="row"><span>${esc(inv.service_name)}</span><span>${gbp(net)}</span></div>
 ${inv.client_vat_rate ? `<div class="row"><span>VAT at ${inv.client_vat_rate}%</span><span>${gbp(vat)}</span></div>` : ""}
-<div class="row total"><span>${inv.status === "paid" ? "Total paid" : "Total due"}</span><span>${gbp(inv.amount_pence)}</span></div>`;
+<div class="row total"><span>${inv.status === "paid" ? "Total paid" : "Total due"}</span><span>${gbp(inv.amount_pence)}</span></div>
+<p class="small" style="margin-top:14px;padding:10px 12px;background:var(--paper);border:1px solid var(--rule);border-radius:4px;"><strong>${esc(vatStatement(inv))}</strong></p>`;
 }
 
 // ---------------------------------------------------------------- emails
@@ -293,7 +309,9 @@ ${inv.client_message ? `<p style="white-space:pre-wrap;">${esc(inv.client_messag
 <tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Invoice</td><td>${esc(inv.number)}</td></tr>
 <tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Amount due</td><td><strong>${gbp(inv.amount_pence)}</strong></td></tr>
 ${inv.due_date ? `<tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Due</td><td>${esc(fmtDate(inv.due_date))}</td></tr>` : ""}
+<tr><td style="padding:4px 24px 4px 0;color:#7a7873;vertical-align:top;">Supplier</td><td>${esc(supplierName(p))}${p.address ? `<br/><span style="color:#7a7873;font-size:13px;">${esc(p.address)}</span>` : ""}</td></tr>
 </table>
+<p style="font-size:13px;"><strong>${esc(vatStatement(inv))}</strong></p>
 ${btn(L.pay, "Pay this invoice")}
 <p style="font-size:13px;color:#7a7873;">You can view the invoice or download a PDF copy at any time: <a href="${L.view}" style="color:#0c0c0c;">${L.view}</a></p>
 <p>Payment is taken securely by Stripe. If anything on the invoice looks wrong, reply to this email before paying.</p>

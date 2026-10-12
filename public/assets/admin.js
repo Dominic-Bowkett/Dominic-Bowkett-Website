@@ -110,7 +110,7 @@
           <label>Description (optional, shown on the invoice)</label><textarea name="description">${v("description")}</textarea>
           <label>Message to the client (optional, in the email only)</label><textarea name="client_message" placeholder="e.g. Thanks for booking — Matt will be with you on Thursday at 10am.">${v("client_message")}</textarea>
           <label>Amount charged to the client (£)</label><input name="amount" inputmode="decimal" required value="${inv ? (inv.amount_pence / 100).toFixed(2) : ""}" placeholder="100.00" />
-          <div class="check"><input type="checkbox" name="client_vat_inclusive" id="cvat" ${inv?.client_vat_rate ? "checked" : ""} /><label for="cvat" style="margin:0;text-transform:none;letter-spacing:0">Amount includes VAT at 20% (partner is VAT registered)</label></div>
+          <div class="check"><input type="checkbox" name="client_vat_inclusive" id="cvat" ${inv?.client_vat_rate ? "checked" : ""} /><label for="cvat" style="margin:0;text-transform:none;letter-spacing:0">Amount includes VAT at 20% <span id="cvat-note" class="muted"></span></label></div>
           <label>Your platform fee, inc VAT (£)</label><input name="fee" inputmode="decimal" value="${inv ? (inv.application_fee_pence / 100).toFixed(2) : ""}" placeholder="10.00" />
           <label>Due date (defaults to ${DUE_DAYS} days)</label><input name="due_date" type="date" value="${inv ? v("due_date") : plusDays(DUE_DAYS)}" />
           <div class="totals" id="totals"></div>
@@ -139,7 +139,16 @@
         <div class="big"><span>Partner receives (before Stripe's fee)</span><span>${gbp(amt - total)}</span></div>
         ${total >= amt && amt ? `<div style="color:#8a2a2a">Fee must be less than the amount.</div>` : ""}`;
     };
-    form.addEventListener("input", recalc); recalc();
+    const syncVat = () => {
+      const p = ps.find((x) => x.stripe_account_id === form.partner_account_id.value);
+      const hasVat = !!(p && String(p.vat_number || "").trim());
+      form.client_vat_inclusive.disabled = !hasVat;
+      if (!hasVat) form.client_vat_inclusive.checked = false;
+      document.getElementById("cvat-note").textContent = p ? (hasVat ? `(VAT No. ${p.vat_number})` : "(no VAT number on file for this partner, so no VAT is charged)") : "";
+      recalc();
+    };
+    form.partner_account_id.addEventListener("change", syncVat);
+    form.addEventListener("input", recalc); recalc(); syncVat();
     const svcSel = document.getElementById("svc-select"), svcInput = form.service_name;
     svcSel.addEventListener("change", () => {
       if (svcSel.value === "__other") { svcInput.style.display = "block"; if (SERVICES.includes(svcInput.value)) svcInput.value = ""; svcInput.focus(); }
