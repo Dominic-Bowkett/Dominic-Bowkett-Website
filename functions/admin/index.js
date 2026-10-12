@@ -1,5 +1,5 @@
 // GET /admin — login form or the invoicing admin app shell (the app itself is /assets/admin.js).
-import { isAdmin } from "../_shared/auth.js";
+import { isAdmin, sessionCookie } from "../_shared/auth.js";
 
 const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" };
 
@@ -62,11 +62,13 @@ export async function onRequestGet({ request, env }) {
       { status: 200, headers }
     );
   }
+  // Sliding session: every visit issues a fresh 30-day cookie.
+  const renewed = { ...headers, "Set-Cookie": await sessionCookie(env) };
   return new Response(
     shell(`<header class="bar"><span class="brand">Invoicing</span>
 <nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Connected accounts</a><a href="#setup" data-nav="setup">Setup</a></nav>
 <div class="right"><a class="btn secondary small" href="/api/admin/export.csv">Export CSV</a><form method="post" action="/admin/logout"><button class="btn secondary small" type="submit">Sign out</button></form></div></header>
 <main id="app"><p class="muted">Loading…</p></main>`, { app: true }),
-    { status: 200, headers }
+    { status: 200, headers: renewed }
   );
 }

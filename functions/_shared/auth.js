@@ -3,7 +3,7 @@
 import { safeEqual } from "./email.js";
 
 const COOKIE = "dbk_admin";
-const TTL_S = 12 * 60 * 60;
+const TTL_S = 30 * 24 * 60 * 60; // 30 days; renewed on every visit to /admin (see functions/admin/index.js)
 const enc = new TextEncoder();
 
 async function hmac(secret, msg) {
