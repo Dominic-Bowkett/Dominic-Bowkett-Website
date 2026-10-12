@@ -102,9 +102,16 @@ export class PDF {
     return this;
   }
 
-  build() {
+  build({ title, author, subject } = {}) {
     const objs = [];
     const add = (s) => { objs.push(s); return objs.length; };
+    const info = add(
+      `<< /Producer (dominicbowkett.com invoicing)` +
+        (title ? ` /Title (${pdfString(title)})` : "") +
+        (author ? ` /Author (${pdfString(author)})` : "") +
+        (subject ? ` /Subject (${pdfString(subject)})` : "") +
+        ` /CreationDate (D:${new Date().toISOString().replace(/[-:T]/g, "").slice(0, 14)}Z) >>`
+    );
     const fontN = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica /Encoding /WinAnsiEncoding >>");
     const fontB = add("<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold /Encoding /WinAnsiEncoding >>");
     const pagesIdx = add(""); // placeholder, filled later
@@ -131,7 +138,7 @@ export class PDF {
     const xref = out.length;
     out += `xref\n0 ${objs.length + 1}\n0000000000 65535 f \n`;
     for (const o of offsets) out += `${String(o).padStart(10, "0")} 00000 n \n`;
-    out += `trailer\n<< /Size ${objs.length + 1} /Root ${catalog} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
+    out += `trailer\n<< /Size ${objs.length + 1} /Root ${catalog} 0 R /Info ${info} 0 R >>\nstartxref\n${xref}\n%%EOF\n`;
     // Byte offsets above assume one byte per char: everything we emit is Latin-1.
     const bytes = new Uint8Array(out.length);
     for (let i = 0; i < out.length; i++) bytes[i] = out.charCodeAt(i) & 0xff;

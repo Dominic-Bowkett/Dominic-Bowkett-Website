@@ -40,7 +40,7 @@ export async function onRequestGet({ request, env, params }) {
   let action = "";
   if (inv.status === "paid") {
     action = `<p class="msg ok" style="background:#e4f3e8;color:#1b6b33;padding:12px;border-radius:4px"><strong>Paid, thank you.</strong> Received ${esc(fmtDate(inv.paid_at, { withTime: true }))}${inv.payment_method ? ` by ${esc(inv.payment_method)}` : ""}. A confirmation has been emailed to you.</p>
-<div class="actions"><a class="btn" href="/invoice/${inv.id}/pdf">Download receipted invoice (PDF)</a>${inv.receipt_url ? `<a class="btn secondary" href="${esc(inv.receipt_url)}">Stripe receipt</a>` : ""}</div>`;
+<div class="actions"><a class="btn" href="/invoice/${inv.id}/pdf">Download receipted PDF invoice</a>${inv.receipt_url ? `<a class="btn secondary" href="${esc(inv.receipt_url)}">Stripe receipt</a>` : ""}</div>`;
   } else if (inv.status === "void") {
     action = `<p class="msg" style="background:#f6e4e4;color:#8a2a2a;padding:12px;border-radius:4px">This invoice has been cancelled and is not payable.</p>`;
   } else if (inv.status === "refunded") {
@@ -49,7 +49,7 @@ export async function onRequestGet({ request, env, params }) {
     action = `${notice}
 <form method="post" action="/pay/${inv.id}/checkout" class="actions">
   <button class="btn" type="submit">Pay ${esc(fmtGbp(inv.amount_pence))} securely</button>
-  <a class="btn secondary" href="/invoice/${inv.id}/pdf">Download PDF</a>
+  <a class="btn secondary" href="/invoice/${inv.id}/pdf">Download PDF invoice</a>
 </form>
 <p class="muted small" style="margin-top:14px">You'll be taken to Stripe's secure checkout. Card payments are protected by 3-D Secure; the charge appears on your statement under the supplier's name.</p>`;
   }

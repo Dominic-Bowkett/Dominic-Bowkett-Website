@@ -10,7 +10,7 @@ export async function onRequestGet({ env, params }) {
   }
   const actions =
     inv.status === "sent" || inv.status === "failed"
-      ? `<div class="actions"><a class="btn" href="/pay/${inv.id}">Pay this invoice</a><a class="btn secondary" href="/invoice/${inv.id}/pdf">Download PDF</a></div>`
-      : `<div class="actions"><a class="btn" href="/invoice/${inv.id}/pdf">Download PDF</a></div>`;
+      ? `<div class="actions"><a class="btn" href="/pay/${inv.id}">Pay this invoice</a><a class="btn secondary" href="/invoice/${inv.id}/pdf">Download PDF invoice</a></div>`
+      : `<div class="actions"><a class="btn" href="/invoice/${inv.id}/pdf">Download PDF invoice</a></div>`;
   return new Response(page({ title: `Invoice ${inv.number}`, body: `<div class="card">${invoiceSummaryHtml(inv)}${actions}</div>` }), { headers });
 }

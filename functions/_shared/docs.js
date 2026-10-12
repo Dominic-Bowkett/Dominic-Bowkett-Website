@@ -136,7 +136,11 @@ export function clientInvoicePdf(inv, env, origin) {
       `Questions: ${biz.email}`,
     { size: 7.5, color: "0.48 0.47 0.45" }
   );
-  return pdf.build();
+  return pdf.build({
+    title: `${inv.status === "paid" ? "Receipted invoice" : "Invoice"} ${inv.number} — ${inv.service_name}${inv.property_address ? ` — ${inv.property_address}` : ""}`,
+    author: supplierName(p),
+    subject: `${inv.service_name} for ${inv.bill_to_business || inv.client_name || inv.client_email}`,
+  });
 }
 
 // ---------------------------------------------------------------- platform fee invoice PDF (to partner)
@@ -208,7 +212,11 @@ export function feeInvoicePdf(inv, env) {
   pdf.rule();
   pdf.space(10);
   pdf.paragraph(`${biz.legalName}, ${biz.address}. Registered in England, Company No. ${biz.companyNo}. VAT ${biz.vatNo}.`, { size: 7.5, color: "0.48 0.47 0.45" });
-  return pdf.build();
+  return pdf.build({
+    title: `VAT invoice ${inv.fee_invoice_number} — platform fee for ${inv.number}`,
+    author: biz.legalName,
+    subject: `Platform fee for invoice ${inv.number} (${inv.service_name})`,
+  });
 }
 
 // ---------------------------------------------------------------- HTML page shell (client-facing)
@@ -318,7 +326,7 @@ export function clientPaidEmail(inv, origin, env) {
 <p>${who}</p>
 <p>Thank you. We've received your payment of <strong>${gbp(inv.amount_pence)}</strong> for invoice ${esc(inv.number)} (${esc(inv.service_name)}${inv.property_address ? `, ${esc(inv.property_address)}` : ""}).</p>
 <p>Everything is in place, so we'll proceed as arranged.</p>
-${btn(L.pdf, "Download your receipted invoice (PDF)")}
+${btn(L.pdf, "Download your receipted PDF invoice")}
 ${biz.reviewUrl ? `<p>If you have a moment, we'd be grateful for a quick rating of the service: <a href="${esc(biz.reviewUrl)}" style="color:#0c0c0c;">${esc(biz.reviewUrl)}</a></p>` : ""}
 <p>Kind regards,<br/>Dominic Bowkett</p>`),
   };
