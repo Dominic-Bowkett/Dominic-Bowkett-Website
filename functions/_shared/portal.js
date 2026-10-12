@@ -126,7 +126,7 @@ export async function dashboardHtml(env, user, origin) {
 </div>
 <div class="card"><h1>Invoices sent on behalf of ${esc(user.display_name || user.business_name || "you")}</h1>
 <p class="muted small">"Your share" is the invoice amount less the platform fee (inc VAT); Stripe's processing fee is then deducted by Stripe in your own account. Every paid invoice has a VAT invoice for the fee.</p>
-${invoices.length ? `<table><thead><tr><th>Number</th><th>Sent</th><th>Client</th><th class="hide-m">Service</th><th class="num">Amount</th><th class="num hide-m">Fee</th><th class="num">Your share</th><th>Status</th><th>Documents</th></tr></thead><tbody>${rows}</tbody></table>` : `<p class="muted">No invoices yet.</p>`}
+${invoices.length ? `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table><thead><tr><th>Number</th><th>Sent</th><th>Client</th><th class="hide-m">Service</th><th class="num">Amount</th><th class="num hide-m">Fee</th><th class="num">Your share</th><th>Status</th><th>Documents</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">No invoices yet.</p>`}
 </div>
 <p class="muted small">This portal is view-only. Questions about an invoice: <a href="mailto:info@dominicbowkett.com">info@dominicbowkett.com</a>.</p>`;
   return portalPage({ title: "Your invoices", body, user });
