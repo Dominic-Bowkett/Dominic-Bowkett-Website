@@ -503,6 +503,14 @@ export async function extractEnquiry(env, text, subject = "") {
   if (out.customer_email && !/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.test(out.customer_email)) out.customer_email = fallback.customer_email;
   if (ALLOWED_FORWARDERS.includes(String(out.customer_email || "").toLowerCase())) out.customer_email = null;
   out.postcode = normalisePostcode(out.postcode) || postcodeFrom(out.property_address) || fallback.postcode;
+  // Use the service names the admin dropdown uses, so jobs and invoices line up.
+  const svc = String(out.service || "").toLowerCase();
+  if (/epc|energy performance/.test(svc) && !/commercial/.test(svc)) out.service = "Domestic EPC";
+  else if (/level 3|building survey|full structural/.test(svc)) out.service = "Building Survey (Level 3)";
+  else if (/level 2|homebuyer/.test(svc)) out.service = "HomeBuyer Survey (Level 2)";
+  else if (/retrofit/.test(svc)) out.service = "Retrofit Assessment";
+  else if (/ventilation/.test(svc)) out.service = "Ventilation Assessment";
+  else if (/survey/.test(svc)) out.service = "Home Insight Survey";
   return out;
 }
 
