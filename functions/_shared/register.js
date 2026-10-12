@@ -42,11 +42,11 @@ export function registerForm({ error = "", values = {} } = {}) {
 <p class="muted">For assessors and surveyors who carry out work invoiced through Dominic Bowkett. You'll verify your email, choose a password, then connect a Stripe account so clients can pay you directly.</p>
 ${error ? `<p class="msg err">${esc(error)}</p>` : ""}
 <form method="post" action="/partner/register">
-<label for="business">Business name</label><input id="business" name="business_name" required value="${v("business_name")}" placeholder="e.g. Ecocertsolutions" />
+<label for="business">Business name</label><input id="business" name="business_name" required value="${v("business_name")}" />
 <label for="name">Your name</label><input id="name" name="contact_name" required value="${v("contact_name")}" />
 <label for="email">Email</label><input id="email" name="email" type="email" required value="${v("email")}" autocomplete="email" />
 <label for="phone">Mobile</label><input id="phone" name="phone" type="tel" value="${v("phone")}" autocomplete="tel" />
-<label for="pc">Coverage postcode (your home or the centre of the area you cover)</label><input id="pc" name="coverage_postcode" required value="${v("coverage_postcode")}" placeholder="TN2 5HB" autocomplete="postal-code" />
+<label for="pc">Coverage postcode (your home or the centre of the area you cover)</label><input id="pc" name="coverage_postcode" required value="${v("coverage_postcode")}" autocomplete="postal-code" />
 <p style="margin-top:18px"><button class="btn" type="submit">Send verification email</button></p>
 </form>
 <p class="small muted">Already registered? <a href="/partner">Sign in</a>.</p></div>`,
