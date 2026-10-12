@@ -65,7 +65,7 @@ export async function getPartnerUser(env, id) {
   const d = await db(env);
   return d
     .prepare(
-      `SELECT u.*, p.display_name, p.business_name, p.vat_number, p.address AS partner_address
+      `SELECT u.*, p.display_name, p.business_name, p.vat_number, p.address AS partner_address, p.charges_enabled
        FROM partner_users u JOIN partners p ON p.stripe_account_id = u.stripe_account_id WHERE u.id = ?`
     )
     .bind(id)

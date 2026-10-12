@@ -4,6 +4,7 @@ import { sendViaResend, OWNER_TO } from "./email.js";
 import { gbp, fmtDate } from "./money.js";
 import { esc, statusLabel } from "./docs.js";
 import { issueInvite, getPartnerUserByEmail } from "./partner-auth.js";
+import { refreshPartnerFromStripe } from "./register.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -100,8 +101,21 @@ table{width:100%;border-collapse:collapse}th,td{text-align:left;padding:9px 8px;
 <main>${body}</main></body></html>`;
 }
 
-export async function dashboardHtml(env, user, origin) {
+export async function dashboardHtml(env, user, origin, { welcome = false, stripeNote = "" } = {}) {
   const d = await db(env);
+  const partner = await getPartner(env, user.stripe_account_id);
+  const stripeBanner = !partner?.charges_enabled
+    ? `<div class="card" style="border-color:#e0c36a;background:#fffaf0"><h2>${welcome ? "Welcome. One more step: " : ""}Connect your Stripe account</h2>
+<p>Clients pay invoices by card or bank through Stripe, and the money goes straight to you. Stripe needs a few details about you and your business (about 5 minutes). You can sign in to an existing Stripe account during the process.</p>
+${stripeNote ? `<p class="msg err">${esc(stripeNote)}</p>` : ""}
+<form method="post" action="/partner/stripe/onboard"><button class="btn" type="submit">Set up Stripe payments</button></form>
+<p class="small muted" style="margin-top:10px">Until this is done, invoices can't be sent on your behalf. Stripe account ${esc(user.stripe_account_id)}.</p></div>`
+    : welcome
+      ? `<div class="card" style="border-color:#9ccfae;background:#f2faf4"><h2>You're all set</h2><p>Stripe is connected and you can receive payments. Invoices sent on your behalf will appear below.</p></div>`
+      : "";
+  const profile = partner
+    ? `<p class="muted small">${esc(partner.contact_name || "")}${partner.coverage_postcode ? ` · coverage postcode ${esc(partner.coverage_postcode)}` : ""}${partner.commission_pct != null ? ` · platform commission ${esc(String(partner.commission_pct))}% inc VAT (can differ per invoice)` : ""}</p>`
+    : "";
   const r = await d.prepare(`SELECT * FROM invoices WHERE partner_account_id = ? AND status != 'draft' ORDER BY COALESCE(sent_at, created_at) DESC LIMIT 500`).bind(user.stripe_account_id).all();
   const invoices = r.results || [];
   const sum = (f) => invoices.filter(f).reduce((a, i) => a + i.amount_pence, 0);
@@ -117,7 +131,7 @@ export async function dashboardHtml(env, user, origin) {
 <td class="small"><a href="/invoice/${i.id}/pdf" target="_blank">PDF</a>${i.fee_invoice_number ? ` · <a href="/fee-invoice/${i.id}/pdf" target="_blank">Fee invoice</a>` : ""}</td></tr>`
     )
     .join("");
-  const body = `
+  const body = `${stripeBanner}${profile}
 <div class="tiles">
   <div class="tile"><div class="v">${invoices.length}</div><div class="k">Invoices sent</div></div>
   <div class="tile"><div class="v">${gbp(sum((i) => i.status === "paid"))}</div><div class="k">Paid (${paid.length})</div></div>

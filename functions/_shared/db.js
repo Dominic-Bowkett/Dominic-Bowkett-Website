@@ -19,6 +19,12 @@ export const SCHEMA = [
     default_currency TEXT,
     copy_invoices INTEGER DEFAULT 1,
     hidden INTEGER DEFAULT 0,
+    contact_name TEXT,
+    coverage_postcode TEXT,
+    coverage_lat REAL,
+    coverage_lng REAL,
+    commission_pct REAL DEFAULT 10,
+    registered_at TEXT,
     notes TEXT,
     stripe_json TEXT,
     synced_at TEXT,
@@ -85,6 +91,18 @@ export const SCHEMA = [
     received_at TEXT DEFAULT (datetime('now')),
     outcome TEXT
   )`,
+  `CREATE TABLE IF NOT EXISTS partner_signups (
+    token TEXT PRIMARY KEY,
+    email TEXT NOT NULL,
+    business_name TEXT,
+    contact_name TEXT,
+    phone TEXT,
+    coverage_postcode TEXT,
+    expires_at TEXT,
+    completed_at TEXT,
+    stripe_account_id TEXT,
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
   `CREATE TABLE IF NOT EXISTS partner_users (
     id TEXT PRIMARY KEY,
     stripe_account_id TEXT NOT NULL,
@@ -120,6 +138,12 @@ const MIGRATIONS = [
   `ALTER TABLE invoices ADD COLUMN client_message TEXT`,
   `ALTER TABLE invoices ADD COLUMN reminders_sent INTEGER DEFAULT 0`,
   `ALTER TABLE invoices ADD COLUMN last_reminder_at TEXT`,
+  `ALTER TABLE partners ADD COLUMN contact_name TEXT`,
+  `ALTER TABLE partners ADD COLUMN coverage_postcode TEXT`,
+  `ALTER TABLE partners ADD COLUMN coverage_lat REAL`,
+  `ALTER TABLE partners ADD COLUMN coverage_lng REAL`,
+  `ALTER TABLE partners ADD COLUMN commission_pct REAL DEFAULT 10`,
+  `ALTER TABLE partners ADD COLUMN registered_at TEXT`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {

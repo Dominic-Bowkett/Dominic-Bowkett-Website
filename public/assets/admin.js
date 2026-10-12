@@ -111,7 +111,7 @@
           <label>Message to the client (optional, in the email only)</label><textarea name="client_message" placeholder="e.g. Thanks for booking — Matt will be with you on Thursday at 10am.">${v("client_message")}</textarea>
           <label>Amount charged to the client (£)</label><input name="amount" inputmode="decimal" required value="${inv ? (inv.amount_pence / 100).toFixed(2) : ""}" placeholder="100.00" />
           <div class="check"><input type="checkbox" name="client_vat_inclusive" id="cvat" ${inv?.client_vat_rate ? "checked" : ""} /><label for="cvat" style="margin:0;text-transform:none;letter-spacing:0">Amount includes VAT at 20% <span id="cvat-note" class="muted"></span></label></div>
-          <label>Your platform fee, inc VAT (£)</label><input name="fee" inputmode="decimal" value="${inv ? (inv.application_fee_pence / 100).toFixed(2) : ""}" placeholder="10.00" />
+          <label>Your platform fee, inc VAT (£) <span id="fee-note" class="muted" style="text-transform:none;letter-spacing:0"></span></label><input name="fee" inputmode="decimal" value="${inv ? (inv.application_fee_pence / 100).toFixed(2) : ""}" placeholder="10.00" />
           <label>Due date (defaults to ${DUE_DAYS} days)</label><input name="due_date" type="date" value="${inv ? v("due_date") : plusDays(DUE_DAYS)}" />
           <div class="totals" id="totals"></div>
         </div>
@@ -140,6 +140,17 @@
         <div class="big"><span>Partner receives (before Stripe's fee)</span><span>${gbp(amt - total)}</span></div>
         ${total >= amt && amt ? `<div style="color:#8a2a2a">Fee must be less than the amount.</div>` : ""}`;
     };
+    let feeTouched = !!inv;
+    form.fee.addEventListener("input", () => { feeTouched = true; });
+    const defaultFee = () => {
+      if (feeTouched) return;
+      const p = ps.find((x) => x.stripe_account_id === form.partner_account_id.value);
+      const pct = Number(p?.commission_pct ?? 10);
+      const amt = Math.round(parseFloat(form.amount.value || "0") * 100) || 0;
+      if (amt > 0) { form.fee.value = (Math.round((amt * pct) / 100) / 100).toFixed(2); document.getElementById("fee-note").textContent = `(${pct}% of the amount, this partner's rate; edit to override)`; recalc(); }
+    };
+    form.amount.addEventListener("input", defaultFee);
+    form.partner_account_id.addEventListener("change", () => { feeTouched = false; defaultFee(); });
     const syncVat = () => {
       const p = ps.find((x) => x.stripe_account_id === form.partner_account_id.value);
       const hasVat = !!(p && String(p.vat_number || "").trim());
@@ -296,11 +307,14 @@
     const ps = showHidden ? all : all.filter((p) => !p.hidden);
     app.innerHTML = `<div class="card"><div class="toolbar"><h1 style="margin:0">Connected accounts</h1><button class="btn secondary small" id="sync">Sync from Stripe</button></div><div id="msg"></div>
       <p class="muted small">Pulled from your Stripe Connect platform. Edit the invoice details here: the supplier name and address printed on client invoices, where the partner's copies and fee invoices go, and their VAT number (shown when an invoice is marked VAT-inclusive).</p>
-      ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""}</span></summary>
+      ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""} · ${esc(String(p.commission_pct ?? 10))}%${p.coverage_postcode ? ` · ${esc(p.coverage_postcode)}` : ""}${p.registered_at ? " · self-registered" : ""}</span></summary>
         <form data-id="${esc(p.stripe_account_id)}" class="grid" style="margin-top:8px">
           <div><label>Display name (on invoices)</label><input name="display_name" value="${esc(p.display_name || "")}" placeholder="${esc(p.business_name || "")}" />
           <label>Invoice / copy email</label><input name="invoice_email" type="email" value="${esc(p.invoice_email || "")}" placeholder="${esc(p.email || "")}" />
           <label>Phone</label><input name="phone" value="${esc(p.phone || "")}" />
+          <label>Contact name</label><input name="contact_name" value="${esc(p.contact_name || "")}" />
+          <label>Commission % (inc VAT, default for new invoices)</label><input name="commission_pct" inputmode="decimal" value="${esc(p.commission_pct ?? 10)}" />
+          <label>Coverage postcode (home or centre of area)</label><input name="coverage_postcode" value="${esc(p.coverage_postcode || "")}" placeholder="TN2 5HB" />
           <div class="check"><input type="checkbox" name="copy_invoices" id="cp-${esc(p.stripe_account_id)}" ${p.copy_invoices ? "checked" : ""} /><label for="cp-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Email them a copy of each invoice sent</label></div>
           <div class="check"><input type="checkbox" name="hidden" id="hd-${esc(p.stripe_account_id)}" ${p.hidden ? "checked" : ""} /><label for="hd-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Hide this account (not offered on new invoices)</label></div></div>
           <div><label>Address (on invoices)</label><textarea name="address">${esc(p.address || "")}</textarea>

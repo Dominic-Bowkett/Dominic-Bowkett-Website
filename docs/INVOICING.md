@@ -42,6 +42,17 @@ which emails a 72-hour set-password link (`/partner/setup/<token>`). Passwords a
 (100k iterations); sessions are a signed cookie that includes the password hash, so a reset logs
 other sessions out. "Forgotten your password" on the sign-in page emails the same link.
 
+## Partner self-registration
+
+`/partner/register` -> verification email (48 h link, `partner_signups`) -> `/partner/register/verify/<token>`
+sets the password, creates a Stripe **Standard** connected account (`POST /v1/accounts type=standard`),
+the `partners` row (commission 10 %, coverage postcode geocoded via postcodes.io) and the login, then
+signs them in. The dashboard shows a "Set up Stripe payments" banner until `charges_enabled`; the button
+creates an Account Link (`/v1/account_links`, hosted onboarding, existing Stripe logins can be used).
+Dom gets a plain-text email on registration and again when the account can take payments.
+Each partner has `commission_pct` (admin-editable, default 10 % inc VAT) which pre-fills the fee on
+new invoices; the fee can still be typed over per invoice.
+
 ## Emails (Resend, from info@dominicbowkett.com)
 
 | When | To | Content |

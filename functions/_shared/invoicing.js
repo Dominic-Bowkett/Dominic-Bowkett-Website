@@ -4,6 +4,7 @@ import { stripe, StripeError, listConnectedAccounts, summariseAccount } from "./
 import { sendViaResend, OWNER_TO } from "./email.js";
 import { toPence, splitGross, todayISO, gbp } from "./money.js";
 import { platform } from "./business.js";
+import { normalisePostcode, geocodePostcode } from "./register.js";
 import {
   clientInvoiceEmail, partnerCopyEmail, clientPaidEmail, partnerPaidEmail, ownerNotice, partnerOf,
   clientReminderEmail, REMINDER_DAYS, REMINDER_MAX, supplierName,
@@ -53,12 +54,27 @@ export async function listPartners(env) {
   return r.results || [];
 }
 
-const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email"];
+const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct"];
 export async function updatePartner(env, id, fields) {
   const d = await db(env);
   const keys = Object.keys(fields).filter((k) => PARTNER_EDITABLE.includes(k));
   if (!keys.length) return;
+  // (coverage_lat/lng are appended to keys below when a postcode is saved)
   if (fields.invoice_email && !EMAIL_RE.test(fields.invoice_email)) throw new UserError("Invoice email is not valid");
+  if (keys.includes("commission_pct")) {
+    const pct = Number(fields.commission_pct);
+    if (!Number.isFinite(pct) || pct < 0 || pct > 50) throw new UserError("Commission must be between 0 and 50 percent");
+    fields.commission_pct = Math.round(pct * 100) / 100;
+  }
+  if (keys.includes("coverage_postcode")) {
+    const pc = normalisePostcode(fields.coverage_postcode);
+    if (fields.coverage_postcode && !pc) throw new UserError("That doesn't look like a UK postcode");
+    fields.coverage_postcode = pc;
+    const geo = pc ? await geocodePostcode(pc) : null;
+    keys.push("coverage_lat", "coverage_lng");
+    fields.coverage_lat = geo?.lat ?? null;
+    fields.coverage_lng = geo?.lng ?? null;
+  }
   await d
     .prepare(`UPDATE partners SET ${keys.map((k) => `${k} = ?`).join(", ")}, updated_at = datetime('now') WHERE stripe_account_id = ?`)
     .bind(...keys.map((k) => (k === "copy_invoices" || k === "hidden" ? (fields[k] ? 1 : 0) : fields[k] ?? null)), id)
