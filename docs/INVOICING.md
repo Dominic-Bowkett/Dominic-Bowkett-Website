@@ -33,6 +33,15 @@ Dominic Bowkett takes a platform fee plus VAT out of the payment.
 Tokens are 128-bit random ids; nothing is guessable. All of these pages are `noindex` and
 disallowed in robots.txt.
 
+## Partner portal (`/partner`)
+
+Read-only login for connected accounts: a table of every non-draft invoice sent on their behalf
+(amount, platform fee, their share, status, paid date, PDF + fee invoice links) and totals.
+Accounts live in `partner_users`; the admin creates one from Connected accounts -> "Portal access",
+which emails a 72-hour set-password link (`/partner/setup/<token>`). Passwords are PBKDF2-SHA256
+(100k iterations); sessions are a signed cookie that includes the password hash, so a reset logs
+other sessions out. "Forgotten your password" on the sign-in page emails the same link.
+
 ## Emails (Resend, from info@dominicbowkett.com)
 
 | When | To | Content |

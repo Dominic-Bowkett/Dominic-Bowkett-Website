@@ -85,6 +85,21 @@ export const SCHEMA = [
     received_at TEXT DEFAULT (datetime('now')),
     outcome TEXT
   )`,
+  `CREATE TABLE IF NOT EXISTS partner_users (
+    id TEXT PRIMARY KEY,
+    stripe_account_id TEXT NOT NULL,
+    email TEXT NOT NULL UNIQUE,
+    password_salt TEXT,
+    password_hash TEXT,
+    invite_token TEXT,
+    invite_expires TEXT,
+    activated_at TEXT,
+    last_login_at TEXT,
+    disabled INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS partner_users_acct ON partner_users(stripe_account_id)`,
   `CREATE TABLE IF NOT EXISTS email_log (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     invoice_id TEXT,

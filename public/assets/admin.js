@@ -307,9 +307,36 @@
           <label>VAT number</label><input name="vat_number" value="${esc(p.vat_number || "")}" />
           <label>Notes</label><textarea name="notes">${esc(p.notes || "")}</textarea>
           <p><button class="btn small" type="submit">Save</button></p></div>
-        </form></details>`).join("") || "<p class='muted'>No connected accounts found. Check STRIPE_SECRET_KEY, then sync.</p>"}
+        </form>
+        <div class="portal" data-acct="${esc(p.stripe_account_id)}" style="margin-top:10px;padding-top:10px;border-top:1px dashed var(--rule)"><h2 style="font-size:13px">Portal access <span class="muted small">(view-only login at /partner)</span></h2><div class="portal-users muted small">Loading…</div>
+          <div style="display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap"><input class="portal-email" type="email" placeholder="${esc(p.invoice_email || p.email || "email")}" value="${esc(p.invoice_email || p.email || "")}" style="max-width:320px" /><button class="btn small portal-invite" type="button">Create account & send setup email</button></div></div>
+        </details>`).join("") || "<p class='muted'>No connected accounts found. Check STRIPE_SECRET_KEY, then sync.</p>"}
       ${hiddenCount ? `<p class="small muted" style="margin-top:12px"><a href="#" id="toggle-hidden">${showHidden ? "Hide" : "Show"} ${hiddenCount} hidden account${hiddenCount === 1 ? "" : "s"}</a></p>` : ""}</div>`;
     document.getElementById("toggle-hidden")?.addEventListener("click", (e) => { e.preventDefault(); showHidden = !showHidden; viewPartners(); });
+    const loadPortal = async (box) => {
+      const acct = box.dataset.acct;
+      try {
+        const { users } = await api(`partners/${acct}/portal`);
+        const el = box.querySelector(".portal-users");
+        el.innerHTML = users.length
+          ? users.map((u) => `<div>${esc(u.email)} · <strong>${esc(u.state)}</strong>${u.last_login_at ? ` · last sign-in ${when(u.last_login_at)}` : u.activated_at ? "" : u.invite_expires ? ` · link valid until ${when(u.invite_expires)}` : ""} ${u.state !== "disabled" ? `<button class="btn secondary small" data-portal-resend="${esc(u.email)}">${u.activated_at ? "Send password reset" : "Resend setup email"}</button> <button class="btn danger small" data-portal-revoke="${esc(u.id)}">Remove access</button>` : `<button class="btn secondary small" data-portal-resend="${esc(u.email)}">Re-enable & send setup email</button>`}</div>`).join("")
+          : "No portal account yet.";
+        el.querySelectorAll("[data-portal-resend]").forEach((b) => b.addEventListener("click", async () => { busy(b, true); try { await api(`partners/${acct}/portal`, { method: "POST", body: { action: "invite", email: b.dataset.portalResend } }); flash(document.getElementById("msg"), `Email sent to ${b.dataset.portalResend}.`); await loadPortal(box); } catch (err) { flash(document.getElementById("msg"), err.message, "err"); busy(b, false); } }));
+        el.querySelectorAll("[data-portal-revoke]").forEach((b) => b.addEventListener("click", async () => { if (!confirm("Remove this person's portal access?")) return; busy(b, true); try { await api(`partners/${acct}/portal`, { method: "POST", body: { action: "revoke", user_id: b.dataset.portalRevoke } }); await loadPortal(box); } catch (err) { flash(document.getElementById("msg"), err.message, "err"); busy(b, false); } }));
+      } catch (err) { box.querySelector(".portal-users").textContent = err.message; }
+    };
+    app.querySelectorAll(".portal").forEach((box) => {
+      loadPortal(box);
+      box.querySelector(".portal-invite").addEventListener("click", async (e) => {
+        const email = box.querySelector(".portal-email").value.trim();
+        if (!email) { flash(document.getElementById("msg"), "Enter the email address for the login.", "err"); return; }
+        if (!confirm(`Create a portal login for ${email} and email them a set-password link?`)) return;
+        busy(e.target, true);
+        try { await api(`partners/${box.dataset.acct}/portal`, { method: "POST", body: { action: "invite", email } }); flash(document.getElementById("msg"), `Setup email sent to ${email}.`); await loadPortal(box); }
+        catch (err) { flash(document.getElementById("msg"), err.message, "err"); }
+        finally { busy(e.target, false); }
+      });
+    });
     document.getElementById("sync").addEventListener("click", async (e) => {
       busy(e.target, true);
       try { const r = await api("partners/sync", { method: "POST", body: {} }); partners = r.partners; await viewPartners(); flash(document.getElementById("msg"), `Synced ${r.synced} account(s).`); }

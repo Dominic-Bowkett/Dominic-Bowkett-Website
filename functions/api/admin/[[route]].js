@@ -6,6 +6,7 @@ import {
   reconcileFromStripe, sendPaidEmails, runReminders,
 } from "../../_shared/invoicing.js";
 import { partnerOf, supplierName } from "../../_shared/docs.js";
+import { portalStatus, invitePartnerUser, revokePartnerUser, PortalError } from "../../_shared/portal.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -59,6 +60,17 @@ export async function onRequest(context) {
       if (method === "PATCH" && id) {
         await updatePartner(env, id, body);
         return json({ ok: true, partners: await listPartners(env) });
+      }
+      if (id && action === "portal") {
+        if (method === "GET") return json({ ok: true, users: await portalStatus(env, id) });
+        if (method === "POST" && body.action === "invite") {
+          const r = await invitePartnerUser(env, id, body.email, origin);
+          return json({ ok: true, ...r, users: await portalStatus(env, id) });
+        }
+        if (method === "POST" && body.action === "revoke") {
+          await revokePartnerUser(env, body.user_id);
+          return json({ ok: true, users: await portalStatus(env, id) });
+        }
       }
     }
 
@@ -137,7 +149,7 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "Unknown endpoint" }, 404);
   } catch (e) {
-    const status = e instanceof UserError ? e.status : 500;
+    const status = e instanceof UserError || e instanceof PortalError ? e.status : 500;
     if (status === 500) console.error("admin api error", e);
     return json({ ok: false, error: e.message || String(e) }, status);
   }

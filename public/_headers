@@ -29,3 +29,6 @@
   X-Robots-Tag: noindex, nofollow
 /fee-invoice/*
   X-Robots-Tag: noindex, nofollow
+/partner*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
