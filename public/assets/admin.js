@@ -1,6 +1,19 @@
 /* Invoicing admin — vanilla JS, talks to /api/admin/*. Served only behind the admin login. */
 (() => {
   const app = document.getElementById("app");
+  // Services offered in the New invoice dropdown. Edit this list to add or remove options; "Other" always allows free text.
+  const SERVICES = [
+    "Domestic EPC",
+    "Home Insight Survey",
+    "HomeBuyer Survey (Level 2)",
+    "Building Survey (Level 3)",
+    "Buy-to-Let Survey",
+    "Drone Roof Survey",
+    "Retrofit Assessment",
+    "Ventilation Assessment",
+  ];
+  const DUE_DAYS = 7; // default payment terms for a new invoice (editable on the form)
+  const plusDays = (n) => { const d = new Date(); d.setDate(d.getDate() + n); return d.toISOString().slice(0, 10); };
   const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
   const gbp = (p) => "£" + ((p || 0) / 100).toLocaleString("en-GB", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const when = (v) => {
@@ -91,12 +104,14 @@
           <label>Property address</label><textarea name="property_address" placeholder="12 Example Road, Tunbridge Wells, TN1 1AA">${v("property_address")}</textarea>
         </div>
         <div>
-          <label>Service</label><input name="service_name" required value="${v("service_name")}" placeholder="Domestic EPC" />
+          <label>Service</label>
+          <select id="svc-select">${SERVICES.map((n) => `<option value="${esc(n)}" ${(inv ? inv.service_name === n : n === "Domestic EPC") ? "selected" : ""}>${esc(n)}</option>`).join("")}<option value="__other" ${inv && !SERVICES.includes(inv.service_name) ? "selected" : ""}>Other (type below)</option></select>
+          <input name="service_name" required value="${v("service_name") || "Domestic EPC"}" placeholder="Describe the service" style="margin-top:6px;display:${inv && !SERVICES.includes(inv.service_name) ? "block" : "none"}" />
           <label>Description (optional, shown on the invoice)</label><textarea name="description">${v("description")}</textarea>
           <label>Amount charged to the client (£)</label><input name="amount" inputmode="decimal" required value="${inv ? (inv.amount_pence / 100).toFixed(2) : ""}" placeholder="100.00" />
           <div class="check"><input type="checkbox" name="client_vat_inclusive" id="cvat" ${inv?.client_vat_rate ? "checked" : ""} /><label for="cvat" style="margin:0;text-transform:none;letter-spacing:0">Amount includes VAT at 20% (partner is VAT registered)</label></div>
           <label>Your platform fee, inc VAT (£)</label><input name="fee" inputmode="decimal" value="${inv ? (inv.application_fee_pence / 100).toFixed(2) : ""}" placeholder="10.00" />
-          <label>Due date (optional)</label><input name="due_date" type="date" value="${v("due_date")}" />
+          <label>Due date (defaults to ${DUE_DAYS} days)</label><input name="due_date" type="date" value="${inv ? v("due_date") : plusDays(DUE_DAYS)}" />
           <div class="totals" id="totals"></div>
         </div>
       </div>
@@ -124,6 +139,11 @@
         ${total >= amt && amt ? `<div style="color:#8a2a2a">Fee must be less than the amount.</div>` : ""}`;
     };
     form.addEventListener("input", recalc); recalc();
+    const svcSel = document.getElementById("svc-select"), svcInput = form.service_name;
+    svcSel.addEventListener("change", () => {
+      if (svcSel.value === "__other") { svcInput.style.display = "block"; if (SERVICES.includes(svcInput.value)) svcInput.value = ""; svcInput.focus(); }
+      else { svcInput.style.display = "none"; svcInput.value = svcSel.value; }
+    });
     document.getElementById("is-biz").addEventListener("change", (e) => (document.getElementById("biz-fields").style.display = e.target.checked ? "block" : "none"));
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
