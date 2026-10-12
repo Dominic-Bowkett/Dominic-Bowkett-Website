@@ -18,3 +18,14 @@
 
 /apple-touch-icon.png
   Cache-Control: public, max-age=86400
+
+# Invoicing system: private pages, never indexed or framed.
+/admin*
+  X-Robots-Tag: noindex, nofollow
+  Cache-Control: no-store
+/pay/*
+  X-Robots-Tag: noindex, nofollow
+/invoice/*
+  X-Robots-Tag: noindex, nofollow
+/fee-invoice/*
+  X-Robots-Tag: noindex, nofollow

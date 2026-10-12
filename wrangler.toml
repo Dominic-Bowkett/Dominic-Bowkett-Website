@@ -1,9 +1,18 @@
-name = "dominic-bowkett-pages"
+name = "dominic-bowkett"
 compatibility_date = "2026-05-10"
 pages_build_output_dir = "./public"
 
 [vars]
 MAIL_FROM = "Dominic Bowkett <info@dominicbowkett.com>"
+# Invoicing: platform identity printed on invoices (see functions/_shared/business.js for defaults)
+FEE_VAT_RATE = "20"
+# REVIEW_URL = "https://g.page/r/.../review"   # when set, the paid-confirmation email invites the client to rate the service
+
+# --- Invoicing database (Stripe Connect invoices), created 12 Oct 2026 with `wrangler d1 create dominicbowkett-invoices` ---
+[[d1_databases]]
+binding = "DB"
+database_name = "dominicbowkett-invoices"
+database_id = "34d87068-e4c9-4978-8a5d-1a4949ad9fda"
 
 # --- Enquiry unsubscribe feature: uncomment once the KV namespace exists ---
 # Suppression list for unsubscribed enquiry contacts.
@@ -13,6 +22,10 @@ MAIL_FROM = "Dominic Bowkett <info@dominicbowkett.com>"
 # binding = "SUPPRESSED"
 # id = "PASTE_KV_NAMESPACE_ID_HERE"
 
-# Secrets (do NOT put in this file) — set once per project:
-#   wrangler pages secret put RESEND_API_KEY
-#   wrangler pages secret put UNSUB_SECRET   # any long random string
+# Secrets (do NOT put in this file) — set once per project with `wrangler pages secret put <NAME>`:
+#   RESEND_API_KEY          Resend API key (enquiry + invoice emails)
+#   UNSUB_SECRET            any long random string (enquiry unsubscribe links)
+#   STRIPE_SECRET_KEY       platform secret key (sk_live_… / sk_test_…)
+#   STRIPE_WEBHOOK_SECRET   signing secret of the Connect webhook endpoint -> /api/stripe/webhook
+#   ADMIN_PASSWORD          password for /admin
+#   ADMIN_SECRET            any long random string (signs the admin session cookie)

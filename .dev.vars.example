@@ -1,0 +1,5 @@
+STRIPE_SECRET_KEY=sk_test_xxx
+STRIPE_WEBHOOK_SECRET=whsec_xxx
+ADMIN_PASSWORD=change-me
+ADMIN_SECRET=some-long-random-string
+RESEND_API_KEY=re_xxx

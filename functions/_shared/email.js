@@ -84,9 +84,10 @@ export function unsubscribeFooterHtml(unsubUrl) {
 
 // ---- Resend send ----
 
-export async function sendViaResend(env, { to, subject, html, replyTo, headers = {}, from }) {
+export async function sendViaResend(env, { to, subject, html, text, replyTo, headers = {}, from, cc, bcc }) {
   if (!env.RESEND_API_KEY) throw new Error("RESEND_API_KEY is not configured");
-  const res = await fetch("https://api.resend.com/emails", {
+  // RESEND_API_BASE is only for local testing against a mock; leave unset in production.
+  const res = await fetch(`${env.RESEND_API_BASE || "https://api.resend.com"}/emails`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${env.RESEND_API_KEY}`,
@@ -96,7 +97,10 @@ export async function sendViaResend(env, { to, subject, html, replyTo, headers =
       from: from || env.MAIL_FROM || FROM_DEFAULT,
       to: Array.isArray(to) ? to : [to],
       subject,
-      html,
+      ...(html ? { html } : {}),
+      ...(text ? { text } : {}),
+      ...(cc ? { cc: Array.isArray(cc) ? cc : [cc] } : {}),
+      ...(bcc ? { bcc: Array.isArray(bcc) ? bcc : [bcc] } : {}),
       ...(replyTo ? { reply_to: replyTo } : {}),
       ...(Object.keys(headers).length ? { headers } : {}),
     }),

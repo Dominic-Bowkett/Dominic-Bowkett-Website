@@ -3,5 +3,11 @@ Allow: /
 # Cloudflare rewrites mailto: links into /cdn-cgi/l/email-protection#... which
 # 404s for crawlers; Cloudflare's own guidance is to exclude /cdn-cgi/ here.
 Disallow: /cdn-cgi/
+# Invoicing system (private, tokenised links)
+Disallow: /admin
+Disallow: /pay/
+Disallow: /invoice/
+Disallow: /fee-invoice/
+Disallow: /api/
 
 Sitemap: https://www.dominicbowkett.com/sitemap.xml
