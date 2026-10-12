@@ -4,6 +4,7 @@ import { stripe } from "../../_shared/stripe.js";
 import { reconcileSession } from "../../_shared/invoicing.js";
 import { page, invoiceSummaryHtml, esc } from "../../_shared/docs.js";
 import { fmtDate } from "../../_shared/money.js";
+import { isAdmin } from "../../_shared/auth.js";
 
 const html = (body, status = 200) =>
   new Response(body, { status, headers: { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" } });
@@ -12,7 +13,8 @@ export async function onRequestGet({ request, env, params }) {
   const url = new URL(request.url);
   const origin = url.origin;
   let inv = await getInvoice(env, params.token);
-  if (!inv || inv.status === "draft") {
+  const adminPreview = inv?.status === "draft" && (await isAdmin(request, env));
+  if (!inv || (inv.status === "draft" && !adminPreview)) {
     return html(page({ title: "Invoice not found", body: `<div class="card"><h1>Invoice not found</h1><p class="muted">This link is not valid. If you received it by email, please reply to that email.</p></div>` }), 404);
   }
 
@@ -45,6 +47,9 @@ export async function onRequestGet({ request, env, params }) {
     action = `<p class="msg" style="background:#f6e4e4;color:#8a2a2a;padding:12px;border-radius:4px">This invoice has been cancelled and is not payable.</p>`;
   } else if (inv.status === "refunded") {
     action = `<p class="msg">This invoice was paid and has since been refunded.</p>`;
+  } else if (adminPreview) {
+    action = `<p class="msg" style="background:#fbf1d8;color:#8a6a1a;padding:12px;border-radius:4px"><strong>Preview.</strong> This is a draft; the client cannot see this page until the invoice is sent. The button below is what they will get.</p>
+<div class="actions"><button class="btn" type="button" disabled>Pay ${esc(fmtGbp(inv.amount_pence))} securely</button><a class="btn secondary" href="/invoice/${inv.id}/pdf">Download PDF invoice</a></div>`;
   } else {
     action = `${notice}
 <form method="post" action="/pay/${inv.id}/checkout" class="actions">

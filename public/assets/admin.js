@@ -117,9 +117,10 @@
         </div>
       </div>
       <div class="actions">
-        <button class="btn secondary" type="submit" data-send="0">${inv ? "Save draft" : "Save as draft"}</button>
-        <button class="btn" type="submit" data-send="1">${inv ? "Save & send" : "Save & send to client"}</button>
-        ${inv ? `<a class="btn secondary" href="#inv/${inv.id}">Cancel</a>` : ""}
+        <button class="btn secondary" type="submit" data-send="0">Save draft</button>
+        <button class="btn secondary" type="button" id="btn-preview">Preview</button>
+        <button class="btn" type="submit" data-send="1">Save & send to client</button>
+        <span id="autosave" class="muted small" style="align-self:center"></span>
       </div>
     </form></div>`;
     const form = document.getElementById("inv-form");
@@ -155,19 +156,69 @@
       else { svcInput.style.display = "none"; svcInput.value = svcSel.value; }
     });
     document.getElementById("is-biz").addEventListener("change", (e) => (document.getElementById("biz-fields").style.display = e.target.checked ? "block" : "none"));
+    // ---- autosave: the form is saved as a draft on the server as soon as it is complete enough, then on every change.
+    const LS_KEY = "inv.new.unsaved";
+    let draftId = inv?.id || null, lastSaved = "", saveTimer = null, saving = null;
+    const status = document.getElementById("autosave");
+    const payload = () => {
+      const body = Object.fromEntries(new FormData(form).entries());
+      body.client_vat_inclusive = form.client_vat_inclusive.checked;
+      if (!document.getElementById("is-biz").checked) { body.bill_to_business = ""; body.bill_to_address = ""; }
+      return body;
+    };
+    const complete = (b) => b.partner_account_id && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(b.client_email || "") && (b.service_name || "").trim() && Math.round(parseFloat(b.amount || "0") * 100) >= 100;
+    const saveNow = async () => {
+      if (saving) return saving;
+      const body = payload();
+      const key = JSON.stringify(body);
+      if (!complete(body)) { try { localStorage.setItem(LS_KEY, key); } catch {} return null; }
+      if (key === lastSaved) return draftId;
+      saving = (async () => {
+        try {
+          status.textContent = "Saving…";
+          let r;
+          if (draftId) r = await api("invoices/" + draftId, { method: "PUT", body });
+          else { r = await api("invoices", { method: "POST", body }); draftId = r.invoice.id; history.replaceState(null, "", "#edit/" + draftId); }
+          lastSaved = key;
+          try { localStorage.removeItem(LS_KEY); } catch {}
+          status.textContent = `Saved as draft ${r.invoice.number} · ${new Date().toLocaleTimeString("en-GB", { hour: "2-digit", minute: "2-digit" })}`;
+          return draftId;
+        } catch (err) { status.textContent = "Not saved: " + err.message; return null; }
+        finally { saving = null; }
+      })();
+      return saving;
+    };
+    const scheduleSave = () => { clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 1200); };
+    form.addEventListener("input", scheduleSave);
+    form.addEventListener("change", scheduleSave);
+    if (!inv) {
+      try {
+        const saved = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+        if (saved) { for (const [k, v] of Object.entries(saved)) { const el = form.elements[k]; if (!el || k === "client_vat_inclusive") continue; el.value = v; } if (saved.bill_to_business || saved.bill_to_address) { document.getElementById("is-biz").checked = true; document.getElementById("biz-fields").style.display = "block"; } if (!SERVICES.includes(saved.service_name)) { svcSel.value = "__other"; svcInput.style.display = "block"; } else svcSel.value = saved.service_name; recalc(); syncVat(); status.textContent = "Restored what you were typing"; }
+      } catch {}
+    } else { lastSaved = JSON.stringify(payload()); }
+    document.getElementById("btn-preview").addEventListener("click", async (e) => {
+      busy(e.target, true);
+      const id = await saveNow() || draftId;
+      busy(e.target, false);
+      if (!id) { flash(document.getElementById("form-msg"), "Fill in the partner, client email, service and amount first, then preview.", "err"); window.scrollTo(0, 0); return; }
+      window.open("/admin/preview/" + id, "_blank");
+    });
+
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const btn = e.submitter; const send = btn?.dataset.send === "1";
-      const fd = new FormData(form);
-      const body = Object.fromEntries(fd.entries());
-      body.client_vat_inclusive = form.client_vat_inclusive.checked;
-      if (!document.getElementById("is-biz").checked) { body.bill_to_business = ""; body.bill_to_address = ""; }
+      const body = payload();
+      if (!complete(body)) { flash(document.getElementById("form-msg"), "Fill in the partner, client email, service and an amount of at least £1.", "err"); window.scrollTo(0, 0); return; }
       if (send && !confirm(`Send invoice for ${gbp(Math.round(parseFloat(body.amount || "0") * 100))} to ${body.client_email}?`)) return;
       busy(btn, true);
+      clearTimeout(saveTimer);
       try {
+        if (saving) await saving;
         let r;
-        if (inv) { r = await api("invoices/" + inv.id, { method: "PUT", body }); if (send) r = await api(`invoices/${inv.id}/send`, { method: "POST" }); }
+        if (draftId) { r = await api("invoices/" + draftId, { method: "PUT", body }); if (send) r = await api(`invoices/${draftId}/send`, { method: "POST" }); }
         else r = await api("invoices", { method: "POST", body: { ...body, send } });
+        try { localStorage.removeItem(LS_KEY); } catch {}
         location.hash = "#inv/" + r.invoice.id;
       } catch (err) { flash(document.getElementById("form-msg"), err.message, "err"); window.scrollTo(0, 0); }
       finally { busy(btn, false); }
@@ -181,8 +232,9 @@
     const { invoice: i, events, emails, links } = await api("invoices/" + id);
     const act = (label, action, cls = "secondary", confirmText) => `<button class="btn ${cls}" data-action="${action}" ${confirmText ? `data-confirm="${esc(confirmText)}"` : ""}>${label}</button>`;
     let actions = "";
-    if (i.status === "draft") actions = `<a class="btn secondary" href="#edit/${i.id}">Edit</a>${act("Send to client", "send", "", `Send ${i.number} for ${gbp(i.amount_pence)} to ${i.client_email}?`)}${act("Void", "void", "danger", "Void this draft?")}`;
-    else if (i.status === "sent" || i.status === "failed") actions = `${act("Resend invoice email", "resend", "secondary", `Resend ${i.number} to ${i.client_email}?`)}${act("Check Stripe status", "reconcile")}${act("Void invoice", "void", "danger", "Void this invoice? The pay link will stop working.")}`;
+    const preview = `<a class="btn secondary" href="/admin/preview/${i.id}" target="_blank">Preview</a>`;
+    if (i.status === "draft") actions = `<a class="btn secondary" href="#edit/${i.id}">Edit</a>${preview}${act("Send to client", "send", "", `Send ${i.number} for ${gbp(i.amount_pence)} to ${i.client_email}?`)}${act("Void", "void", "danger", "Void this draft?")}`;
+    else if (i.status === "sent" || i.status === "failed") actions = `${preview}${act("Resend invoice email", "resend", "secondary", `Resend ${i.number} to ${i.client_email}?`)}${act("Check Stripe status", "reconcile")}${act("Void invoice", "void", "danger", "Void this invoice? The pay link will stop working.")}`;
     else if (i.status === "paid") actions = `${act("Resend paid confirmation + fee invoice", "resend-paid-emails", "secondary", "Resend the paid confirmation to the client and the fee invoice to the partner?")}${act("Check Stripe status", "reconcile")}`;
     else actions = act("Check Stripe status", "reconcile");
 

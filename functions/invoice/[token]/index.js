@@ -1,9 +1,11 @@
 // GET /invoice/:token — client-facing invoice view with PDF download and (if unpaid) a pay button.
 import { getInvoice } from "../../_shared/db.js";
 import { page, invoiceSummaryHtml } from "../../_shared/docs.js";
+import { isAdmin } from "../../_shared/auth.js";
 
-export async function onRequestGet({ env, params }) {
+export async function onRequestGet({ request, env, params }) {
   const inv = await getInvoice(env, params.token);
+  if (inv?.status === "draft" && (await isAdmin(request, env))) inv.status = "sent"; // admin preview of a draft
   const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" };
   if (!inv || inv.status === "draft") {
     return new Response(page({ title: "Invoice not found", body: `<div class="card"><h1>Invoice not found</h1><p class="muted">This link is not valid.</p></div>` }), { status: 404, headers });
