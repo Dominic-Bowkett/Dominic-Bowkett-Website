@@ -18,6 +18,7 @@ export const SCHEMA = [
     country TEXT,
     default_currency TEXT,
     copy_invoices INTEGER DEFAULT 1,
+    hidden INTEGER DEFAULT 0,
     notes TEXT,
     stripe_json TEXT,
     synced_at TEXT,
@@ -95,14 +96,28 @@ export const SCHEMA = [
 
 // Statuses: draft -> sent -> paid | failed | void | refunded
 
+// Additive migrations for tables created by earlier versions. Each is safe to re-run.
+const MIGRATIONS = [`ALTER TABLE partners ADD COLUMN hidden INTEGER DEFAULT 0`];
+async function migrate(env) {
+  for (const sql of MIGRATIONS) {
+    try {
+      await env.DB.prepare(sql).run();
+    } catch (e) {
+      if (!/duplicate column/i.test(e.message || "")) throw e;
+    }
+  }
+}
+
 let ready = null;
 export function ensureSchema(env) {
   if (!env.DB) throw new Error("DB (D1) binding is not configured");
   if (!ready) {
-    ready = env.DB.batch(SCHEMA.map((s) => env.DB.prepare(s))).catch((e) => {
-      ready = null;
-      throw e;
-    });
+    ready = env.DB.batch(SCHEMA.map((s) => env.DB.prepare(s)))
+      .then(() => migrate(env))
+      .catch((e) => {
+        ready = null;
+        throw e;
+      });
   }
   return ready;
 }

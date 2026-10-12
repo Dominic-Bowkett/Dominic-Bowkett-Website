@@ -80,7 +80,7 @@
         <div>
           <label>Connected account (who does the work)</label>
           <select name="partner_account_id" required>${ps.length ? "" : '<option value="">No connected accounts synced yet</option>'}
-            ${ps.map((p) => `<option value="${esc(p.stripe_account_id)}" ${inv?.partner_account_id === p.stripe_account_id ? "selected" : ""} ${p.charges_enabled ? "" : "disabled"}>${esc(pname(p))}${p.charges_enabled ? "" : " (cannot take payments yet)"}</option>`).join("")}</select>
+            ${ps.filter((p) => !p.hidden || inv?.partner_account_id === p.stripe_account_id).map((p) => `<option value="${esc(p.stripe_account_id)}" ${inv?.partner_account_id === p.stripe_account_id ? "selected" : ""} ${p.charges_enabled ? "" : "disabled"}>${esc(pname(p))}${p.charges_enabled ? "" : " (cannot take payments yet)"}</option>`).join("")}</select>
           <label>Client email</label><input name="client_email" type="email" required value="${v("client_email")}" />
           <label>Client name</label><input name="client_name" value="${v("client_name")}" placeholder="Jane Smith" />
           <div class="check"><input type="checkbox" id="is-biz" ${inv?.bill_to_business || inv?.bill_to_address ? "checked" : ""} /><label for="is-biz" style="margin:0;text-transform:none;letter-spacing:0">Bill to a business / different address</label></div>
@@ -209,12 +209,13 @@
     const ps = await getPartners();
     app.innerHTML = `<div class="card"><div class="toolbar"><h1 style="margin:0">Connected accounts</h1><button class="btn secondary small" id="sync">Sync from Stripe</button></div><div id="msg"></div>
       <p class="muted small">Pulled from your Stripe Connect platform. Edit the invoice details here: the supplier name and address printed on client invoices, where the partner's copies and fee invoices go, and their VAT number (shown when an invoice is marked VAT-inclusive).</p>
-      ${ps.map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> · ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""}</span></summary>
+      ${[...ps.filter((p) => !p.hidden), ...ps.filter((p) => p.hidden)].map((p) => `<details style="border-top:1px solid var(--rule);padding:10px 0;${p.hidden ? "opacity:.55" : ""}"><summary style="cursor:pointer"><strong>${esc(pname(p))}</strong> <span class="mono muted small">${esc(p.stripe_account_id)}</span> ${p.hidden ? '<span class="badge">hidden</span> ' : ""}· ${p.charges_enabled ? '<span class="badge paid">can take payments</span>' : '<span class="badge failed">cannot take payments yet</span>'} <span class="muted small">${esc(p.account_type || "")}${p.fees_payer ? ` · Stripe fees paid by ${p.fees_payer === "account" ? "the partner" : p.fees_payer}` : ""}</span></summary>
         <form data-id="${esc(p.stripe_account_id)}" class="grid" style="margin-top:8px">
           <div><label>Display name (on invoices)</label><input name="display_name" value="${esc(p.display_name || "")}" placeholder="${esc(p.business_name || "")}" />
           <label>Invoice / copy email</label><input name="invoice_email" type="email" value="${esc(p.invoice_email || "")}" placeholder="${esc(p.email || "")}" />
           <label>Phone</label><input name="phone" value="${esc(p.phone || "")}" />
-          <div class="check"><input type="checkbox" name="copy_invoices" id="cp-${esc(p.stripe_account_id)}" ${p.copy_invoices ? "checked" : ""} /><label for="cp-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Email them a copy of each invoice sent</label></div></div>
+          <div class="check"><input type="checkbox" name="copy_invoices" id="cp-${esc(p.stripe_account_id)}" ${p.copy_invoices ? "checked" : ""} /><label for="cp-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Email them a copy of each invoice sent</label></div>
+          <div class="check"><input type="checkbox" name="hidden" id="hd-${esc(p.stripe_account_id)}" ${p.hidden ? "checked" : ""} /><label for="hd-${esc(p.stripe_account_id)}" style="margin:0;text-transform:none;letter-spacing:0">Hide this account (not offered on new invoices)</label></div></div>
           <div><label>Address (on invoices)</label><textarea name="address">${esc(p.address || "")}</textarea>
           <label>VAT number</label><input name="vat_number" value="${esc(p.vat_number || "")}" />
           <label>Notes</label><textarea name="notes">${esc(p.notes || "")}</textarea>
@@ -230,6 +231,7 @@
         e.preventDefault();
         const body = Object.fromEntries(new FormData(f).entries());
         body.copy_invoices = f.copy_invoices.checked;
+        body.hidden = f.hidden.checked;
         const btn = f.querySelector("button"); busy(btn, true);
         try { const r = await api("partners/" + f.dataset.id, { method: "PATCH", body }); partners = r.partners; flash(document.getElementById("msg"), "Saved."); }
         catch (err) { flash(document.getElementById("msg"), err.message, "err"); }

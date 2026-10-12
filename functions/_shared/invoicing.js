@@ -52,7 +52,7 @@ export async function listPartners(env) {
   return r.results || [];
 }
 
-const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "notes", "email"];
+const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email"];
 export async function updatePartner(env, id, fields) {
   const d = await db(env);
   const keys = Object.keys(fields).filter((k) => PARTNER_EDITABLE.includes(k));
@@ -60,7 +60,7 @@ export async function updatePartner(env, id, fields) {
   if (fields.invoice_email && !EMAIL_RE.test(fields.invoice_email)) throw new UserError("Invoice email is not valid");
   await d
     .prepare(`UPDATE partners SET ${keys.map((k) => `${k} = ?`).join(", ")}, updated_at = datetime('now') WHERE stripe_account_id = ?`)
-    .bind(...keys.map((k) => (k === "copy_invoices" ? (fields[k] ? 1 : 0) : fields[k] ?? null)), id)
+    .bind(...keys.map((k) => (k === "copy_invoices" || k === "hidden" ? (fields[k] ? 1 : 0) : fields[k] ?? null)), id)
     .run();
 }
 
