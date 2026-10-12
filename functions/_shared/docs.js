@@ -7,6 +7,13 @@ export function esc(s) {
   return String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
 }
 
+// Turn URLs and email addresses in already-escaped text into clickable links.
+export function linkify(escaped) {
+  return String(escaped || "")
+    .replace(/(https?:\/\/[^\s<]+?)([.,;:!?)]*)(?=\s|$|<)/g, '<a href="$1" style="color:#0c0c0c;">$1</a>$2')
+    .replace(/(^|[\s(>])([\w.+-]+@[\w-]+(?:\.[\w-]+)+)/g, '$1<a href="mailto:$2" style="color:#0c0c0c;">$2</a>');
+}
+
 export function partnerOf(inv) {
   try { return inv.partner_snapshot ? JSON.parse(inv.partner_snapshot) : {}; } catch { return {}; }
 }
@@ -278,7 +285,7 @@ ${inv.property_address ? `<h2>Property</h2><p>${esc(inv.property_address).replac
 <h2>From</h2>
 <p>${esc(supplierName(p))}${p.business_name && p.display_name && p.business_name !== p.display_name ? `<br/><span class="small">${esc(p.business_name)}</span>` : ""}${p.address ? `<br/><span class="muted small">${esc(p.address)}</span>` : ""}${p.invoice_email || p.email ? `<br/><span class="muted small">${esc(p.invoice_email || p.email)}</span>` : ""}${p.phone ? `<br/><span class="muted small">${esc(p.phone)}</span>` : ""}${inv.client_vat_rate && p.vat_number ? `<br/><span class="muted small">VAT No. ${esc(p.vat_number)}</span>` : ""}</p>
 <h2>Details</h2>
-${inv.description ? `<p class="small"><pre>${esc(inv.description)}</pre></p>` : ""}
+${inv.description ? `<p class="small"><pre>${linkify(esc(inv.description))}</pre></p>` : ""}
 <div class="row"><span>${esc(inv.service_name)}</span><span>${gbp(net)}</span></div>
 ${inv.client_vat_rate ? `<div class="row"><span>VAT at ${inv.client_vat_rate}%</span><span>${gbp(vat)}</span></div>` : ""}
 <div class="row total"><span>${inv.status === "paid" ? "Total paid" : "Total due"}</span><span>${gbp(inv.amount_pence)}</span></div>
@@ -303,7 +310,7 @@ export function clientInvoiceEmail(inv, origin) {
     subject: `Invoice ${inv.number} — ${inv.service_name} — ${gbp(inv.amount_pence)}`,
     html: emailShell(`
 <p>${who}</p>
-${inv.client_message ? `<p style="white-space:pre-wrap;">${esc(inv.client_message)}</p>` : ""}
+${inv.client_message ? `<p style="white-space:pre-wrap;">${linkify(esc(inv.client_message))}</p>` : ""}
 <p>Please find your invoice for <strong>${esc(inv.service_name)}</strong>${inv.property_address ? ` at ${esc(inv.property_address)}` : ""}, carried out by ${esc(supplierName(p))}.</p>
 <table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0;font-size:15px;">
 <tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Invoice</td><td>${esc(inv.number)}</td></tr>
@@ -332,6 +339,32 @@ export function partnerCopyEmail(inv, origin) {
       `Platform fee: ${gbp(inv.application_fee_pence)} inc VAT (${gbp(inv.fee_net_pence)} + VAT ${gbp(inv.fee_vat_pence)}), deducted from the payment; a VAT invoice follows once paid\n` +
       `You receive: ${gbp(inv.amount_pence - inv.application_fee_pence)} less Stripe's processing fee\n\n` +
       `View / PDF: ${L.view}\nPay link given to the client: ${L.pay}\n`,
+  };
+}
+
+// Payment reminder n (1..REMINDER_MAX) to the client.
+export const REMINDER_DAYS = 7;
+export const REMINDER_MAX = 4;
+export function clientReminderEmail(inv, origin, n) {
+  const L = links(origin, inv);
+  const p = partnerOf(inv);
+  const who = inv.client_name ? `Hello ${esc(inv.client_name.split(" ")[0])},` : "Hello,";
+  const final = n >= REMINDER_MAX;
+  const overdue = inv.due_date && inv.due_date < new Date().toISOString().slice(0, 10);
+  return {
+    subject: `${final ? "Final reminder" : "Reminder"}: invoice ${inv.number} — ${gbp(inv.amount_pence)} ${overdue ? "overdue" : "outstanding"}`,
+    html: emailShell(`
+<p>${who}</p>
+<p>${final ? "This is a final reminder that" : "A quick reminder that"} invoice <strong>${esc(inv.number)}</strong> for <strong>${esc(inv.service_name)}</strong>${inv.property_address ? ` at ${esc(inv.property_address)}` : ""} (${esc(supplierName(p))}) is still outstanding.</p>
+<table role="presentation" cellpadding="0" cellspacing="0" style="margin:16px 0;font-size:15px;">
+<tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Amount due</td><td><strong>${gbp(inv.amount_pence)}</strong></td></tr>
+<tr><td style="padding:4px 24px 4px 0;color:#7a7873;">Invoice date</td><td>${esc(fmtDate(inv.issued_at || inv.created_at))}</td></tr>
+${inv.due_date ? `<tr><td style="padding:4px 24px 4px 0;color:#7a7873;">${overdue ? "Was due" : "Due"}</td><td>${esc(fmtDate(inv.due_date))}</td></tr>` : ""}
+</table>
+${btn(L.pay, "Pay this invoice")}
+<p style="font-size:13px;color:#7a7873;">View or download the invoice: <a href="${L.view}" style="color:#0c0c0c;">${L.view}</a></p>
+${final ? `<p>If payment is not received within the next 7 days we will have to take further steps to recover the amount. If there is a problem with the invoice, please reply to this email so we can sort it out.</p>` : `<p>If you've already paid, thank you and please ignore this. If there's a problem with the invoice, just reply to this email.</p>`}
+<p>Kind regards,<br/>Dominic Bowkett</p>`),
   };
 }
 

@@ -71,7 +71,7 @@
         ${invoices.map((i) => `<tr class="click" data-id="${i.id}"><td class="mono">${esc(i.number)}</td><td>${day(i.issued_at || i.created_at)}</td>
           <td>${esc(i.bill_to_business || i.client_name || "")}<br/><span class="muted small">${esc(i.client_email)}</span></td><td>${esc(i.partner_name)}</td>
           <td>${esc(i.service_name)}${i.property_address ? `<br/><span class="muted small">${esc(i.property_address)}</span>` : ""}</td>
-          <td class="num">${gbp(i.amount_pence)}</td><td class="num">${gbp(i.application_fee_pence)}</td><td>${badge(i.status)}${i.last_error ? `<br/><span class="small" style="color:#8a2a2a">${esc(i.last_error)}</span>` : ""}</td></tr>`).join("")}
+          <td class="num">${gbp(i.amount_pence)}</td><td class="num">${gbp(i.application_fee_pence)}</td><td>${badge(i.status)}${i.reminders_sent ? `<br/><span class="small muted">${i.reminders_sent} reminder${i.reminders_sent === 1 ? "" : "s"} sent</span>` : ""}${i.last_error ? `<br/><span class="small" style="color:#8a2a2a">${esc(i.last_error)}</span>` : ""}</td></tr>`).join("")}
         </tbody></table><p class="muted small" style="margin:10px 0 0">${invoices.length} shown · paid in this view ${gbp(sum)} · platform fees ${gbp(fees)}</p>`;
       list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#inv/" + tr.dataset.id)));
     };
@@ -252,6 +252,7 @@
           <dt>Issued / due</dt><dd>${day(i.issued_at)}${i.due_date ? ` / due ${day(i.due_date)}` : ""}</dd>
           ${i.sent_at ? `<dt>Sent</dt><dd>${when(i.sent_at)}</dd>` : ""}
           ${i.paid_at ? `<dt>Paid</dt><dd>${when(i.paid_at)}${i.payment_method ? ` · ${esc(i.payment_method)}` : ""}</dd>` : ""}
+          ${i.reminders_sent ? `<dt>Reminders</dt><dd>${i.reminders_sent} of 4 sent, last ${when(i.last_reminder_at)}${i.reminders_sent >= 4 ? " · <strong>further action needed</strong>" : ""}</dd>` : (i.status === "sent" || i.status === "failed") && i.sent_at ? `<dt>Reminders</dt><dd class="muted">automatic at 7, 14, 21 and 28 days unpaid</dd>` : ""}
         </dl>
         <div><div class="totals">
           <div class="big"><span>Client pays</span><span>${gbp(i.amount_pence)}</span></div>
@@ -341,9 +342,21 @@
       <p class="small">In Stripe → Developers → Webhooks, add an endpoint for <strong>connected accounts</strong> ("Listen to events on Connected accounts") pointing at:</p>
       <p class="mono">${esc(s.webhook_url)}</p>
       <p class="small">Events: checkout.session.completed, checkout.session.async_payment_succeeded, checkout.session.async_payment_failed, checkout.session.expired, payment_intent.payment_failed, charge.refunded, charge.dispute.created. Put the signing secret in STRIPE_WEBHOOK_SECRET.</p>
+      <h2 style="margin-top:20px">Payment reminders</h2>
+      <p class="small">Unpaid invoices get a reminder email at 7, 14, 21 and 28 days after sending, with an alert to info@dominicbowkett.com each time; after the fourth the invoice is flagged for further action. A scheduled Worker runs this every morning. <button class="btn secondary small" id="run-reminders">Run now</button> <button class="btn secondary small" id="dry-reminders">Preview (dry run)</button></p>
+      <pre id="reminders-out" class="small mono" style="white-space:pre-wrap"></pre>
       <h2 style="margin-top:20px">Counts</h2>
       <table><tbody>${Object.entries(s.counts).map(([k, v]) => `<tr><td>${badge(k)}</td><td>${v.n}</td><td class="num">${gbp(v.total)}</td></tr>`).join("") || "<tr><td class='muted'>No invoices yet</td></tr>"}</tbody></table>
     </div>`;
+    for (const [id, dry] of [["run-reminders", false], ["dry-reminders", true]]) {
+      document.getElementById(id).addEventListener("click", async (e) => {
+        if (!dry && !confirm("Send any reminders that are due right now?")) return;
+        busy(e.target, true);
+        try { const r = await api("reminders", { method: "POST", body: { dry_run: dry } }); document.getElementById("reminders-out").textContent = `${dry ? "Would send" : "Sent"}: ${r.sent.length ? r.sent.map((x) => `${x.number} (reminder ${x.reminder}, ${x.days} days${x.final ? ", final" : ""})`).join("; ") : "nothing due"}. Checked ${r.checked} unpaid invoice(s).`; }
+        catch (err) { document.getElementById("reminders-out").textContent = err.message; }
+        finally { busy(e.target, false); }
+      });
+    }
   }
 
   async function route() {

@@ -3,7 +3,7 @@ import { isAdmin, sameOrigin } from "../../_shared/auth.js";
 import { db, getInvoice } from "../../_shared/db.js";
 import {
   UserError, syncPartners, listPartners, updatePartner, createInvoice, editInvoice, sendInvoice, voidInvoice,
-  reconcileFromStripe, sendPaidEmails,
+  reconcileFromStripe, sendPaidEmails, runReminders,
 } from "../../_shared/invoicing.js";
 import { partnerOf, supplierName } from "../../_shared/docs.js";
 
@@ -108,6 +108,11 @@ export async function onRequest(context) {
           return json({ ok: true, invoice: await getInvoice(env, id) });
         }
       }
+    }
+
+    if (head === "reminders" && method === "POST") {
+      const result = await runReminders(env, origin, { asOf: body.as_of || undefined, dryRun: !!body.dry_run });
+      return json({ ok: true, ...result });
     }
 
     if (head === "export.csv" && method === "GET") {

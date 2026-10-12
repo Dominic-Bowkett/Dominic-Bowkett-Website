@@ -1,0 +1,13 @@
+{
+  "name": "dbk-invoice-reminders",
+  "main": "src/index.js",
+  // info@dominicbowkett.com's account (same as the dominic-bowkett Pages project)
+  "account_id": "e2bdf844902d43c877a78ddd56a4e5ad",
+  "compatibility_date": "2026-05-10",
+  "vars": {
+    "TARGET_URL": "https://www.dominicbowkett.com/api/cron/reminders"
+  },
+  // 08:00 UTC every day (09:00 BST). Secret: CRON_SECRET (must match the Pages project's CRON_SECRET)
+  "triggers": { "crons": ["0 8 * * *"] },
+  "observability": { "enabled": true }
+}

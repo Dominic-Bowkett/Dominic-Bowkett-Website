@@ -29,3 +29,4 @@ database_id = "34d87068-e4c9-4978-8a5d-1a4949ad9fda"
 #   STRIPE_WEBHOOK_SECRET   signing secret of the Connect webhook endpoint -> /api/stripe/webhook
 #   ADMIN_PASSWORD          password for /admin
 #   ADMIN_SECRET            any long random string (signs the admin session cookie)
+#   CRON_SECRET             shared with workers/invoice-reminders (daily reminder run)

@@ -44,6 +44,18 @@ disallowed in robots.txt.
 | Paid | partner | plain text: paid, fee VAT invoice PDF link, "go ahead" |
 | Paid / failed / mismatch / refund / dispute | Dom (info@) | one plain-text alert per event |
 
+## Payment reminders
+
+A small scheduled Worker (`workers/invoice-reminders`, cron 08:00 UTC daily) POSTs to
+`/api/cron/reminders` with the shared `CRON_SECRET`. Any invoice still `sent`/`failed` gets a
+reminder email at 7, 14, 21 and 28 days after `sent_at` (one per 6-day window at most), and Dom gets
+a plain-text alert each time. The fourth is a final reminder; the invoice is then flagged
+"further action needed" and no more are sent. Setup -> "Run now" / "Preview (dry run)" trigger it by hand.
+
+Deploy the Worker from `workers/invoice-reminders` with `wrangler deploy`, then
+`wrangler secret put CRON_SECRET` there and `wrangler pages secret put CRON_SECRET --project-name dominic-bowkett`
+with the same value.
+
 ## Failure guards
 
 - Webhook signature + 5-minute timestamp tolerance; every event id is recorded so retries are no-ops.

@@ -40,6 +40,8 @@ export const SCHEMA = [
     service_name TEXT NOT NULL,
     description TEXT,
     client_message TEXT,
+    reminders_sent INTEGER DEFAULT 0,
+    last_reminder_at TEXT,
     currency TEXT NOT NULL DEFAULT 'gbp',
     amount_pence INTEGER NOT NULL,
     client_vat_rate INTEGER DEFAULT 0,
@@ -101,6 +103,8 @@ export const SCHEMA = [
 const MIGRATIONS = [
   `ALTER TABLE partners ADD COLUMN hidden INTEGER DEFAULT 0`,
   `ALTER TABLE invoices ADD COLUMN client_message TEXT`,
+  `ALTER TABLE invoices ADD COLUMN reminders_sent INTEGER DEFAULT 0`,
+  `ALTER TABLE invoices ADD COLUMN last_reminder_at TEXT`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {

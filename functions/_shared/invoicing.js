@@ -2,10 +2,11 @@
 import { db, getInvoice, getPartner, updateInvoice, logEvent, logEmail, nextNumber, randomToken } from "./db.js";
 import { stripe, StripeError, listConnectedAccounts, summariseAccount } from "./stripe.js";
 import { sendViaResend, OWNER_TO } from "./email.js";
-import { toPence, splitGross, todayISO } from "./money.js";
+import { toPence, splitGross, todayISO, gbp } from "./money.js";
 import { platform } from "./business.js";
 import {
   clientInvoiceEmail, partnerCopyEmail, clientPaidEmail, partnerPaidEmail, ownerNotice, partnerOf,
+  clientReminderEmail, REMINDER_DAYS, REMINDER_MAX, supplierName,
 } from "./docs.js";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -384,6 +385,54 @@ export async function recordPaymentFailure(env, inv, detail, origin) {
   await updateInvoice(env, inv.id, { last_error: `Payment failed: ${detail?.message || detail?.code || "unknown"}` });
   // Keep the invoice payable: the client can retry from the same pay link. Dom gets one heads-up.
   await notifyOwner(env, inv, origin, "Payment attempt failed");
+}
+
+// ---------------------------------------------------------------- payment reminders (run daily by the cron Worker)
+
+// Reminder n goes out once the invoice has been unpaid for n * REMINDER_DAYS days (7, 14, 21, 28).
+// Each reminder is mirrored to Dom; the last one flags the invoice for further action.
+export async function runReminders(env, origin, { asOf, dryRun = false } = {}) {
+  const d = await db(env);
+  const now = asOf ? new Date(asOf) : new Date();
+  if (Number.isNaN(now.getTime())) throw new UserError("Invalid as_of date");
+  const r = await d
+    .prepare(`SELECT * FROM invoices WHERE status IN ('sent','failed') AND sent_at IS NOT NULL AND COALESCE(reminders_sent, 0) < ? ORDER BY sent_at`)
+    .bind(REMINDER_MAX)
+    .all();
+  const out = { checked: 0, sent: [], skipped: [], dryRun, asOf: now.toISOString() };
+  for (const inv of r.results || []) {
+    out.checked++;
+    const sentAt = new Date(inv.sent_at.includes("T") ? inv.sent_at : inv.sent_at.replace(" ", "T") + "Z");
+    const days = Math.floor((now - sentAt) / 86400000);
+    const n = (inv.reminders_sent || 0) + 1;
+    if (days < n * REMINDER_DAYS) { out.skipped.push({ number: inv.number, days, next_at_day: n * REMINDER_DAYS }); continue; }
+    // never more than one reminder per invoice in any 6-day window, even if runs were missed
+    if (inv.last_reminder_at && now - new Date(inv.last_reminder_at) < 6 * 86400000) { out.skipped.push({ number: inv.number, days, reason: "reminded recently" }); continue; }
+    if (dryRun) { out.sent.push({ number: inv.number, days, reminder: n, dryRun: true }); continue; }
+    const ok = await email(env, inv, `client_reminder_${n}`, { to: inv.client_email, replyTo: OWNER_TO, ...clientReminderEmail(inv, origin, n) });
+    if (!ok) { out.skipped.push({ number: inv.number, days, reason: "email failed" }); continue; }
+    const final = n >= REMINDER_MAX;
+    await updateInvoice(env, inv.id, {
+      reminders_sent: n,
+      last_reminder_at: now.toISOString(),
+      ...(final ? { last_error: `Unpaid after ${days} days and ${REMINDER_MAX} reminders: further action needed` } : {}),
+    });
+    await logEvent(env, inv.id, "reminder.sent", { n, days, final });
+    const fresh = await getInvoice(env, inv.id);
+    await email(env, fresh, "owner_reminder_alert", {
+      to: OWNER_TO,
+      subject: `${final ? "ACTION NEEDED: final reminder" : `Reminder ${n} of ${REMINDER_MAX}`} sent — ${inv.number} — ${gbp(inv.amount_pence)} unpaid ${days} days`,
+      text:
+        `Invoice ${inv.number} (${inv.service_name}${inv.property_address ? `, ${inv.property_address}` : ""}) is still unpaid ${days} days after it was sent.\n` +
+        `Client: ${inv.client_name || ""} <${inv.client_email}>\nPartner: ${supplierName(partnerOf(inv))}\nAmount: ${gbp(inv.amount_pence)}` + (inv.due_date ? ` · due ${inv.due_date}` : "") + `\n\n` +
+        (final
+          ? `That was the final (${REMINDER_MAX}th) automatic reminder. No more will be sent: this one now needs you to take further action.\n`
+          : `Reminder ${n} of ${REMINDER_MAX} has just been emailed to the client. The next goes in ${REMINDER_DAYS} days if still unpaid.\n`) +
+        `\nAdmin: ${origin}/admin#inv/${inv.id}\nClient pay page: ${origin}/pay/${inv.id}\n`,
+    });
+    out.sent.push({ number: inv.number, days, reminder: n, final });
+  }
+  return out;
 }
 
 export async function reconcileFromStripe(env, id, origin) {
