@@ -10,6 +10,13 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .sv-back{font-size:24px;line-height:1;text-decoration:none;padding:4px 8px 6px;border-radius:8px}
 .sv-title{min-width:0;flex:1;display:flex;flex-direction:column}.sv-title b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sv-title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hbtn{border:1px solid var(--rule);background:#fff;border-radius:10px;width:38px;height:38px;font-size:20px;line-height:1;flex:none}.hbtn:disabled{opacity:.35}
+#sv-toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));transform:translate(-50%,-8px);background:#111;color:#fff;border-radius:999px;padding:9px 14px;font-size:13.5px;display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20;max-width:calc(100% - 24px)}
+#sv-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}#sv-toast button{background:none;border:0;color:#8fb8ff;font-weight:700;font-size:13.5px;padding:0}
+.chip.mini{padding:4px 10px;font-size:13px}
+.laser{margin-top:12px;display:flex;flex-direction:column;gap:6px}.laser label{margin:0;text-transform:none;letter-spacing:0;font-size:14px;align-self:flex-start}
+.lr{display:flex;align-items:center;gap:8px;padding:8px 0;border-bottom:1px solid #eeece6}.lr>div{flex:1}.lr small{display:block;color:var(--muted)}
+.hintbox.rm{background:#f6e4e4;color:var(--bad);display:flex;align-items:center;gap:10px;justify-content:space-between}
 .pill{font-size:12px;font-weight:600;padding:5px 10px;border-radius:999px;background:#e9f4ec;color:var(--ok);white-space:nowrap}
 .pill.saving{background:#eef2fa;color:var(--accent)}.pill.queued{background:#fbf1d8;color:#8a5a00}.pill.error{background:#f6e4e4;color:var(--bad)}
 .sv-bar{display:flex;gap:8px;align-items:center;padding:8px 10px;background:#fff;border-bottom:1px solid var(--rule);overflow-x:auto;scrollbar-width:none}
@@ -66,12 +73,13 @@ export async function onRequestGet({ request, env, params }) {
   const html = page(`<div id="survey" data-id="${esc(id)}">
 <header class="sv-top"><a class="sv-back" href="/admin/survey" aria-label="All surveys">&#8249;</a>
 <div class="sv-title"><b id="sv-name">Loading…</b><span class="muted small" id="sv-visit"></span></div>
+<button class="hbtn" id="sv-undo" type="button" aria-label="Undo" disabled>↶</button><button class="hbtn" id="sv-redo" type="button" aria-label="Redo" disabled>↷</button>
 <span id="sv-status" class="pill">Loading</span></header>
 <div class="sv-bar"><div id="sv-floors" class="seg"></div>
 <div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-docs" type="button">Docs</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
 <div id="sv-stage"><svg id="sv-plan" xmlns="http://www.w3.org/2000/svg"></svg><div id="sv-hint"></div>
 <div id="sv-legend"><span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin / pre-filled</span></div></div>
-<aside id="sv-sheet" class="sheet" hidden></aside>
+<aside id="sv-sheet" class="sheet" hidden></aside><div id="sv-toast" role="status"></div>
 </div>`, { title: "Survey", app: true, appCss: APP_CSS });
   return new Response(html, { status: 200, headers: { ...headers, "Set-Cookie": await sessionCookie(env) } });
 }

@@ -4,15 +4,84 @@
 //   PUT    /api/survey/properties/:pid/records/:ref            upsert one record (autosave; last client_ts wins)
 //   POST   /api/survey/properties/:pid/records/:ref/photos     raw image body -> R2 (x-photo-id header makes retries idempotent)
 //   DELETE /api/survey/properties/:pid/photos/:photoId         hide a photo (the R2 object is kept)
+//   POST   /api/survey/properties/:pid/photos/:photoId/restore un-hide it again (undo)
 //   GET    /api/survey/properties/:pid/export.csv              windows, doors, rooms and evidence as CSV
 //   GET    /api/survey/photo/:photoId                          the image itself
 //   GET    /api/survey/doc/:docId[?dl=1]                       a property document (PDF etc.), inline or as a download
+//   POST   /api/survey/vision                                  raw photo of a laser measurer's screen -> the distances on it
+//                                                              (Claude vision; needs the ANTHROPIC_API_KEY secret, optional CLAUDE_VISION_MODEL)
 import { isAdmin, sameOrigin } from "../../_shared/auth.js";
 import { surveyDb, REF_RE, PHOTO_ID_RE, KINDS, recordOut, photoOut, docOut, INLINE_TYPES } from "../../_shared/survey.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
 const MAX_PHOTO = 25 * 1024 * 1024;
+const VISION_TYPES = new Set(["image/jpeg", "image/png", "image/webp", "image/gif"]);
+const VISION_PROMPT = `This photo shows the screen of a laser distance measurer used by a building surveyor.
+List every DISTANCE reading visible on the screen: the main (large) reading and any smaller lines such as previous measurements or
+the separate lengths of an area/volume measurement. Skip area (m², ft²) and volume (m³) results, angles, battery and mode icons.
+For each distance give the text exactly as shown (with its unit) and the value in metres (convert mm, cm, feet and inches).
+Order them as they appear from top to bottom. If the screen is unreadable, return no readings and say why in the note.`;
+// structured outputs (Opus 5.5 rejects forced tool_choice; thinking is always on, so max_tokens covers thinking + JSON)
+const VISION_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["readings", "note"],
+  properties: {
+    readings: { type: "array", items: { type: "object", additionalProperties: false, required: ["text", "metres", "role"], properties: {
+      text: { type: "string", description: "the reading exactly as displayed, with its unit" },
+      metres: { type: "number", description: "the value in metres" },
+      role: { type: "string", description: "main, previous, side of an area/volume measurement, or other" },
+    } } },
+    note: { type: "string", description: "anything the surveyor should know, e.g. glare or a cut-off digit; empty if none" },
+  },
+};
+function b64(buf) {
+  const bytes = new Uint8Array(buf); let s = "";
+  for (let i = 0; i < bytes.length; i += 0x8000) s += String.fromCharCode.apply(null, bytes.subarray(i, i + 0x8000));
+  return btoa(s);
+}
+const m2 = (m) => (Math.round(m * 100) / 100).toFixed(2);
+async function readLaser(request, env) {
+  const type = (request.headers.get("content-type") || "").split(";")[0].trim().toLowerCase();
+  if (!VISION_TYPES.has(type)) return json({ ok: false, error: "Use a JPEG or PNG photo for the laser reading" }, 415);
+  const buf = await request.arrayBuffer();
+  if (!buf.byteLength) return json({ ok: false, error: "Empty photo" }, 400);
+  if (buf.byteLength > 4.5 * 1024 * 1024) return json({ ok: false, error: "Photo too large for reading (max 4.5 MB)" }, 413);
+  let out;
+  if (env.VISION_STUB === "1") {   // local tests only: no API call
+    out = { readings: [{ text: "3.457 m", metres: 3.457, role: "main" }, { text: "1.212 m", metres: 1.212, role: "previous" }, { text: "2 m²", metres: 0, role: "other" }], note: "stub" };
+  } else {
+    if (!env.ANTHROPIC_API_KEY) return json({ ok: false, error: "Laser reading is not set up yet: the ANTHROPIC_API_KEY secret needs adding in Cloudflare (Pages > dominic-bowkett > Settings > Variables and secrets). The photo is saved; enter the numbers by hand." }, 503);
+    const model = env.CLAUDE_VISION_MODEL || "claude-opus-5-5";
+    const ctl = new AbortController(); const timer = setTimeout(() => ctl.abort(), 45000);
+    let res;
+    try {
+      res = await fetch(`${env.ANTHROPIC_BASE_URL || "https://api.anthropic.com"}/v1/messages`, {   // base URL override for local tests only
+        method: "POST", signal: ctl.signal,
+        headers: { "x-api-key": env.ANTHROPIC_API_KEY, "anthropic-version": "2023-06-01", "content-type": "application/json" },
+        body: JSON.stringify({
+          model, max_tokens: 4000,
+          output_config: { ...(/^claude-(opus|sonnet|fable)-5/.test(model) ? { effort: "low" } : {}), format: { type: "json_schema", schema: VISION_SCHEMA } },
+          messages: [{ role: "user", content: [
+            { type: "image", source: { type: "base64", media_type: type, data: b64(buf) } },
+            { type: "text", text: VISION_PROMPT },
+          ] }],
+        }),
+      });
+    } catch (e) { return json({ ok: false, error: e.name === "AbortError" ? "Reading timed out: try again or enter the numbers by hand" : "Could not reach the reading service" }, 502); }
+    finally { clearTimeout(timer); }
+    const j = await res.json().catch(() => null);
+    if (!res.ok || !j) { console.error("vision error", res.status, j && j.error); return json({ ok: false, error: `Reading service error (${res.status})${j && j.error && j.error.message ? `: ${j.error.message}` : ""}` }, 502); }
+    if (j.stop_reason === "refusal") return json({ ok: false, error: "The reading service declined this photo: enter the numbers by hand" }, 502);
+    if (j.stop_reason === "max_tokens") return json({ ok: false, error: "The reading was cut short: try again" }, 502);
+    const text = (j.content || []).filter((c) => c.type === "text").map((c) => c.text).join("");
+    try { out = JSON.parse(text); } catch { console.error("vision: not JSON", text.slice(0, 200)); return json({ ok: false, error: "Could not understand the reading: try again" }, 502); }
+  }
+  const readings = (Array.isArray(out.readings) ? out.readings : [])
+    .map((r) => ({ text: String(r.text || "").slice(0, 40), metres: Number(r.metres), role: String(r.role || "").slice(0, 40) }))
+    .filter((r) => Number.isFinite(r.metres) && r.metres > 0.005 && r.metres < 300)
+    .slice(0, 8).map((r) => ({ ...r, m2: m2(r.metres) }));
+  return json({ ok: true, readings, note: String(out.note || "").slice(0, 200) });
+}
 
 export async function onRequest({ request, env, params }) {
   if (!(await isAdmin(request, env))) return json({ ok: false, error: "Not signed in" }, 401);
@@ -49,6 +118,8 @@ export async function onRequest({ request, env, params }) {
         "cache-control": "private, no-store",
       } });
     }
+
+    if (head === "vision" && !pid && method === "POST") return await readLaser(request, env);
 
     if (head !== "properties") return json({ ok: false, error: "Unknown endpoint" }, 404);
 
@@ -125,7 +196,14 @@ export async function onRequest({ request, env, params }) {
       return json({ ok: true, photo: photoOut(row) });
     }
 
-    if (sub === "photos" && ref && method === "DELETE") {
+    if (sub === "photos" && ref && sub2 === "restore" && method === "POST") {
+      if (!PHOTO_ID_RE.test(ref)) return json({ ok: false, error: "Bad photo id" }, 400);
+      await d.prepare(`UPDATE survey_photos SET deleted = 0 WHERE id = ? AND property_id = ?`).bind(ref, pid).run();
+      const row = await d.prepare(`SELECT * FROM survey_photos WHERE id = ? AND property_id = ?`).bind(ref, pid).first();
+      return row ? json({ ok: true, photo: photoOut(row) }) : json({ ok: false, error: "Not found" }, 404);
+    }
+
+    if (sub === "photos" && ref && !sub2 && method === "DELETE") {
       if (!PHOTO_ID_RE.test(ref)) return json({ ok: false, error: "Bad photo id" }, 400);
       await d.prepare(`UPDATE survey_photos SET deleted = 1 WHERE id = ? AND property_id = ?`).bind(ref, pid).run();
       return json({ ok: true });
@@ -145,16 +223,22 @@ export async function onRequest({ request, env, params }) {
       for (const c of plan.checklist || []) rows.push({ ref: c.ref, kind: "check", floor: "", label: c.label, room: c.category, plan: c });
       for (const r of rows) seen.add(r.ref);
       for (const r of Object.values(recs)) if (!seen.has(r.ref) && !r.deleted) rows.push({ ref: r.ref, kind: r.kind, floor: r.floor, label: r.data.title || r.data.label || r.ref, room: roomName(r.floor, r.data.room), plan: {} });
-      const cols = ["floor", "ref", "kind", "label", "room_or_category", "status", "width_mm", "height_mm", "count", "type", "glazing", "frame", "gap", "installed", "age_evidence", "length_m", "width_m", "ceiling_m", "notes", "photos", "x", "y"];
+      // windows/doors: width_m x height_m (older mm entries converted); rooms: length_m x width_m and room_height_m
+      const cols = ["floor", "ref", "kind", "label", "room_or_category", "status", "width_m", "height_m", "length_m", "room_height_m", "count", "type", "glazing", "frame", "gap", "installed", "age_evidence", "notes", "photos", "x", "y"];
+      const normM = (v) => { const t = String(v ?? "").trim(); if (t === "") return ""; let n = Number(t.replace(",", ".")); if (!Number.isFinite(n) || n <= 0) return t; if (n >= 100) n /= 1000; return n.toFixed(2); };   // as the form does: 2 dp, 100+ = mm
+      const metres = (m, mm) => (m !== undefined && m !== "" ? normM(m) : mm !== undefined && mm !== "" ? (Number.isFinite(Number(mm)) ? (Number(mm) / 1000).toFixed(2) : `${mm} mm`) : "");
       const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
       const lines = [cols.join(",")];
       for (const r of rows) {
-        const rec = recs[r.ref]; if (rec && rec.deleted) continue;
+        const rec = recs[r.ref];
+        const removed = !!(rec && rec.deleted); if (removed && !seen.has(r.ref)) continue;   // a deleted ad-hoc pin is gone; a removed plan item stays listed
         const own = rec ? rec.data : {}; const dd = { ...own };
         if (r.plan.prefill && !own._pf) for (const [k, v] of Object.entries(r.plan.prefill)) if (dd[k] === undefined) dd[k] = `${v} (pre-filled, not confirmed)`;
-        const status = dd.absent ? "not present" : Object.keys(own).length || counts[r.ref] ? "recorded" : "";
-        lines.push([r.floor, r.ref, r.kind, r.label, r.room, status, dd.width_mm, dd.height_mm, dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,
-          dd.length_m, dd.width_m, dd.ceiling_m, dd.notes, counts[r.ref] || 0, rec?.x ?? r.plan.x ?? "", rec?.y ?? r.plan.y ?? ""].map(cell).join(","));
+        const status = removed ? "removed from plan (not present)" : dd.absent ? "not present" : Object.keys(own).length || counts[r.ref] ? "recorded" : "";
+        const isRoom = r.kind === "room";
+        lines.push([r.floor, r.ref, r.kind, r.label, r.room, status, isRoom ? normM(dd.width_m) : metres(dd.width_m, dd.width_mm), isRoom ? "" : metres(dd.height_m, dd.height_mm),
+          isRoom ? normM(dd.length_m) : "", isRoom ? normM(dd.ceiling_m) : "", dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,
+          dd.notes, counts[r.ref] || 0, rec?.x ?? r.plan.x ?? "", rec?.y ?? r.plan.y ?? ""].map(cell).join(","));
       }
       return new Response(lines.join("\r\n"), {
         headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="survey-${pid}-${new Date().toISOString().slice(0, 10)}.csv"`, "cache-control": "no-store" },
