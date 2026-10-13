@@ -55,11 +55,24 @@ export const SURVEY_SCHEMA = [
   `CREATE INDEX IF NOT EXISTS survey_docs_prop ON survey_docs(property_id, sort)`,
 ];
 
+// columns added after the first release (photo stamp metadata); ALTER TABLE on databases that predate them
+const PHOTO_COLS = [["taken_at", "TEXT"], ["lat", "REAL"], ["lng", "REAL"], ["accuracy_m", "REAL"], ["time_source", "TEXT"],
+  ["geo_source", "TEXT"], ["stamped", "INTEGER DEFAULT 0"], ["photo_kind", "TEXT"]];
+async function migrate(DB) {
+  let have = null;
+  try { have = new Set(((await DB.prepare("PRAGMA table_info(survey_photos)").all()).results || []).map((c) => c.name)); } catch { have = null; }
+  for (const [col, type] of PHOTO_COLS) {
+    if (have && have.has(col)) continue;
+    try { await DB.prepare(`ALTER TABLE survey_photos ADD COLUMN ${col} ${type}`).run(); }
+    catch (e) { if (!/duplicate column/i.test(String((e && e.message) || e))) throw e; }   // another isolate got there first
+  }
+}
+
 let ready = null;
 export async function surveyDb(env) {
   if (!env.DB) throw new Error("DB (D1) binding is not configured");
   if (!ready) {
-    ready = env.DB.batch(SURVEY_SCHEMA.map((s) => env.DB.prepare(s))).catch((e) => {
+    ready = env.DB.batch(SURVEY_SCHEMA.map((s) => env.DB.prepare(s))).then(() => migrate(env.DB)).catch((e) => {
       ready = null;
       throw e;
     });
@@ -86,5 +99,7 @@ export function docOut(d) {
 export const INLINE_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
 
 export function photoOut(p) {
-  return { id: p.id, ref: p.ref, content_type: p.content_type, bytes: p.bytes, file_name: p.file_name, created_at: p.created_at };
+  return { id: p.id, ref: p.ref, content_type: p.content_type, bytes: p.bytes, file_name: p.file_name, created_at: p.created_at,
+    taken_at: p.taken_at || null, lat: p.lat ?? null, lng: p.lng ?? null, accuracy_m: p.accuracy_m ?? null, time_source: p.time_source || null,
+    geo_source: p.geo_source || null, stamped: !!p.stamped, kind: p.photo_kind || "photo" };
 }

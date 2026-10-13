@@ -6,6 +6,7 @@
 //   DELETE /api/survey/properties/:pid/photos/:photoId         hide a photo (the R2 object is kept)
 //   POST   /api/survey/properties/:pid/photos/:photoId/restore un-hide it again (undo)
 //   GET    /api/survey/properties/:pid/export.csv              windows, doors, rooms and evidence as CSV
+//   GET    /api/survey/properties/:pid/photos.csv              photo log: item, time taken, GPS, link (one row per photo)
 //   GET    /api/survey/photo/:photoId                          the image itself
 //   GET    /api/survey/doc/:docId[?dl=1]                       a property document (PDF etc.), inline or as a download
 //   POST   /api/survey/vision                                  raw photo of a laser measurer's screen -> the distances on it
@@ -189,9 +190,22 @@ export async function onRequest({ request, env, params }) {
       const ext = { "image/jpeg": "jpg", "image/png": "png", "image/webp": "webp", "image/heic": "heic", "image/heif": "heif", "image/gif": "gif" }[type];
       const key = `survey/${pid}/${ref}/${id}.${ext}`;
       const name = String(request.headers.get("x-file-name") || "").replace(/[^\w .()-]/g, "").slice(0, 120) || null;
+      // stamp metadata from the phone (time taken, GPS); anything out of range is dropped rather than stored
+      const hdr = (k) => String(request.headers.get(k) || "").trim();
+      const inRange = (v, lo, hi) => { if (v === "") return null; const n = Number(v); return Number.isFinite(n) && n >= lo && n <= hi ? n : null; };
+      const oneOf = (v, opts) => (opts.includes(v) ? v : null);
+      const tk = Date.parse(hdr("x-taken-at"));
+      const takenAt = Number.isFinite(tk) && tk > Date.UTC(1995, 0, 1) && tk < Date.now() + 864e5 ? new Date(tk).toISOString() : null;
+      let lat = inRange(hdr("x-lat"), -90, 90), lng = inRange(hdr("x-lng"), -180, 180);
+      if (lat === null || lng === null) { lat = null; lng = null; }
+      const acc = lat === null ? null : inRange(hdr("x-acc"), 0, 1e6);
+      const geoSource = lat === null ? (hdr("x-geo-source") === "none" ? "none" : null) : oneOf(hdr("x-geo-source"), ["device", "exif"]);
+      const timeSource = takenAt ? oneOf(hdr("x-time-source"), ["device", "exif", "file", "added"]) : null;
+      const kind = oneOf(hdr("x-photo-kind"), ["photo", "laser"]) || "photo";
       await env.SURVEY_FILES.put(key, buf, { httpMetadata: { contentType: type }, customMetadata: { property: pid, ref } });
-      await d.prepare(`INSERT OR IGNORE INTO survey_photos (id, property_id, ref, r2_key, content_type, bytes, file_name) VALUES (?, ?, ?, ?, ?, ?, ?)`)
-        .bind(id, pid, ref, key, type, buf.byteLength, name).run();
+      await d.prepare(`INSERT OR IGNORE INTO survey_photos (id, property_id, ref, r2_key, content_type, bytes, file_name, taken_at, lat, lng, accuracy_m, time_source, geo_source, stamped, photo_kind)
+                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+        .bind(id, pid, ref, key, type, buf.byteLength, name, takenAt, lat, lng, acc, timeSource, geoSource, hdr("x-stamped") === "1" ? 1 : 0, kind).run();
       const row = await d.prepare(`SELECT * FROM survey_photos WHERE id = ?`).bind(id).first();
       return json({ ok: true, photo: photoOut(row) });
     }
@@ -224,7 +238,7 @@ export async function onRequest({ request, env, params }) {
       for (const r of rows) seen.add(r.ref);
       for (const r of Object.values(recs)) if (!seen.has(r.ref) && (!r.deleted || (r.data && r.data._cleared))) rows.push({ ref: r.ref, kind: r.kind, floor: r.floor, label: r.data.title || r.data.label || r.ref, room: roomName(r.floor, r.data.room), plan: {} });
       // windows/doors: width_m x height_m (older mm entries converted); rooms: length_m x width_m and room_height_m
-      const cols = ["floor", "ref", "kind", "label", "room_or_category", "status", "width_m", "height_m", "length_m", "room_height_m", "count", "type", "glazing", "frame", "gap", "installed", "age_evidence", "notes", "photos", "x", "y"];
+      const cols = ["floor", "ref", "kind", "label", "room_or_category", "status", "width_m", "height_m", "length_m", "room_height_m", "building_part", "count", "type", "glazing", "frame", "gap", "installed", "age_evidence", "notes", "photos", "x", "y"];
       const normM = (v) => { const t = String(v ?? "").trim(); if (t === "") return ""; let n = Number(t.replace(",", ".")); if (!Number.isFinite(n) || n <= 0) return t; if (n >= 100) n /= 1000; return n.toFixed(2); };   // as the form does: 2 dp, 100+ = mm
       const metres = (m, mm) => (m !== undefined && m !== "" ? normM(m) : mm !== undefined && mm !== "" ? (Number.isFinite(Number(mm)) ? (Number(mm) / 1000).toFixed(2) : `${mm} mm`) : "");
       const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
@@ -241,11 +255,42 @@ export async function onRequest({ request, env, params }) {
         const status = removed ? (own._cleared ? "cleared by Start again (recorded data kept)" : "removed from plan (not present)") : dd.absent ? "not present" : recorded ? "recorded" : "";
         const isRoom = r.kind === "room";
         lines.push([r.floor, r.ref, r.kind, r.label, r.room, status, isRoom ? normM(dd.width_m) : metres(dd.width_m, dd.width_mm), isRoom ? "" : metres(dd.height_m, dd.height_mm),
-          isRoom ? normM(dd.length_m) : "", isRoom ? normM(dd.ceiling_m) : "", dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,
+          isRoom ? normM(dd.length_m) : "", isRoom ? normM(dd.ceiling_m) : "", isRoom ? dd.part || "" : "", dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,
           dd.notes, counts[r.ref] || 0, rec?.x ?? r.plan.x ?? "", rec?.y ?? r.plan.y ?? ""].map(cell).join(","));
       }
       return new Response(lines.join("\r\n"), {
         headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="survey-${pid}-${new Date().toISOString().slice(0, 10)}.csv"`, "cache-control": "no-store" },
+      });
+    }
+
+    if (sub === "photos.csv" && method === "GET") {   // evidence log: one row per photo, with when and where it was taken
+      const plan = JSON.parse(prop.plan_json);
+      const recs = Object.fromEntries(((await d.prepare(`SELECT * FROM survey_records WHERE property_id = ?`).bind(pid).all()).results || []).map((r) => [r.ref, recordOut(r)]));
+      const items = Object.fromEntries((plan.items || []).map((i) => [i.ref, i]));
+      const checks = Object.fromEntries((plan.checklist || []).map((c) => [c.ref, c]));
+      const floors = Object.fromEntries((plan.floors || []).map((f) => [f.key, f]));
+      const rooms = {}; for (const f of plan.floors || []) for (const r of f.rooms || []) rooms[`room-${f.key}-${r.key}`] = { name: r.name, floor: f.key };
+      const what = (ref) => {
+        const it = items[ref], rec = recs[ref], rm = rooms[ref], ck = checks[ref];
+        if (it) return [it.label || ref, it.kind, it.floor];
+        if (rm) return [rm.name, "room", rm.floor];
+        if (ck) return [ck.label || ref, "check", ""];
+        if (rec) return [(rec.data && (rec.data.title || rec.data.label)) || ref, rec.kind, rec.floor];
+        return [ref, "", ""];
+      };
+      const local = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+      const origin = new URL(request.url).origin;
+      const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
+      const cols = ["floor", "ref", "item", "kind", "photo_kind", "taken_uk_time", "taken_at_utc", "time_source", "lat", "lng", "accuracy_m", "geo_source", "stamped", "file_name", "uploaded_at_utc", "link"];
+      const lines = [cols.join(",")];
+      for (const p of (await d.prepare(`SELECT * FROM survey_photos WHERE property_id = ? AND deleted = 0 ORDER BY julianday(COALESCE(taken_at, created_at)), created_at, id`).bind(pid).all()).results || []) {
+        const [label, kind, floor] = what(p.ref);
+        lines.push([floors[floor] ? floors[floor].name : floor, p.ref, label, kind, p.photo_kind || "photo", p.taken_at ? local.format(new Date(p.taken_at)).replace(",", "") : "",
+          p.taken_at || "", p.time_source || "", p.lat ?? "", p.lng ?? "", p.accuracy_m != null ? Math.round(p.accuracy_m) : "", p.geo_source || "", p.stamped ? "yes" : "no",
+          p.file_name || "", p.created_at || "", `${origin}/api/survey/photo/${p.id}`].map(cell).join(","));
+      }
+      return new Response(lines.join("\r\n"), {
+        headers: { "content-type": "text/csv; charset=utf-8", "content-disposition": `attachment; filename="photos-${pid}-${new Date().toISOString().slice(0, 10)}.csv"`, "cache-control": "no-store" },
       });
     }
 

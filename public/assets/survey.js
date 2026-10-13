@@ -13,6 +13,10 @@
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const COL = { todo: "#9a978f", part: "#c27c00", done: "#1b7a3a", absent: "#a12a2a", pin: "#1f4e9c" };
   const ROOMFILL = { todo: "#fbf8f0", part: "#fbefd6", done: "#e2f1e5" };
+  // RdSAP building parts: an extension's colour replaces the progress fill (Main keeps it); hues kept clear of the status colours
+  const PARTS = ["Main", "Ext 1", "Ext 2", "Ext 3", "Ext 4"];
+  const PART_COL = { "Ext 1": { fill: "#d3e3ff", line: "#2f6fd6" }, "Ext 2": { fill: "#e6d8f8", line: "#7b4cc2" }, "Ext 3": { fill: "#ffd9cc", line: "#d0532a" }, "Ext 4": { fill: "#c9efec", line: "#1f8f87" } };
+  const LEGEND_BASE = `<span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin / pre-filled</span>`;
 
   // ---------- state ----------
   let plan = null, floorKey = null, selected = null, addMode = null, authLost = false, online = navigator.onLine;
@@ -27,7 +31,7 @@
 
   // ---------- helpers ----------
   const roomRef = (fk, key) => `room-${fk}-${key}`;
-  const floorOf = (k) => plan.floors.find((f) => f.key === k);
+  const floorOf = (k) => (plan ? plan.floors.find((f) => f.key === k) : undefined);   // a resize can draw before the plan has loaded
   const curFloor = () => floorOf(floorKey);
   const centroid = (p) => { let A = 0, cx = 0, cy = 0; for (let i = 0; i < p.length; i++) { const [x1, y1] = p[i], [x2, y2] = p[(i + 1) % p.length]; const c = x1 * y2 - x2 * y1; A += c; cx += (x1 + x2) * c; cy += (y1 + y2) * c; } return A ? [cx / (3 * A), cy / (3 * A)] : p[0]; };
   const inPoly = (x, y, p) => { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; };
@@ -58,6 +62,13 @@
     if (!it || d._pf) return { d, pre: {} };
     const pre = {}; for (const [k, v] of Object.entries(it.prefill)) if (d[k] === undefined) pre[k] = v;
     return { d: { ...pre, ...d }, pre };
+  }
+  const partOf = (ref) => { const r = records.get(ref); const v = r && !r.deleted && r.data ? r.data.part : ""; return PARTS.includes(v) ? v : ""; };
+  let legendKey = "";
+  function updateLegend() {   // the extension colours in use anywhere in the plan
+    const used = PARTS.filter((pt) => PART_COL[pt] && plan.floors.some((f) => f.rooms.some((r) => partOf(roomRef(f.key, r.key)) === pt)));
+    const key = used.join("|"); if (key === legendKey) return; legendKey = key; const el = $("sv-legend"); if (!el) return;
+    el.innerHTML = LEGEND_BASE + used.map((pt) => `<span><i style="background:${PART_COL[pt].fill};box-shadow:inset 0 0 0 2px ${PART_COL[pt].line}"></i>${esc(pt)}</span>`).join("");
   }
   const nPhotos = (ref) => (photos.get(ref) || []).length + (pending.get(ref) || []).length;
   function status(ref, kind) {
@@ -207,7 +218,122 @@
   window.addEventListener("offline", () => { online = false; updateStatus(); });
   window.addEventListener("beforeunload", (e) => { if (Object.keys(queue).length || [...pending.values()].some((a) => a.length)) { persistQueue(); e.preventDefault(); e.returnValue = ""; } });
 
+  // ---------- photo stamps: date/time + GPS burned into the image (not on laser photos) ----------
+  // location: a watch started on the first "Take photo" tap (or at load when already allowed), stopped after 5 quiet minutes
+  let geoFix = null, geoWatch = null, geoDenied = false, geoWaiters = [], geoIdle = 0;
+  const geoWake = () => { const w = geoWaiters; geoWaiters = []; w.forEach((f) => f()); };
+  function stopGeo() { if (geoWatch !== null) { try { navigator.geolocation.clearWatch(geoWatch); } catch {} geoWatch = null; } }
+  let geoWarned = false;
+  function geoBlocked() { geoDenied = true; stopGeo(); if (!geoWarned) { geoWarned = true; toast(window.isSecureContext === false ? "Location needs a secure (https) page: photos get the date and time only" : "Location is blocked for this site: photos get the date and time only"); } }
+  function startGeo() {
+    clearTimeout(geoIdle); geoIdle = setTimeout(stopGeo, 5 * 60000);
+    if (geoDenied) { geoBlocked(); return; }
+    if (geoWatch !== null || !navigator.geolocation) return;
+    try {
+      geoWatch = navigator.geolocation.watchPosition(
+        (p) => { geoFix = { lat: p.coords.latitude, lng: p.coords.longitude, acc: p.coords.accuracy, t: Math.min(Date.now(), p.timestamp || Date.now()) }; geoWake(); },
+        (e) => { if (e && e.code === 1) geoBlocked(); geoWake(); },
+        { enableHighAccuracy: true, maximumAge: 15000, timeout: 60000 });
+    } catch { geoWatch = null; }
+  }
+  // the freshest fix (under 2 minutes old), waiting up to `ms` for one of 30 m or better
+  async function fixNow(ms = 8000) {
+    const fresh = () => (geoFix && Date.now() - geoFix.t < 120000 ? geoFix : null);
+    if (geoDenied) { geoBlocked(); return fresh(); }
+    if (!navigator.geolocation) return fresh();
+    startGeo(); const until = Date.now() + ms;
+    while (!(fresh() && fresh().acc <= 30) && Date.now() < until && !geoDenied) await new Promise((ok) => { const to = setTimeout(ok, until - Date.now()); geoWaiters.push(() => { clearTimeout(to); ok(); }); });
+    return fresh();
+  }
+  // EXIF from a JPEG: DateTimeOriginal (+ offset) and GPS, for photos picked from the library
+  async function readExif(file) {
+    try {
+      const b = new DataView(await file.slice(0, 262144).arrayBuffer());
+      if (b.byteLength < 4 || b.getUint16(0) !== 0xffd8) return {};
+      for (let off = 2; off + 10 <= b.byteLength;) {
+        const marker = b.getUint16(off), len = b.getUint16(off + 2);
+        if (marker === 0xffe1 && b.getUint32(off + 4) === 0x45786966) return parseTiff(b, off + 10);   // "Exif\0\0"
+        if ((marker & 0xff00) !== 0xff00 || marker === 0xffda) break;
+        off += 2 + len;
+      }
+    } catch {}
+    return {};
+  }
+  function parseTiff(b, t) {
+    const le = b.getUint16(t) === 0x4949, u16 = (o) => b.getUint16(t + o, le), u32 = (o) => b.getUint32(t + o, le);
+    const ifd = (o) => { const n = u16(o), out = {}; for (let i = 0; i < n; i++) { const e = o + 2 + i * 12; out[u16(e)] = { type: u16(e + 2), count: u32(e + 4), at: e + 8 }; } return out; };
+    const str = (en) => { const at = en.count > 4 ? u32(en.at) : en.at; let s = ""; for (let i = 0; i < en.count; i++) { const c = b.getUint8(t + at + i); if (!c) break; s += String.fromCharCode(c); } return s; };
+    const rats = (en) => { const at = u32(en.at), out = []; for (let i = 0; i < en.count; i++) { const den = u32(at + i * 8 + 4); out.push(den ? u32(at + i * 8) / den : 0); } return out; };
+    const num1 = (en) => { const sz = { 3: 2, 4: 4, 5: 8, 9: 4, 10: 8, 11: 4, 12: 8 }[en.type]; if (!sz) return null; const at = sz > 4 ? u32(en.at) : en.at;   // first value of any numeric type
+      return en.type === 3 ? u16(at) : en.type === 4 ? u32(at) : en.type === 9 ? b.getInt32(t + at, le) : en.type === 11 ? b.getFloat32(t + at, le) : en.type === 12 ? b.getFloat64(t + at, le)
+        : (() => { const den = en.type === 10 ? b.getInt32(t + at + 4, le) : u32(at + 4); return den ? (en.type === 10 ? b.getInt32(t + at, le) : u32(at)) / den : null; })(); };
+    const out = {}, i0 = ifd(u32(4)), ex = i0[0x8769] ? ifd(u32(i0[0x8769].at)) : {};
+    const dt = ex[0x9003] ? str(ex[0x9003]) : "", m = /^(\d{4}):(\d\d):(\d\d) (\d\d):(\d\d):(\d\d)/.exec(dt);
+    if (m) { const tz = ex[0x9011] ? str(ex[0x9011]) : ""; const d = new Date(`${m[1]}-${m[2]}-${m[3]}T${m[4]}:${m[5]}:${m[6]}${/^[+-]\d\d:\d\d$/.test(tz) ? tz : ""}`); if (!isNaN(d)) out.time = d.getTime(); }
+    if (i0[0x8825]) {
+      const g = ifd(u32(i0[0x8825].at));
+      if (g[2] && g[4] && g[2].type === 5 && g[4].type === 5 && g[2].count === 3 && g[4].count === 3) {
+        const dms = (en) => { const [d0, m0, s0] = rats(en); return d0 + m0 / 60 + s0 / 3600; };
+        let lat = dms(g[2]), lng = dms(g[4]); if (g[1] && str(g[1]) === "S") lat = -lat; if (g[3] && str(g[3]) === "W") lng = -lng;
+        if (Math.abs(lat) <= 90 && Math.abs(lng) <= 180 && (lat || lng)) { out.lat = lat; out.lng = lng; if (g[31]) { const a = num1(g[31]); if (a != null && a >= 0 && a < 1e5) out.acc = a; } }
+      }
+    }
+    return out;
+  }
+  // when a photo was taken, decided the moment it arrives: camera = phone clock (or its EXIF time when within 10 min); library =
+  // EXIF time, else a real past file date, else "added" (the pick time, flagged). Location: its own EXIF GPS, else "pending" = a live
+  // fix for fresh photos only (so an old photo never gets today's position), else none.
+  async function photoTime(file, from, picked) {
+    const ex = await readExif(file), lm = Number(file.lastModified) || 0;
+    // "Take photo" can hand back an existing file (desktop browsers ignore capture=, Android falls back to the chooser): an old one is a library pick
+    if (from === "camera" && ((ex.time && Math.abs(picked - ex.time) >= 10 * 60000) || (lm && picked - lm >= 10 * 60000))) from = "library";
+    let time = picked, src = "device";
+    if (ex.time && (from === "library" || Math.abs(picked - ex.time) < 10 * 60000)) { time = ex.time; src = "exif"; }
+    else if (from === "library") { if (lm && picked - lm > 2 * 60000) { time = lm; src = "file"; } else src = "added"; }
+    const meta = { taken_at: new Date(time).toISOString(), time_source: src };
+    if (ex.lat != null) Object.assign(meta, { lat: ex.lat, lng: ex.lng, acc: ex.acc ?? null, geo_source: "exif" });
+    else meta.geo_source = (src === "device" || src === "exif") && Math.abs(picked - time) < 10 * 60000 ? "pending" : "none";
+    return meta;
+  }
+  const UK_TIME = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", day: "2-digit", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23", timeZoneName: "short" });
+  const UK_PARTS = new Intl.DateTimeFormat("en-GB", { timeZone: "Europe/London", year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hourCycle: "h23" });
+  const fileStamp = (ms) => { const p = Object.fromEntries(UK_PARTS.formatToParts(new Date(ms)).map((x) => [x.type, x.value])); return `${p.year}-${p.month}-${p.day}_${p.hour}-${p.minute}-${p.second}`; };
+  function stampItem(ref) {
+    const e = entity(ref); if (!e) return ""; const f = e.floor ? floorOf(e.floor) : null;
+    if (e.kind === "room") return `${e.label}${f ? ` (${f.name})` : ""}`;
+    const rk = e.room || ((records.get(ref) || {}).data || {}).room; const room = f && rk ? f.rooms.find((q) => q.key === rk) : null;
+    return [e.kind === "evidence" ? ((records.get(ref) || {}).data || {}).title || e.label : e.label, room ? room.name : f ? f.name : ""].filter(Boolean).join(" · ");
+  }
+  function stampLines(ref, m) {   // m = photo meta (taken_at, time_source, lat/lng/acc)
+    const where = m.lat != null ? `${(+m.lat).toFixed(5)}, ${(+m.lng).toFixed(5)}${m.acc != null ? ` ±${Math.max(1, Math.round(m.acc))} m` : ""}` : "location not available";
+    const when = `${UK_TIME.format(new Date(m.taken_at)).replace(",", "")}${m.time_source === "file" ? " (file date)" : m.time_source === "added" ? " (time added, not taken)" : ""}`;
+    return [`${when} · ${where}`, [propTitle, stampItem(ref)].filter(Boolean).join(" · ")];
+  }
+  // draw the photo (EXIF orientation applied, longest side <= max) with a dark strip of white text along the bottom
+  async function stampImage(file, lines, max = 2560) {
+    try {
+      let src;
+      try { src = await createImageBitmap(file, { imageOrientation: "from-image" }); }
+      catch { src = await new Promise((ok, no) => { const im = new Image(); im.onload = () => ok(im); im.onerror = no; im.src = URL.createObjectURL(file); }); }
+      const sc = Math.min(1, max / Math.max(src.width, src.height)), c = document.createElement("canvas");
+      c.width = Math.round(src.width * sc); c.height = Math.round(src.height * sc);
+      const g = c.getContext("2d"); g.drawImage(src, 0, 0, c.width, c.height); if (src.close) src.close();
+      const fs = Math.max(14, Math.round(Math.min(c.width, c.height) * 0.024)), pad = Math.round(fs * 0.55), lh = Math.round(fs * 1.28), bar = lines.length * lh + pad * 2;
+      g.fillStyle = "rgba(0,0,0,0.62)"; g.fillRect(0, c.height - bar, c.width, bar);
+      g.font = `600 ${fs}px system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif`; g.fillStyle = "#fff"; g.textBaseline = "top";
+      lines.forEach((text, i) => {
+        let t = text; const room = c.width - pad * 2;
+        while (t.length > 4 && g.measureText(t).width > room) t = `${t.slice(0, -2).trimEnd()}…`;
+        g.fillText(t, pad, c.height - bar + pad + i * lh);
+      });
+      const b = await new Promise((ok) => c.toBlob(ok, "image/jpeg", 0.88));
+      return b && b.size ? b : null;
+    } catch { return null; }   // undecodable (e.g. HEIC in Chrome): uploaded unstamped, the time/GPS still go with it
+  }
+  const latin1 = (s) => String(s || "").replace(/[^\x20-\x7e]/g, "_");   // header values must be Latin-1 or fetch throws
+
   // ---------- photos (IndexedDB queue) ----------
+  let propTitle = "";
   let idbP = null;
   const idb = () => idbP || (idbP = new Promise((res, rej) => { const r = indexedDB.open("dbk-survey", 1); r.onupgradeneeded = () => r.result.createObjectStore("photos", { keyPath: "id" }); r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error); }));
   const idbDo = async (mode, fn) => { const d = await idb(); return new Promise((res, rej) => { const t = d.transaction("photos", mode); const st = t.objectStore("photos"); const req = fn(st); t.oncomplete = () => res(req && req.result); t.onerror = () => rej(t.error); }); };
@@ -228,23 +354,48 @@
       return b && b.size ? b : file;
     } catch { return file; }
   }
-  async function addPhotos(ref, files) {
+  // opts.from: "camera" | "library"; opts.laser: a laser-display photo (kept as evidence, never stamped or located)
+  const idbRec = (o) => ({ id: o.id, pid: o.pid, ref: o.ref, blob: o.blob, type: o.type, name: o.name, ts: o.ts, meta: o.meta, prep: o.prep ? 1 : 0 });
+  async function addPhotos(ref, files, opts = {}) {
     const r = ensureRec(ref); if (!records.get(ref).client_ts) touch(r);   // make sure the record (pin position etc.) exists too
+    const kind = opts.laser ? "laser" : "photo", from = opts.from === "library" ? "library" : "camera", picked = Date.now(), batch = [];
+    // 1) every file is on the phone (IndexedDB) straight away, with its time already decided - nothing waits on GPS first
     for (const file of files) {
-      const blob = await shrink(file);
-      const o = { id: uid(), pid: PID, ref, blob, type: blob.type || file.type || "image/jpeg", name: file.name || "photo.jpg", ts: Date.now() };
-      await idbPut(o);
-      o.url = URL.createObjectURL(blob);
+      const o = { id: uid(), pid: PID, ref, blob: file, type: file.type || "image/jpeg", name: latin1(file.name || "photo.jpg"), ts: picked, prep: true, url: URL.createObjectURL(file) };
+      o.meta = kind === "photo" ? { kind, ...(await photoTime(file, from, picked)) } : { kind };
       if (!pending.has(ref)) pending.set(ref, []);
-      pending.get(ref).push(o);
-      upload(o);
+      pending.get(ref).push(o); await idbPut(idbRec(o)); batch.push(o);
     }
     refreshSheetPhotos(ref); render(); updateStatus();
+    // 2) one live fix for the whole batch (only fresh photos without their own GPS ask for it)
+    const fix = batch.some((o) => o.meta.geo_source === "pending") ? await fixNow() : null;
+    // 3) stamp and upload each
+    for (const o of batch) await finishPhoto(o, fix);
+    refreshSheetPhotos(ref); render(); updateStatus();
+  }
+  // stamp (photos) or shrink (laser), replace the queued raw file, upload; also finishes photos a reload interrupted (fix = null then)
+  async function finishPhoto(o, fix) {
+    const m = o.meta || (o.meta = { kind: "photo" }); let blob = null;
+    if (m.kind === "photo" && m.taken_at) {
+      if (m.geo_source === "pending") { if (fix) Object.assign(m, { lat: fix.lat, lng: fix.lng, acc: fix.acc, geo_source: "device" }); else m.geo_source = "none"; }
+      blob = await stampImage(o.blob, stampLines(o.ref, m)); m.stamped = blob ? 1 : 0;
+      if (blob) o.name = `${latin1(labelOf(o.ref)).replace(/[^A-Za-z0-9-]+/g, "_").slice(0, 40) || "photo"}_${fileStamp(Date.parse(m.taken_at))}.jpg`;
+    }
+    if (!blob) blob = await shrink(o.blob);
+    if (o.cancelled) return;   // removed while it was being stamped
+    URL.revokeObjectURL(o.url);
+    Object.assign(o, { blob, type: blob.type || o.type || "image/jpeg", prep: false, url: URL.createObjectURL(blob) });
+    await idbPut(idbRec(o)); refreshSheetPhotos(o.ref); upload(o);
   }
   async function upload(o) {
-    if (o.busy || authLost) return; o.busy = true; updateStatus(true);
+    if (o.busy || o.prep || authLost) return; o.busy = true; updateStatus(true);
     try {
-      const res = await fetch(`${API}/records/${encodeURIComponent(o.ref)}/photos`, { method: "POST", headers: { "content-type": o.type, "x-photo-id": o.id, "x-file-name": o.name, "x-requested-with": "fetch" }, body: o.blob });
+      const m = o.meta || {}, h = { "content-type": o.type, "x-photo-id": o.id, "x-file-name": latin1(o.name), "x-requested-with": "fetch", "x-photo-kind": m.kind || "photo" };
+      if (m.taken_at) { h["x-taken-at"] = m.taken_at; h["x-time-source"] = m.time_source || ""; }
+      if (m.geo_source) h["x-geo-source"] = m.geo_source;
+      if (m.lat != null && m.lng != null) { h["x-lat"] = String(m.lat); h["x-lng"] = String(m.lng); if (m.acc != null) h["x-acc"] = String(m.acc); }
+      if (m.stamped != null) h["x-stamped"] = String(m.stamped);
+      const res = await fetch(`${API}/records/${encodeURIComponent(o.ref)}/photos`, { method: "POST", headers: h, body: o.blob });
       if (res.status === 401) { authLost = true; return; }
       const j = await res.json().catch(() => ({}));
       if (!res.ok || !j.ok) { o.failed = j.error || `HTTP ${res.status}`; return; }
@@ -276,7 +427,7 @@
   }
   async function deletePhoto(ref, id) {
     const pend = (pending.get(ref) || []).find((p) => p.id === id);
-    if (pend) { if (!confirm("This photo has not uploaded yet. Remove it?")) return; pending.set(ref, pending.get(ref).filter((p) => p.id !== id)); await idbDel(id); refreshSheetPhotos(ref); render(); updateStatus(); return; }
+    if (pend) { if (!confirm("This photo has not uploaded yet. Remove it?")) return; pend.cancelled = true; pending.set(ref, pending.get(ref).filter((p) => p.id !== id)); await idbDel(id); refreshSheetPhotos(ref); render(); updateStatus(); return; }
     const photo = (photos.get(ref) || []).find((p) => p.id === id);
     if (await photoRemove(ref, id)) { pushHistory({ type: "photo-del", ref, photo, label: `${labelOf(ref)}: photo removed` }); toast("Photo removed", true); }
     else alert("Could not remove the photo (no connection?). Try again later.");
@@ -302,14 +453,19 @@
     let h = ""; hits = [];
     if (f.outline) h += `<polygon class="outline" points="${P(f.outline)}"/>`;
     for (const r of f.rooms) {
-      const ref = roomRef(f.key, r.key), st = status(ref, "room");
-      h += `<polygon class="room${selected === ref ? " hit" : ""}" fill="${ROOMFILL[st] || ROOMFILL.todo}" points="${P(r.poly)}"/>`;
+      const ref = roomRef(f.key, r.key), st = status(ref, "room"), pc = PART_COL[partOf(ref)];
+      h += `<polygon class="room${selected === ref ? " hit" : ""}" fill="${pc ? pc.fill : ROOMFILL[st] || ROOMFILL.todo}" points="${P(r.poly)}"/>`;
+      if (pc) h += `<polygon points="${P(r.poly)}" fill="none" stroke="${pc.line}" stroke-width="3" stroke-linejoin="round" opacity=".85" pointer-events="none"/>`;
     }
+    const selRoom = f.rooms.find((r) => roomRef(f.key, r.key) === selected);   // the selection ring on top of any part outline
+    if (selRoom) h += `<polygon class="room hit" fill="none" pointer-events="none" points="${P(selRoom.poly)}"/>`;
+    updateLegend();
     for (const r of f.rooms) {
       const ref = roomRef(f.key, r.key), b = bbox(r.poly.map(S)), wpx = b.x1 - b.x0, hpx = b.y1 - b.y0;
       if (Math.min(wpx, hpx) < 34) continue;
       const [cx, cy] = S(centroid(r.poly)); const d = (records.get(ref) || {}).data || {};
       const name = r.name.replace(/\s*\(.*\)\s*$/, ""); const maxCh = Math.max(4, Math.floor(wpx / 7));
+      const pt = partOf(ref); if (PART_COL[pt] && hpx > 44) h += `<text class="rsub" x="${cx.toFixed(1)}" y="${(cy - 18).toFixed(1)}" text-anchor="middle" style="fill:${PART_COL[pt].line};font-weight:700">${esc(pt)}</text>`;
       h += `<text class="rlabel" x="${cx.toFixed(1)}" y="${(cy - 4).toFixed(1)}" text-anchor="middle">${esc(name.length > maxCh ? name.slice(0, maxCh - 1) + "…" : name)}</text>`;
       if (d.length_m && d.width_m) h += `<text class="rmeas" x="${cx.toFixed(1)}" y="${(cy + 10).toFixed(1)}" text-anchor="middle">${esc(d.length_m)} × ${esc(d.width_m)} m</text>`;
       else if (r.listing && hpx > 50) h += `<text class="rsub" x="${cx.toFixed(1)}" y="${(cy + 10).toFixed(1)}" text-anchor="middle">${esc(r.listing)}</text>`;
@@ -471,6 +627,7 @@
       { k: "notes", l: "Notes", t: "text" }],
     room: [{ k: "ceiling_m", l: "Room height (m)", t: "num", half: 1, dp: 2, recent: true }, { k: "storey", l: "Storey", t: "line", half: 1, ph: "e.g. room in roof" },
       { k: "length_m", l: "Length (m)", t: "num", half: 1, dp: 2 }, { k: "width_m", l: "Width (m)", t: "num", half: 1, dp: 2 },
+      { k: "part", l: "Building part (RdSAP)", t: "chips", o: PARTS, sw: { Main: "#fbf8f0", ...Object.fromEntries(Object.entries(PART_COL).map(([k, v]) => [k, v.line])) } },
       { k: "heated", l: "Heated?", t: "chips", o: ["Heated", "Unheated"] },
       { k: "emitters", l: "Heat emitters", t: "chips", o: ["Radiators", "Underfloor", "Storage heater", "Electric panel", "None", "Other"] },
       { k: "notes", l: "Notes", t: "text" }],
@@ -489,11 +646,12 @@
     if (f.t === "num" || f.t === "line") return `<div><label>${esc(f.l)}</label><input data-k="${f.k}"${dp} ${f.t === "num" ? 'inputmode="decimal" autocomplete="off"' : 'autocomplete="off"'} value="${esc(v ?? "")}" placeholder="${esc(f.ph || "")}"/></div>`;
     if (f.t === "text") return `<div><label>${esc(f.l)}</label><textarea data-k="${f.k}" placeholder="Type or dictate…">${esc(v ?? "")}</textarea></div>`;
     if (f.t === "bool") return `<label class="toggle"><input type="checkbox" data-k="${f.k}" ${v ? "checked" : ""}/> ${esc(f.l)}</label>`;
-    return `<div><label>${esc(f.l)}${tag}</label><div class="chips" data-chips="${f.k}">${f.o.map((o) => `<button type="button" class="chip${v === o ? " on" : ""}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+    return `<div><label>${esc(f.l)}${tag}</label><div class="chips" data-chips="${f.k}">${f.o.map((o) => `<button type="button" class="chip${v === o ? " on" : ""}" data-v="${esc(o)}">${f.sw && f.sw[o] ? `<i class="sw" style="background:${f.sw[o]}"></i>` : ""}${esc(o)}</button>`).join("")}</div></div>`;
   }
   function photosHtml(ref) {
-    const srv = (photos.get(ref) || []).map((p) => `<div class="ph"><a href="/api/survey/photo/${p.id}" target="_blank" rel="noopener"><img loading="lazy" src="/api/survey/photo/${p.id}" alt=""/></a><button class="del" data-del="${p.id}" aria-label="Remove">×</button></div>`);
-    const pen = (pending.get(ref) || []).map((p) => `<div class="ph"><img src="${p.url}" alt=""/><span class="wait">${p.failed ? "retrying" : "uploading"}</span><button class="del" data-del="${p.id}" aria-label="Remove">×</button></div>`);
+    const cap = (p) => (p.kind === "laser" ? "laser" : p.taken_at ? `${UK_TIME.format(new Date(p.taken_at)).replace(/^(\d+ \w+) \d{4},? (\d\d:\d\d).*$/, "$1 $2")}${p.lat != null ? " 📍" : ""}` : "");
+    const srv = (photos.get(ref) || []).map((p) => `<div class="ph"${p.taken_at ? ` title="${esc(UK_TIME.format(new Date(p.taken_at)))}${p.lat != null ? ` · ${(+p.lat).toFixed(5)}, ${(+p.lng).toFixed(5)}` : ""}"` : ""}>${cap(p) ? `<span class="cap">${esc(cap(p))}</span>` : ""}<a href="/api/survey/photo/${p.id}" target="_blank" rel="noopener"><img loading="lazy" src="/api/survey/photo/${p.id}" alt=""/></a><button class="del" data-del="${p.id}" aria-label="Remove">×</button></div>`);
+    const pen = (pending.get(ref) || []).map((p) => `<div class="ph"><img src="${p.url}" alt=""/><span class="wait">${p.prep ? "stamping…" : p.failed ? "retrying" : "uploading"}</span><button class="del" data-del="${p.id}" aria-label="Remove">×</button></div>`);
     return srv.concat(pen).join("") || '<span class="muted small">No photos yet.</span>';
   }
   function refreshSheetPhotos(ref) { if (selected === ref) { const el = sheet.querySelector(".photos"); if (el) el.innerHTML = photosHtml(ref); } }
@@ -541,7 +699,8 @@
 ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class="btn small" type="button" data-act="restore">Restore</button></div>' : ""}
 <form autocomplete="off" data-ref="${esc(ref)}" onsubmit="return false">${fields}</form>
 <label>Photos</label><div class="photos">${photosHtml(ref)}</div>
-<div class="addphoto"><label class="btn" style="flex:1">📷 Take photo<input type="file" accept="image/*" capture="environment" multiple hidden data-photo="1"/></label><label class="btn secondary" style="flex:1;color:var(--ink)">Add from library<input type="file" accept="image/*" multiple hidden data-photo="1"/></label></div>
+<div class="addphoto"><label class="btn" style="flex:1">📷 Take photo<input type="file" accept="image/*" capture="environment" multiple hidden data-photo="camera"/></label><label class="btn secondary" style="flex:1;color:var(--ink)">Add from library<input type="file" accept="image/*" multiple hidden data-photo="library"/></label></div>
+<div class="small muted" style="margin-top:6px">Photos are stamped with the date, time and GPS position.</div>
 <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${canMove && !removed ? '<button class="btn secondary small" type="button" data-act="move">Move on plan</button>' : ""}${canRemove && !removed ? `<button class="btn danger small" type="button" data-act="remove">Remove ${kind === "evidence" ? "pin" : kind} from plan</button>` : ""}</div>`;
     sheet.hidden = false;
   }
@@ -565,7 +724,7 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     if (t.dataset && t.dataset.dp) { commitDp(t, refOf(t)); return; }
     if (!selected) return;
     if (t.type === "checkbox" && t.dataset.k) setField(refOf(t), t.dataset.k, t.checked);
-    if (t.dataset && t.dataset.photo && t.files && t.files.length) { addPhotos(selected, [...t.files]); t.value = ""; }
+    if (t.dataset && t.dataset.photo && t.files && t.files.length) { addPhotos(selected, [...t.files], { from: t.dataset.photo }); t.value = ""; }
     if (t.dataset && t.dataset.laser && t.files && t.files.length) { readLaser(selected, t.files[0]); t.value = ""; }
   });
   // ---------- laser photo -> Claude vision -> pick readings ----------
@@ -573,7 +732,7 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     let box = sheet.querySelector(".lres"); if (!box) return;
     const e = entity(ref); const targets = e && e.kind === "room" ? [["length_m", "Length"], ["width_m", "Width"], ["ceiling_m", "Height"]] : [["width_m", "Width"], ["height_m", "Height"]];
     box.innerHTML = '<div class="muted small">Reading the display…</div>';
-    addPhotos(ref, [file]);   // the laser photo is kept as evidence on this item
+    addPhotos(ref, [file], { laser: true });   // the laser photo is kept as evidence on this item (no stamp, no location)
     let j = null;
     try {
       const img = await shrink(file, 1600);
@@ -587,6 +746,7 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     box.innerHTML = `<div class="small muted" style="margin:6px 0">Tap a button to use a reading (2 decimal places):</div>` + j.readings.map((r) => `<div class="lr"><div><b>${esc(r.m2)} m</b><small>${esc(r.text)}${r.role ? ` · ${esc(r.role)}` : ""}</small></div>${targets.map(([k, lab]) => `<button type="button" class="chip" data-assign="${k}" data-val="${esc(r.m2)}">${lab}</button>`).join("")}</div>`).join("");
   }
   sheet.addEventListener("click", (ev) => {
+    if (ev.target.closest(".addphoto label")) startGeo();   // the fix is usually ready by the time the photo comes back
     const chip = ev.target.closest(".chip");
     if (chip && selected && !chip.dataset.assign && !chip.dataset.setk) {
       const wrap = chip.parentElement, k = wrap.dataset.chips, v = chip.dataset.v; const { d: ed, pre } = effData(selected); const cur = ed[k];
@@ -659,7 +819,7 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     const removedList = removedItems()
       .map((i) => ({ ref: i.ref, label: i.label, sub: `${i.floor ? floorOf(i.floor).name : ""} · removed (tap to restore)`, st: "absent", np: nPhotos(i.ref) }));
     const wins = items.filter((i) => i.kind === "window"), doors = items.filter((i) => i.kind === "door");
-    const rooms = plan.floors.flatMap((f) => f.rooms.map((r) => ({ ref: roomRef(f.key, r.key), label: r.name, sub: f.name, kind: "room" })));
+    const rooms = plan.floors.flatMap((f) => f.rooms.map((r) => { const ref = roomRef(f.key, r.key), pt = partOf(ref); return { ref, label: r.name, sub: `${f.name}${pt ? ` · ${pt}` : ""}`, kind: "room" }; }));
     const evid = items.filter((i) => i.kind === "evidence");
     const tag = (x) => ({ ...x, st: status(x.ref, x.kind || "check"), np: nPhotos(x.ref) });
     const pfx = (i) => (i.prefill && i.prefill.age_evidence ? ` · ${i.prefill.age_evidence} pre-filled` : "");
@@ -673,7 +833,7 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
 <h2>Progress</h2><div class="sub">${esc(plan.address || "")}</div>
 ${bar("Windows", W)}${bar("External doors", D)}${bar("Rooms measured", R)}${bar("Evidence checklist", C)}${E.length ? bar("Evidence pins", E) : ""}
 <p class="small muted">${esc(plan.note || "")}</p>
-<p><a download class="btn secondary small" href="${API}/export.csv">Download CSV</a></p>
+<p style="display:flex;gap:8px;flex-wrap:wrap"><a download class="btn secondary small" href="${API}/export.csv">Download CSV</a><a download class="btn secondary small" href="${API}/photos.csv">Photo log (time + GPS)</a></p>
 <h3>Evidence checklist</h3>${rows(C)}
 <h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}${removedList.length ? `<h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Removed from the plan <button class="btn secondary small" type="button" data-act="restore-all">Restore all (${removedList.length})</button></h3>${rows(removedList)}` : ""}
 ${startAgain()}</div>`;
@@ -701,6 +861,8 @@ ${startAgain()}</div>`;
       online = false;
     }
     plan = j.property.plan;
+    propTitle = j.property.title || plan.title || "";
+    try { if (navigator.permissions) navigator.permissions.query({ name: "geolocation" }).then((s) => { if (s.state === "granted") startGeo(); else if (s.state === "denied") geoDenied = true; }).catch(() => {}); } catch {}
     $("sv-name").textContent = j.property.title || plan.title; $("sv-visit").textContent = [plan.visit, j.property.address].filter(Boolean).join(" · ");
     document.title = `${j.property.title} · Survey`;
     for (const r of j.records) records.set(r.ref, r);
@@ -710,7 +872,9 @@ ${startAgain()}</div>`;
       const r = records.get(ref);
       if (!r || (q.client_ts || 0) > (r.client_ts || 0)) records.set(ref, { ref, ...q });
     }
-    for (const o of await idbAll()) if (o.pid === PID) { o.url = URL.createObjectURL(o.blob); if (!pending.has(o.ref)) pending.set(o.ref, []); pending.get(o.ref).push(o); }
+    const unfinished = [];
+    for (const o of await idbAll()) if (o.pid === PID) { o.url = URL.createObjectURL(o.blob); if (o.prep) { o.prep = true; unfinished.push(o); } else o.prep = false; if (!pending.has(o.ref)) pending.set(o.ref, []); pending.get(o.ref).push(o); }
+    if (unfinished.length) setTimeout(async () => { for (const o of unfinished) await finishPhoto(o, null); updateStatus(); }, 0);   // interrupted while stamping
     $("sv-undo").onclick = () => undo(); $("sv-redo").onclick = () => redo(); updateUndo();
     $("sv-floors").innerHTML = plan.floors.map((f) => `<button type="button" data-k="${esc(f.key)}">${esc(f.name)}</button>`).join("");
     $("sv-floors").onclick = (ev) => { const b = ev.target.closest("button"); if (b) { closeSheet(); setFloor(b.dataset.k); } };

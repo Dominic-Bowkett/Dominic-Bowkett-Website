@@ -19,6 +19,11 @@
 /apple-touch-icon.png
   Cache-Control: public, max-age=86400
 
+# On-site survey app: photo stamps need the phone's location (the site-wide rule above switches it off)
+/admin/survey/*
+  ! Permissions-Policy
+  Permissions-Policy: geolocation=(self), microphone=(), camera=(self), interest-cohort=()
+
 # Invoicing system: private pages, never indexed or framed.
 /admin*
   X-Robots-Tag: noindex, nofollow

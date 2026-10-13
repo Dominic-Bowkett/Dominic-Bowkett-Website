@@ -1,6 +1,8 @@
 // HTML shells for /admin/survey pages (list + capture app). The app itself is /assets/survey.js.
 
-export const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex" };
+// the survey app stamps photos with GPS, so this page (only) may use the phone's location; everything else on the site keeps geolocation=()
+export const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "no-store", "x-robots-tag": "noindex",
+  "permissions-policy": "geolocation=(self), microphone=(), camera=(self), interest-cohort=()" };
 export const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]);
 
 const CSS = `
@@ -36,7 +38,7 @@ export function page(inner, { title = "Surveys", app = false, appCss = "" } = {}
 <title>${esc(title)} · Survey · Dominic Bowkett</title>
 <link rel="icon" href="/favicon.ico" sizes="any" /><link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-<style>${CSS}${appCss}</style></head><body>${inner}${app ? '<script src="/assets/survey.js?v=6" defer></script>' : ""}</body></html>`;
+<style>${CSS}${appCss}</style></head><body>${inner}${app ? '<script src="/assets/survey.js?v=7" defer></script>' : ""}</body></html>`;
 }
 
 export function loginPage(url, env) {
