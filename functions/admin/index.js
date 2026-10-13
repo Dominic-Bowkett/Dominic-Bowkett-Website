@@ -88,7 +88,7 @@ export async function onRequestGet({ request, env }) {
   const renewed = { ...headers, "Set-Cookie": await sessionCookie(env) };
   return new Response(
     shell(`<header class="bar"><span class="brand">Invoicing</span>
-<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Partners</a><a href="#setup" data-nav="setup">Setup</a></nav>
+<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Partners</a><a href="#setup" data-nav="setup">Setup</a><a href="/admin/survey">Surveys</a></nav>
 <div class="right"><a class="btn secondary small" href="/api/admin/export.csv">Export CSV</a><form method="post" action="/admin/logout"><button class="btn secondary small" type="submit">Sign out</button></form></div></header>
 <main id="app"><p class="muted">Loading…</p></main>`, { app: true }),
     { status: 200, headers: renewed }

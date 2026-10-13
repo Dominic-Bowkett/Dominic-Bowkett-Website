@@ -19,6 +19,11 @@ binding = "DB"
 database_name = "dominicbowkett-invoices"
 database_id = "34d87068-e4c9-4978-8a5d-1a4949ad9fda"
 
+# --- On-site survey photos (/admin/survey), created 13 Oct 2026 with `wrangler r2 bucket create dominicbowkett-survey-files` ---
+[[r2_buckets]]
+binding = "SURVEY_FILES"
+bucket_name = "dominicbowkett-survey-files"
+
 # --- Enquiry unsubscribe feature: uncomment once the KV namespace exists ---
 # Suppression list for unsubscribed enquiry contacts.
 #   wrangler kv namespace create SUPPRESSED
