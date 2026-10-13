@@ -6,8 +6,9 @@
 //   DELETE /api/survey/properties/:pid/photos/:photoId         hide a photo (the R2 object is kept)
 //   GET    /api/survey/properties/:pid/export.csv              windows, doors, rooms and evidence as CSV
 //   GET    /api/survey/photo/:photoId                          the image itself
+//   GET    /api/survey/doc/:docId[?dl=1]                       a property document (PDF etc.), inline or as a download
 import { isAdmin, sameOrigin } from "../../_shared/auth.js";
-import { surveyDb, REF_RE, PHOTO_ID_RE, KINDS, recordOut, photoOut } from "../../_shared/survey.js";
+import { surveyDb, REF_RE, PHOTO_ID_RE, KINDS, recordOut, photoOut, docOut, INLINE_TYPES } from "../../_shared/survey.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -32,6 +33,23 @@ export async function onRequest({ request, env, params }) {
       return new Response(obj.body, { headers: { "content-type": row.content_type || "image/jpeg", "cache-control": "private, max-age=604800, immutable" } });
     }
 
+    if (head === "doc" && pid && method === "GET") {
+      if (!PHOTO_ID_RE.test(pid)) return json({ ok: false, error: "Bad id" }, 400);
+      const row = await d.prepare(`SELECT * FROM survey_docs WHERE id = ? AND deleted = 0`).bind(pid).first();
+      if (!row || !env.SURVEY_FILES) return json({ ok: false, error: "Not found" }, 404);
+      const obj = await env.SURVEY_FILES.get(row.r2_key);
+      if (!obj) return json({ ok: false, error: "Not found" }, 404);
+      const type = String(row.content_type || "application/octet-stream").toLowerCase();
+      const name = String(row.file_name || "document").replace(/[\r\n"\\]/g, "");
+      const ascii = name.replace(/[^\x20-\x7e]/g, "_");
+      const inline = INLINE_TYPES.has(type) && new URL(request.url).searchParams.get("dl") !== "1";
+      return new Response(obj.body, { headers: {
+        "content-type": INLINE_TYPES.has(type) ? type : "application/octet-stream",
+        "content-disposition": `${inline ? "inline" : "attachment"}; filename="${ascii}"; filename*=UTF-8''${encodeURIComponent(name)}`,
+        "cache-control": "private, no-store",
+      } });
+    }
+
     if (head !== "properties") return json({ ok: false, error: "Unknown endpoint" }, 404);
 
     if (!pid && method === "GET") {
@@ -51,11 +69,13 @@ export async function onRequest({ request, env, params }) {
     if (!sub && method === "GET") {
       const recs = await d.prepare(`SELECT * FROM survey_records WHERE property_id = ?`).bind(pid).all();
       const photos = await d.prepare(`SELECT * FROM survey_photos WHERE property_id = ? AND deleted = 0 ORDER BY created_at`).bind(pid).all();
+      const docs = await d.prepare(`SELECT * FROM survey_docs WHERE property_id = ? AND deleted = 0 ORDER BY sort, created_at`).bind(pid).all();
       return json({
         ok: true,
         property: { id: prop.id, title: prop.title, address: prop.address, visit: prop.visit, plan: JSON.parse(prop.plan_json) },
         records: (recs.results || []).map(recordOut),
         photos: (photos.results || []).map(photoOut),
+        docs: (docs.results || []).map(docOut),
         photos_enabled: !!env.SURVEY_FILES,
       });
     }

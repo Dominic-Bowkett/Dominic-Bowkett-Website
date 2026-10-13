@@ -21,6 +21,9 @@ textarea{min-height:84px;resize:vertical}
 .list{max-width:760px;margin:0 auto;padding:18px 14px 60px}
 .list h1{font-size:20px;margin:6px 0 14px}
 .pcard{display:block;background:#fff;border:1px solid var(--rule);border-radius:10px;padding:16px;margin-bottom:12px;text-decoration:none}
+.pcard a.open{display:block;text-decoration:none;color:var(--ink)}
+.docs{margin-top:14px;border-top:1px solid var(--rule);padding-top:10px}.docs .dh{font-size:12px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.doc{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0eee9}.doc a:first-child{flex:1;min-width:0;font-weight:500;overflow-wrap:anywhere}.doc .btn{flex:none}.doc:last-child{border-bottom:0}
 .pcard h2{font-size:16px;margin:0 0 4px}.pcard .row{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--muted)}
 .topnav{display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--rule)}
 .topnav .brand{font-weight:600}.topnav .right{margin-left:auto;display:flex;gap:8px}
@@ -33,7 +36,7 @@ export function page(inner, { title = "Surveys", app = false, appCss = "" } = {}
 <title>${esc(title)} · Survey · Dominic Bowkett</title>
 <link rel="icon" href="/favicon.ico" sizes="any" /><link rel="apple-touch-icon" href="/apple-touch-icon.png" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
-<style>${CSS}${appCss}</style></head><body>${inner}${app ? '<script src="/assets/survey.js?v=3" defer></script>' : ""}</body></html>`;
+<style>${CSS}${appCss}</style></head><body>${inner}${app ? '<script src="/assets/survey.js?v=4" defer></script>' : ""}</body></html>`;
 }
 
 export function loginPage(url, env) {

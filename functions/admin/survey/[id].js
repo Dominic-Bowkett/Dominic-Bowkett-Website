@@ -54,6 +54,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .prow .dot{width:12px;height:12px;border-radius:50%;flex:none;background:var(--todo)}
 .prow .dot.part{background:var(--part)}.prow .dot.done{background:var(--ok)}.prow .dot.absent{background:var(--bad)}
 .prow .t{flex:1;min-width:0}.prow .t small{display:block;color:var(--muted)}
+.dlist .doc{display:flex;align-items:center;gap:10px;padding:12px 2px;border-bottom:1px solid #eeece6}.dlist .doc .t{flex:1;min-width:0}.dlist .doc .t small{display:block;color:var(--muted);overflow-wrap:anywhere;word-break:break-all}
 .bar{height:8px;background:#e7e4dd;border-radius:4px;overflow:hidden;margin:4px 0 2px}.bar i{display:block;height:100%;background:var(--ok)}
 `;
 
@@ -67,7 +68,7 @@ export async function onRequestGet({ request, env, params }) {
 <div class="sv-title"><b id="sv-name">Loading…</b><span class="muted small" id="sv-visit"></span></div>
 <span id="sv-status" class="pill">Loading</span></header>
 <div class="sv-bar"><div id="sv-floors" class="seg"></div>
-<div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
+<div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-docs" type="button">Docs</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
 <div id="sv-stage"><svg id="sv-plan" xmlns="http://www.w3.org/2000/svg"></svg><div id="sv-hint"></div>
 <div id="sv-legend"><span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin / pre-filled</span></div></div>
 <aside id="sv-sheet" class="sheet" hidden></aside>

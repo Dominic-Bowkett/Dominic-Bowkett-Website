@@ -19,6 +19,7 @@
   const records = new Map();   // ref -> {ref, kind, floor, x, y, data, deleted, client_ts}
   const photos = new Map();    // ref -> [server photo]
   const pending = new Map();   // ref -> [{id, blob, url, type, name, failed}]
+  let docs = [];               // property documents (PDF plans etc.) stored in R2
   let queue = {};              // ref -> payload waiting for the server
   try { queue = JSON.parse(localStorage.getItem(QKEY) || "{}") || {}; } catch { queue = {}; }
   const view = { s: 30, tx: 0, ty: 0 };
@@ -336,6 +337,17 @@
   $("sv-addwin").onclick = () => setAddMode(addMode && addMode.type === "window" ? null : { type: "window" });
   $("sv-fit").onclick = () => fit();
   $("sv-progress").onclick = () => openProgress();
+  $("sv-docs").onclick = () => openDocs();
+  function openDocs() {
+    selected = null; render();
+    const mb = (b) => (b ? `${(b / 1048576).toFixed(b < 1048576 ? 2 : 1)} MB` : "");
+    const rows = docs.map((d) => `<div class="doc"><div class="t"><a href="/api/survey/doc/${encodeURIComponent(d.id)}" target="_blank" rel="noopener">${esc(d.title)}</a><small>${esc(d.file_name || "")} · ${mb(d.bytes)}</small></div><a download class="btn secondary small" href="/api/survey/doc/${encodeURIComponent(d.id)}?dl=1">Download</a></div>`).join("");
+    sheet.innerHTML = `<div class="grab"></div><button class="x" type="button" data-act="close" aria-label="Close">×</button>
+<h2>Documents</h2><div class="sub">${esc(plan.address || "")}</div>
+<div class="dlist">${rows || '<p class="muted">No documents for this property yet.</p>'}</div>
+<p class="small muted" style="margin-top:12px">Tap a title to open it, or Download to save it to the phone.${online ? "" : " You are offline: documents open once the connection is back."}</p>`;
+    sheet.hidden = false; sheet.scrollTop = 0;
+  }
 
   function setFloor(k) {
     floorKey = k; try { localStorage.setItem(`dbk-survey-floor:${PID}`, k); } catch {}
@@ -466,7 +478,7 @@
 <h2>Progress</h2><div class="sub">${esc(plan.address || "")}</div>
 ${bar("Windows", W)}${bar("External doors", D)}${bar("Rooms measured", R)}${bar("Evidence checklist", C)}${E.length ? bar("Evidence pins", E) : ""}
 <p class="small muted">${esc(plan.note || "")}</p>
-<p><a class="btn secondary small" href="${API}/export.csv">Download CSV</a></p>
+<p><a download class="btn secondary small" href="${API}/export.csv">Download CSV</a></p>
 <h3>Evidence checklist</h3>${rows(C)}
 <h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}</div>`;
     sheet.hidden = false; sheet.scrollTop = 0;
@@ -492,6 +504,7 @@ ${bar("Windows", W)}${bar("External doors", D)}${bar("Rooms measured", R)}${bar(
     document.title = `${j.property.title} · Survey`;
     for (const r of j.records) records.set(r.ref, r);
     for (const p of j.photos) { if (!photos.has(p.ref)) photos.set(p.ref, []); photos.get(p.ref).push(p); }
+    docs = j.docs || [];
     for (const [ref, q] of Object.entries(queue)) {   // local edits not yet on the server win
       const r = records.get(ref);
       if (!r || (q.client_ts || 0) > (r.client_ts || 0)) records.set(ref, { ref, ...q });

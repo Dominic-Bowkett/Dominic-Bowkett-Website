@@ -40,6 +40,19 @@ export const SURVEY_SCHEMA = [
     created_at TEXT DEFAULT (datetime('now'))
   )`,
   `CREATE INDEX IF NOT EXISTS survey_photos_prop ON survey_photos(property_id, ref)`,
+  `CREATE TABLE IF NOT EXISTS survey_docs (
+    id TEXT PRIMARY KEY,
+    property_id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    file_name TEXT,
+    r2_key TEXT NOT NULL,
+    content_type TEXT,
+    bytes INTEGER,
+    sort INTEGER DEFAULT 0,
+    deleted INTEGER DEFAULT 0,
+    created_at TEXT DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS survey_docs_prop ON survey_docs(property_id, sort)`,
 ];
 
 let ready = null;
@@ -64,6 +77,13 @@ export function recordOut(r) {
   try { data = JSON.parse(r.data_json || "{}"); } catch { data = {}; }
   return { ref: r.ref, kind: r.kind, floor: r.floor, x: r.x, y: r.y, data, deleted: !!r.deleted, client_ts: r.client_ts, updated_at: r.updated_at };
 }
+
+export function docOut(d) {
+  return { id: d.id, title: d.title, file_name: d.file_name, content_type: d.content_type, bytes: d.bytes, created_at: d.created_at };
+}
+
+// Documents a page may show inline; anything else is always sent as a download.
+export const INLINE_TYPES = new Set(["application/pdf", "image/jpeg", "image/png", "image/webp"]);
 
 export function photoOut(p) {
   return { id: p.id, ref: p.ref, content_type: p.content_type, bytes: p.bytes, file_name: p.file_name, created_at: p.created_at };
