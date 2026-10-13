@@ -222,7 +222,7 @@ export async function onRequest({ request, env, params }) {
       for (const it of plan.items || []) rows.push({ ref: it.ref, kind: it.kind, floor: it.floor, label: it.label, room: roomName(it.floor, it.room), plan: it });
       for (const c of plan.checklist || []) rows.push({ ref: c.ref, kind: "check", floor: "", label: c.label, room: c.category, plan: c });
       for (const r of rows) seen.add(r.ref);
-      for (const r of Object.values(recs)) if (!seen.has(r.ref) && !r.deleted) rows.push({ ref: r.ref, kind: r.kind, floor: r.floor, label: r.data.title || r.data.label || r.ref, room: roomName(r.floor, r.data.room), plan: {} });
+      for (const r of Object.values(recs)) if (!seen.has(r.ref) && (!r.deleted || (r.data && r.data._cleared))) rows.push({ ref: r.ref, kind: r.kind, floor: r.floor, label: r.data.title || r.data.label || r.ref, room: roomName(r.floor, r.data.room), plan: {} });
       // windows/doors: width_m x height_m (older mm entries converted); rooms: length_m x width_m and room_height_m
       const cols = ["floor", "ref", "kind", "label", "room_or_category", "status", "width_m", "height_m", "length_m", "room_height_m", "count", "type", "glazing", "frame", "gap", "installed", "age_evidence", "notes", "photos", "x", "y"];
       const normM = (v) => { const t = String(v ?? "").trim(); if (t === "") return ""; let n = Number(t.replace(",", ".")); if (!Number.isFinite(n) || n <= 0) return t; if (n >= 100) n /= 1000; return n.toFixed(2); };   // as the form does: 2 dp, 100+ = mm
@@ -231,10 +231,14 @@ export async function onRequest({ request, env, params }) {
       const lines = [cols.join(",")];
       for (const r of rows) {
         const rec = recs[r.ref];
-        const removed = !!(rec && rec.deleted); if (removed && !seen.has(r.ref)) continue;   // a deleted ad-hoc pin is gone; a removed plan item stays listed
-        const own = rec ? rec.data : {}; const dd = { ...own };
+        const own = rec ? rec.data || {} : {}; const dd = { ...own };
+        const removed = !!(rec && rec.deleted); if (removed && !seen.has(r.ref) && !own._cleared) continue;   // a pin removed on its own is gone; a removed plan item stays listed
+        // the app's own bookkeeping (_pf, _cleared) and an opening's label / room / moved flag are not survey data
+        const meta = r.kind === "window" || r.kind === "door" ? ["title", "room", "moved"] : [];
+        const recorded = Object.keys(own).some((k) => !k.startsWith("_") && !meta.includes(k)) || !!counts[r.ref];
+        if (removed && own._cleared && !recorded) continue;   // cleared by "Start again" with nothing recorded: just a desk guess, leave it out
         if (r.plan.prefill && !own._pf) for (const [k, v] of Object.entries(r.plan.prefill)) if (dd[k] === undefined) dd[k] = `${v} (pre-filled, not confirmed)`;
-        const status = removed ? "removed from plan (not present)" : dd.absent ? "not present" : Object.keys(own).length || counts[r.ref] ? "recorded" : "";
+        const status = removed ? (own._cleared ? "cleared by Start again (recorded data kept)" : "removed from plan (not present)") : dd.absent ? "not present" : recorded ? "recorded" : "";
         const isRoom = r.kind === "room";
         lines.push([r.floor, r.ref, r.kind, r.label, r.room, status, isRoom ? normM(dd.width_m) : metres(dd.width_m, dd.width_mm), isRoom ? "" : metres(dd.height_m, dd.height_mm),
           isRoom ? normM(dd.length_m) : "", isRoom ? normM(dd.ceiling_m) : "", dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,

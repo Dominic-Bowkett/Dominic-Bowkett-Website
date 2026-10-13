@@ -32,7 +32,9 @@
   const centroid = (p) => { let A = 0, cx = 0, cy = 0; for (let i = 0; i < p.length; i++) { const [x1, y1] = p[i], [x2, y2] = p[(i + 1) % p.length]; const c = x1 * y2 - x2 * y1; A += c; cx += (x1 + x2) * c; cy += (y1 + y2) * c; } return A ? [cx / (3 * A), cy / (3 * A)] : p[0]; };
   const inPoly = (x, y, p) => { let c = false; for (let i = 0, j = p.length - 1; i < p.length; j = i++) { const [xi, yi] = p[i], [xj, yj] = p[j]; if ((yi > y) !== (yj > y) && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) c = !c; } return c; };
   const bbox = (pts) => ({ x0: Math.min(...pts.map((q) => q[0])), y0: Math.min(...pts.map((q) => q[1])), x1: Math.max(...pts.map((q) => q[0])), y1: Math.max(...pts.map((q) => q[1])) });
-  const hasData = (d) => Object.keys(d || {}).some((k) => d[k] !== "" && d[k] != null && d[k] !== false);
+  const hasData = (d) => Object.keys(d || {}).some((k) => !k.startsWith("_") && d[k] !== "" && d[k] != null && d[k] !== false);
+  const OPENING_META = new Set(["title", "room", "moved"]);
+  const openingData = (d) => Object.fromEntries(Object.entries(d || {}).filter(([k]) => !OPENING_META.has(k)));
   const uid = () => (crypto.randomUUID ? crypto.randomUUID() : `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 12)}`).toLowerCase();
   const compass8 = (b) => ["N", "NE", "E", "SE", "S", "SW", "W", "NW"][Math.round((((b % 360) + 360) % 360) / 45) % 8];
   const compass16 = (b) => ["N", "NNE", "NE", "ENE", "E", "ESE", "SE", "SSE", "S", "SSW", "SW", "WSW", "W", "WNW", "NW", "NNW"][Math.round((((b % 360) + 360) % 360) / 22.5) % 16];
@@ -52,7 +54,7 @@
   // desk pre-fill (e.g. CERTASS / FENSA age evidence): shown as selected until the first edit of that item copies it into the record
   const prefillOf = (ref) => { const it = plan.items.find((i) => i.ref === ref); return it && it.prefill ? it : null; };
   function effData(ref) {
-    const r = records.get(ref); const d = r && !r.deleted ? r.data : {}; const it = prefillOf(ref);
+    const r = records.get(ref); const d = r ? r.data : {}; const it = prefillOf(ref);   // a removed item still shows what was recorded on it
     if (!it || d._pf) return { d, pre: {} };
     const pre = {}; for (const [k, v] of Object.entries(it.prefill)) if (d[k] === undefined) pre[k] = v;
     return { d: { ...pre, ...d }, pre };
@@ -61,7 +63,7 @@
   function status(ref, kind) {
     const r = records.get(ref); const d = r && !r.deleted ? r.data : {}; const np = nPhotos(ref);
     if (d.absent) return "absent";
-    if (kind === "window" || kind === "door") return (d.width_m || d.width_mm) && (d.height_m || d.height_mm) ? "done" : hasData(d) || np ? "part" : "todo";
+    if (kind === "window" || kind === "door") return (d.width_m || d.width_mm) && (d.height_m || d.height_mm) ? "done" : hasData(openingData(d)) || np ? "part" : "todo";
     if (kind === "room") return d.length_m && d.width_m ? "done" : hasData(d) || np ? "part" : "todo";
     return np || (d.notes && String(d.notes).trim()) || d.state ? "done" : hasData(d) ? "part" : "todo";
   }
@@ -111,7 +113,7 @@
   }
   // ---------- undo / redo ----------
   const undoStack = [], redoStack = [];
-  const FIELD_LABEL = { width_m: "width", height_m: "height", length_m: "length", ceiling_m: "room height", notes: "notes", title: "title" };
+  const FIELD_LABEL = { width_m: "width", height_m: "height", length_m: "length", ceiling_m: "room height", notes: "notes", title: "label" };
   const snapRec = (r) => (r ? JSON.parse(JSON.stringify({ kind: r.kind, floor: r.floor, x: r.x, y: r.y, data: r.data, deleted: !!r.deleted })) : null);
   function labelOf(ref) { const e = entity(ref); return e ? e.label || e.ref : ref; }
   function remember(ref, before, label, field, merge) {   // merge: the 2 dp / mm tidy-up joins the typing it tidies
@@ -130,6 +132,7 @@
   async function applyEntry(e, dir) {
     if (e.type === "rec") applySnap(e.ref, dir === "undo" ? e.before : e.after);
     else if (e.type === "photo-del") return dir === "undo" ? photoRestore(e.ref, e.photo) : photoRemove(e.ref, e.photo.id);
+    else if (e.type === "batch") for (const c of e.changes) applySnap(c.ref, dir === "undo" ? c.before : c.after);
     return true;
   }
   let historyBusy = false;
@@ -145,6 +148,7 @@
     render();
     if (selected) { const rec = records.get(selected), en = entity(selected);
       if (!en || (rec && rec.deleted && selected.startsWith("pin-"))) closeSheet(); else if (sheet.querySelector("form")) openSheet(en); }
+    else if (sheet.querySelector(".prog")) openProgress();
     toast(`${verb}: ${e.label}`);
   }
   function updateUndo() {
@@ -393,7 +397,8 @@
       const ref = `pin-${floorKey}-${Date.now().toString(36)}${Math.random().toString(36).slice(2, 5)}`;
       const r = { ref, kind: mode.type, floor: floorKey, x: +wx.toFixed(3), y: +wy.toFixed(3), data: {}, deleted: false, client_ts: 0 };
       const rm = curFloor().rooms.find((q) => inPoly(wx, wy, q.poly)); if (rm) r.data.room = rm.key;
-      records.set(ref, r); touch(r); remember(ref, null, mode.type === "window" ? "window added" : "pin added"); select(ref); return;
+      if (mode.type === "window" || mode.type === "door") r.data.title = nextLabel(floorKey, mode.type);
+      records.set(ref, r); touch(r); remember(ref, null, mode.type === "evidence" ? "pin added" : `${r.data.title} added`); select(ref); return;
     }
     let best = null;
     for (const t of hits) { const d = Math.hypot(t.x - sx, t.y - sy); if (d <= t.r && (!best || d < best.d)) best = { ref: t.ref, d }; }
@@ -405,12 +410,28 @@
   function setAddMode(m) {
     if (m && !sheet.hidden) closeSheet();   // the plan must be visible to tap the spot
     addMode = m;
-    for (const [id, t] of [["sv-pin", "evidence"], ["sv-addwin", "window"]]) $(id).classList.toggle("on", !!m && m.type === t);
+    for (const [id, t] of [["sv-pin", "evidence"], ["sv-addwin", "window"], ["sv-adddoor", "door"]]) $(id).classList.toggle("on", !!m && m.type === t);
     hintEl.style.display = m ? "block" : "none";
-    hintEl.textContent = !m ? "" : m.type === "move" ? "Tap the new position" : m.type === "evidence" ? "Tap where the evidence is" : "Tap where the window is";
+    hintEl.textContent = !m ? "" : m.type === "move" ? "Tap the new position" : m.type === "evidence" ? "Tap where the evidence is" : m.type === "door" ? "Tap where the door is" : "Tap where the window is";
+  }
+  // next label for a hand-added window/door, in the floor's own style (W/D on the first floor listed, F/FD on "ff", C/CD on "co"...);
+  // numbers continue from the openings still on the plan, so after "Start again" they restart at 1
+  function nextLabel(fk, kind) {
+    const re = /^([A-Z]+)(\d+)$/;
+    // a plan item marked "not present" keeps its number reserved, unless the floor has been started again (no plan items of this kind left)
+    const reserve = plan.items.some((i) => i.floor === fk && i.kind === kind && !isRemoved(i.ref));
+    const labs = (all) => [
+      ...plan.items.filter((i) => i.floor === fk && i.kind === kind && (all || !isRemoved(i.ref) || (reserve && !((records.get(i.ref) || {}).data || {})._cleared))).map((i) => i.label),
+      ...[...records.values()].filter((r) => r.floor === fk && r.kind === kind && r.ref.startsWith("pin-") && (all || !r.deleted)).map((r) => r.data && r.data.title),
+    ].map((l) => re.exec(String(l || "").trim())).filter(Boolean);
+    const seen = {}; for (const mm of labs(true)) seen[mm[1]] = (seen[mm[1]] || 0) + 1;
+    const first = plan.floors[0] && plan.floors[0].key === fk, fl = String(fk || "w")[0].toUpperCase();
+    const prefix = Object.keys(seen).sort((a, b) => seen[b] - seen[a])[0] || (kind === "door" ? (first ? "D" : `${fl}D`) : first ? "W" : fl);
+    return `${prefix}${Math.max(0, ...labs(false).filter((mm) => mm[1] === prefix).map((mm) => +mm[2])) + 1}`;
   }
   $("sv-pin").onclick = () => setAddMode(addMode && addMode.type === "evidence" ? null : { type: "evidence" });
   $("sv-addwin").onclick = () => setAddMode(addMode && addMode.type === "window" ? null : { type: "window" });
+  $("sv-adddoor").onclick = () => setAddMode(addMode && addMode.type === "door" ? null : { type: "door" });
   $("sv-fit").onclick = () => fit();
   $("sv-progress").onclick = () => openProgress();
   $("sv-docs").onclick = () => openDocs();
@@ -499,21 +520,26 @@
     else if (kind === "room") { title = e.label; sub = `${f.name}${room.listing ? ` · listing ${room.listing}` : ""}`; hint = room.note || ""; }
     else if (kind === "check") { title = e.label; sub = e.category || "Checklist"; }
     else { title = d.title || e.label || "Evidence"; sub = `${e.category || d.category || "Evidence"}${room ? ` · ${room.name}` : ""}${f ? ` · ${f.name}` : ""}`; }
-    const form = FORMS[kind] || FORMS.evidence; let fields = "", halfOpen = false;
-    for (const fd of form) {
-      if (fd.half && !halfOpen) { fields += '<div class="two">'; halfOpen = true; }
-      if (!fd.half && halfOpen) { fields += "</div>"; halfOpen = false; }
-      fields += fieldHtml(ref, fd, d, pre);
-    }
-    if (halfOpen) fields += "</div>";
-    const canMove = kind === "window" || kind === "door" || kind === "evidence";
-    const removed = isRemoved(ref); const canRemove = kind === "window" || kind === "door" || kind === "evidence";
     const laser = kind === "window" || kind === "door" || kind === "room"
       ? `<div class="laser"><label class="btn secondary small" style="color:var(--ink)">📏 Read laser photo<input type="file" accept="image/*" capture="environment" hidden data-laser="1"/></label><span class="muted small">Photograph the measurer's screen, then pick which reading is ${kind === "room" ? "length, width or height" : "width and which is height"}.</span><div class="lres"></div></div>` : "";
+    const base = FORMS[kind] || FORMS.evidence;
+    const form = (kind === "window" || kind === "door") && !e.seeded ? [{ k: "title", l: "Label", t: "line", ph: kind === "door" ? "e.g. D3" : "e.g. W3" }, ...base] : base;
+    // the laser button sits straight under the size boxes (width/height; for rooms after length/width)
+    const laserAt = laser ? (kind === "room" ? "width_m" : "height_m") : null; let fields = "", halfOpen = false, laserDue = false;
+    for (const fd of form) {
+      if (fd.half && !halfOpen) { fields += '<div class="two">'; halfOpen = true; }
+      if (!fd.half && halfOpen) { fields += "</div>"; halfOpen = false; if (laserDue) { fields += laser; laserDue = false; } }
+      fields += fieldHtml(ref, fd, d, pre);
+      if (fd.k === laserAt) laserDue = true;
+    }
+    if (halfOpen) fields += "</div>";
+    if (laserDue) fields += laser;
+    const canMove = kind === "window" || kind === "door" || kind === "evidence";
+    const removed = isRemoved(ref); const canRemove = kind === "window" || kind === "door" || kind === "evidence";
     sheet.innerHTML = `<div class="grab"></div><button class="x" type="button" data-act="close" aria-label="Close">×</button>
 <h2>${esc(title)}</h2><div class="sub">${esc(sub)}</div>${hint ? `<div class="hintbox">${esc(hint)}</div>` : ""}${e.prefill ? `<div class="hintbox pf"><b>Pre-filled from records:</b> ${esc(Object.values(e.prefill).join(" · "))}${e.prefill_note ? ` — ${esc(e.prefill_note)}` : ""}. Change it if the sticker or certificate says otherwise.</div>` : ""}${(kind === "window" || kind === "door") && plan.glazing_records ? `<div class="small muted" style="margin:6px 2px">${esc(plan.glazing_records)}</div>` : ""}
 ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class="btn small" type="button" data-act="restore">Restore</button></div>' : ""}
-<form autocomplete="off" data-ref="${esc(ref)}" onsubmit="return false">${fields}</form>${laser}
+<form autocomplete="off" data-ref="${esc(ref)}" onsubmit="return false">${fields}</form>
 <label>Photos</label><div class="photos">${photosHtml(ref)}</div>
 <div class="addphoto"><label class="btn" style="flex:1">📷 Take photo<input type="file" accept="image/*" capture="environment" multiple hidden data-photo="1"/></label><label class="btn secondary" style="flex:1;color:var(--ink)">Add from library<input type="file" accept="image/*" multiple hidden data-photo="1"/></label></div>
 <div class="actions" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${canMove && !removed ? '<button class="btn secondary small" type="button" data-act="move">Move on plan</button>' : ""}${canRemove && !removed ? `<button class="btn danger small" type="button" data-act="remove">Remove ${kind === "evidence" ? "pin" : kind} from plan</button>` : ""}</div>`;
@@ -574,17 +600,63 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     const act = ev.target.closest("[data-act]"); if (!act) return;
     if (act.dataset.act === "close") closeSheet();
     else if (act.dataset.act === "move") { const ref = selected; closeSheet(); setAddMode({ type: "move", ref }); }
-    else if (act.dataset.act === "remove") { const ref = selected, lab = labelOf(ref); const before = snapRec(records.get(ref)); const r = ensureRec(ref); r.deleted = true; touch(r); remember(ref, before, `${lab} removed`); closeSheet(); toast(`${lab} removed from the plan`, true); }
-    else if (act.dataset.act === "restore") { const ref = selected, lab = labelOf(ref); const before = snapRec(records.get(ref)); const r = ensureRec(ref); r.deleted = false; touch(r); remember(ref, before, `${lab} restored`); select(ref); toast(`${lab} restored`); }
+    else if (act.dataset.act === "remove") { const ref = selected, lab = labelOf(ref); const before = snapRec(records.get(ref)); const r = ensureRec(ref); r.deleted = true; delete r.data._cleared; touch(r); remember(ref, before, `${lab} removed`); closeSheet(); toast(`${lab} removed from the plan`, true); }
+    else if (act.dataset.act === "clear-floor") clearOpenings(floorKey);
+    else if (act.dataset.act === "clear-all") clearOpenings(null);
+    else if (act.dataset.act === "restore-all") restoreAll();
+    else if (act.dataset.act === "restore") { const ref = selected, lab = labelOf(ref); const renamed = restoreRefs([ref], `${lab} restored`); select(ref); toast(`${lab} restored${renamed.length ? `; yours renumbered ${renamed.join(", ")}` : ""}`); }
   });
 
   // ---------- progress ----------
+  // ---------- start again: every window/door off the plan in one step (one Undo puts them all back) ----------
+  function liveOpenings(fk) {
+    return [...plan.items.filter((i) => (i.kind === "window" || i.kind === "door") && !isRemoved(i.ref) && (!fk || i.floor === fk)).map((i) => i.ref),
+      ...sitePins().filter((r) => (r.kind === "window" || r.kind === "door") && (!fk || r.floor === fk)).map((r) => r.ref)];
+  }
+  function removedItems() {   // plan items taken off + hand-added pins removed with something recorded on them
+    return [...plan.items.filter((i) => isRemoved(i.ref)),
+      ...[...records.values()].filter((r) => r.deleted && r.ref.startsWith("pin-") && ((r.data && r.data._cleared) || (r.kind === "evidence" ? hasData(r.data) : hasData(openingData(r.data))) || nPhotos(r.ref) > 0)).map((r) => entity(r.ref))].filter(Boolean);
+  }
+  function batch(refs, fn, label) {
+    const changes = refs.map((ref) => { const before = snapRec(records.get(ref)); const r = ensureRec(ref); fn(r); touch(r); return { ref, before, after: snapRec(r) }; });
+    if (changes.length) pushHistory({ type: "batch", changes, label });
+    render(); return changes.length;
+  }
+  function clearOpenings(fk) {
+    const refs = liveOpenings(fk); if (!refs.length) return;
+    const where = fk ? floorOf(fk).name : "the whole plan";
+    if (!confirm(`Take all ${refs.length} windows and doors off ${where}?\n\nNothing is deleted: anything measured or photographed stays with them (Progress > Removed). One Undo puts them all back.`)) return;
+    const n = batch(refs, (r) => { r.deleted = true; r.data._cleared = true; }, `${refs.length} windows/doors cleared`);
+    openProgress(); toast(`${n} cleared from ${fk ? floorOf(fk).name : "the plan"}`, true);
+  }
+  // put items back (one history entry); a hand-added opening whose label now appears twice on its floor is renumbered
+  // (plan items keep their pre-visit labels), so "Restore all" after re-adding W1, W2... never leaves two W1s
+  function restoreRefs(refs, label) {
+    const changes = [], renamed = [], inRefs = new Set(refs);
+    const step = (ref, fn) => { const before = snapRec(records.get(ref)); const r = ensureRec(ref); fn(r); touch(r); changes.push({ ref, before, after: snapRec(r) }); };
+    for (const ref of refs) step(ref, (r) => { r.deleted = false; delete r.data._cleared; });
+    const live = [...plan.items.filter((i) => (i.kind === "window" || i.kind === "door") && !isRemoved(i.ref)).map((i) => ({ ref: i.ref, floor: i.floor, kind: i.kind, label: i.label, pin: false })),
+      ...sitePins().filter((r) => r.kind === "window" || r.kind === "door").map((r) => ({ ref: r.ref, floor: r.floor, kind: r.kind, label: String(r.data.title || "").trim(), pin: true }))];
+    const groups = new Map(); for (const o of live) { if (!o.label) continue; const k = `${o.floor}|${o.kind}|${o.label}`; if (!groups.has(k)) groups.set(k, []); groups.get(k).push(o); }
+    for (const g of groups.values()) {
+      if (g.length < 2 || !g.some((o) => inRefs.has(o.ref))) continue;
+      const keep = g.find((o) => !o.pin) || g.find((o) => !inRefs.has(o.ref)) || g[0];
+      for (const o of g) if (o !== keep && o.pin) step(o.ref, (r) => { const old = r.data.title; r.data.title = nextLabel(r.floor, r.kind); renamed.push(`${old} → ${r.data.title}`); });
+    }
+    if (changes.length) pushHistory({ type: "batch", changes, label }); render();
+    return renamed;
+  }
+  function restoreAll() {
+    const refs = removedItems().map((i) => i.ref); if (!refs.length) return;
+    const renamed = restoreRefs(refs, `${refs.length} restored`);
+    openProgress(); toast(`${refs.length} put back on the plan${renamed.length ? `; ${renamed.length} you added renumbered (${renamed.slice(0, 3).join(", ")}${renamed.length > 3 ? "…" : ""})` : ""}`, true);
+  }
   function openProgress() {
     flushEdit(); selected = null; render();
     const rows = (list) => list.map((x) => `<div class="prow" data-ref="${esc(x.ref)}"><span class="dot ${x.st}"></span><div class="t">${esc(x.label)}<small>${esc(x.sub || "")}</small></div><span class="muted small">${x.np ? `📷${x.np}` : ""}</span></div>`).join("");
     const pct = (a, b) => (b ? Math.round((100 * a) / b) : 0);
     const items = [...plan.items.filter((i) => !isRemoved(i.ref)), ...sitePins().map((r) => entity(r.ref))];
-    const removedList = [...plan.items.filter((i) => isRemoved(i.ref)), ...[...records.values()].filter((r) => r.deleted && r.ref.startsWith("pin-") && (hasData(r.data) || nPhotos(r.ref) > 0)).map((r) => entity(r.ref))].filter(Boolean)
+    const removedList = removedItems()
       .map((i) => ({ ref: i.ref, label: i.label, sub: `${i.floor ? floorOf(i.floor).name : ""} · removed (tap to restore)`, st: "absent", np: nPhotos(i.ref) }));
     const wins = items.filter((i) => i.kind === "window"), doors = items.filter((i) => i.kind === "door");
     const rooms = plan.floors.flatMap((f) => f.rooms.map((r) => ({ ref: roomRef(f.key, r.key), label: r.name, sub: f.name, kind: "room" })));
@@ -603,8 +675,14 @@ ${bar("Windows", W)}${bar("External doors", D)}${bar("Rooms measured", R)}${bar(
 <p class="small muted">${esc(plan.note || "")}</p>
 <p><a download class="btn secondary small" href="${API}/export.csv">Download CSV</a></p>
 <h3>Evidence checklist</h3>${rows(C)}
-<h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}${removedList.length ? `<h3>Removed from the plan</h3>${rows(removedList)}` : ""}</div>`;
+<h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}${removedList.length ? `<h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Removed from the plan <button class="btn secondary small" type="button" data-act="restore-all">Restore all (${removedList.length})</button></h3>${rows(removedList)}` : ""}
+${startAgain()}</div>`;
     sheet.hidden = false; sheet.scrollTop = 0;
+  }
+  function startAgain() {
+    const nf = liveOpenings(floorKey).length, na = liveOpenings(null).length; if (!na) return "";
+    return `<h3>Start again</h3><p class="small muted">Take every window and door off the plan, then add them yourself with + Window and + Door (numbered W1, W2… as you go). Nothing is deleted: measurements and photos stay with the removed items, and one Undo puts them all back.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${nf ? `<button class="btn danger small" type="button" data-act="clear-floor">Clear ${esc(curFloor().name)} (${nf})</button>` : ""}<button class="btn danger small" type="button" data-act="clear-all">Clear whole plan (${na})</button></div>`;
   }
   sheet.addEventListener("click", (ev) => { const row = ev.target.closest(".prow"); if (row) select(row.dataset.ref); });
 

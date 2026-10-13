@@ -11,7 +11,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .sv-title{min-width:0;flex:1;display:flex;flex-direction:column}.sv-title b{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .sv-title span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .hbtn{border:1px solid var(--rule);background:#fff;border-radius:10px;width:38px;height:38px;font-size:20px;line-height:1;flex:none}.hbtn:disabled{opacity:.35}
-#sv-toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));transform:translate(-50%,-8px);background:#111;color:#fff;border-radius:999px;padding:9px 14px;font-size:13.5px;display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20;max-width:calc(100% - 24px)}
+#sv-toast{position:fixed;left:50%;top:calc(116px + env(safe-area-inset-top));transform:translate(-50%,-8px);background:#111;color:#fff;border-radius:16px;padding:10px 16px;font-size:13.5px;display:flex;gap:12px;align-items:center;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:20;max-width:calc(100% - 24px)}
 #sv-toast.on{opacity:1;transform:translate(-50%,0);pointer-events:auto}#sv-toast button{background:none;border:0;color:#8fb8ff;font-weight:700;font-size:13.5px;padding:0}
 .chip.mini{padding:4px 10px;font-size:13px}
 .laser{margin-top:12px;display:flex;flex-direction:column;gap:6px}.laser label{margin:0;text-transform:none;letter-spacing:0;font-size:14px;align-self:flex-start}
@@ -76,7 +76,7 @@ export async function onRequestGet({ request, env, params }) {
 <button class="hbtn" id="sv-undo" type="button" aria-label="Undo" disabled>↶</button><button class="hbtn" id="sv-redo" type="button" aria-label="Redo" disabled>↷</button>
 <span id="sv-status" class="pill">Loading</span></header>
 <div class="sv-bar"><div id="sv-floors" class="seg"></div>
-<div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-docs" type="button">Docs</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
+<div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-adddoor" type="button">+ Door</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-docs" type="button">Docs</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
 <div id="sv-stage"><svg id="sv-plan" xmlns="http://www.w3.org/2000/svg"></svg><div id="sv-hint"></div>
 <div id="sv-legend"><span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin / pre-filled</span></div></div>
 <aside id="sv-sheet" class="sheet" hidden></aside><div id="sv-toast" role="status"></div>
