@@ -129,9 +129,10 @@ export async function onRequest({ request, env, params }) {
       const cell = (v) => `"${String(v ?? "").replace(/"/g, '""')}"`;
       const lines = [cols.join(",")];
       for (const r of rows) {
-        const rec = recs[r.ref]; const dd = rec && !rec.deleted ? rec.data : {};
-        if (rec && rec.deleted) continue;
-        const status = dd.absent ? "not present" : Object.keys(dd).length || counts[r.ref] ? "recorded" : "";
+        const rec = recs[r.ref]; if (rec && rec.deleted) continue;
+        const own = rec ? rec.data : {}; const dd = { ...own };
+        if (r.plan.prefill && !own._pf) for (const [k, v] of Object.entries(r.plan.prefill)) if (dd[k] === undefined) dd[k] = `${v} (pre-filled, not confirmed)`;
+        const status = dd.absent ? "not present" : Object.keys(own).length || counts[r.ref] ? "recorded" : "";
         lines.push([r.floor, r.ref, r.kind, r.label, r.room, status, dd.width_mm, dd.height_mm, dd.count, dd.type, dd.glazing, dd.frame, dd.gap, dd.installed, dd.age_evidence,
           dd.length_m, dd.width_m, dd.ceiling_m, dd.notes, counts[r.ref] || 0, rec?.x ?? r.plan.x ?? "", rec?.y ?? r.plan.y ?? ""].map(cell).join(","));
       }

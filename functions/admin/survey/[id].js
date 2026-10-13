@@ -39,6 +39,8 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .chip{border:1px solid var(--rule);background:#fff;border-radius:999px;padding:7px 12px;font-size:14px}
 .chip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
 .hintbox{background:#f6f5f1;border-radius:8px;padding:8px 10px;font-size:13px;color:#444;margin:8px 0}
+.hintbox.pf{background:#eef2fa;color:#1f3f7a}
+.pftag{display:inline-block;margin-left:8px;background:#eef2fa;color:var(--accent);border-radius:999px;padding:1px 8px;font-size:11px;text-transform:none;letter-spacing:0;vertical-align:1px}
 .photos{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}
 .ph{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#eee}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
@@ -67,7 +69,7 @@ export async function onRequestGet({ request, env, params }) {
 <div class="sv-bar"><div id="sv-floors" class="seg"></div>
 <div class="sv-tools"><button class="btn secondary small" id="sv-pin" type="button">+ Pin</button><button class="btn secondary small" id="sv-addwin" type="button">+ Window</button><button class="btn secondary small" id="sv-progress" type="button">Progress</button><button class="btn secondary small" id="sv-fit" type="button">Fit</button></div></div>
 <div id="sv-stage"><svg id="sv-plan" xmlns="http://www.w3.org/2000/svg"></svg><div id="sv-hint"></div>
-<div id="sv-legend"><span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin</span></div></div>
+<div id="sv-legend"><span><i style="background:#9a978f"></i>to do</span><span><i style="background:#c27c00"></i>started</span><span><i style="background:#1b7a3a"></i>done</span><span><i style="background:#1f4e9c"></i>pin / pre-filled</span></div></div>
 <aside id="sv-sheet" class="sheet" hidden></aside>
 </div>`, { title: "Survey", app: true, appCss: APP_CSS });
   return new Response(html, { status: 200, headers: { ...headers, "Set-Cookie": await sessionCookie(env) } });

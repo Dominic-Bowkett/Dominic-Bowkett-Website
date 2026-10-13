@@ -48,6 +48,14 @@
     return null;
   }
   const posOf = (e) => { const r = records.get(e.ref); return r && r.x != null && r.y != null ? [r.x, r.y] : [e.x, e.y]; };
+  // desk pre-fill (e.g. CERTASS / FENSA age evidence): shown as selected until the first edit of that item copies it into the record
+  const prefillOf = (ref) => { const it = plan.items.find((i) => i.ref === ref); return it && it.prefill ? it : null; };
+  function effData(ref) {
+    const r = records.get(ref); const d = r && !r.deleted ? r.data : {}; const it = prefillOf(ref);
+    if (!it || d._pf) return { d, pre: {} };
+    const pre = {}; for (const [k, v] of Object.entries(it.prefill)) if (d[k] === undefined) pre[k] = v;
+    return { d: { ...pre, ...d }, pre };
+  }
   const nPhotos = (ref) => (photos.get(ref) || []).length + (pending.get(ref) || []).length;
   function status(ref, kind) {
     const r = records.get(ref); const d = r && !r.deleted ? r.data : {}; const np = nPhotos(ref);
@@ -92,6 +100,8 @@
   }
   function setField(ref, k, v) {
     const r = ensureRec(ref);
+    const it = prefillOf(ref);
+    if (it && !r.data._pf) { for (const [pk, pv] of Object.entries(it.prefill)) if (r.data[pk] === undefined) r.data[pk] = pv; r.data._pf = true; }
     if (v === "" || v === null || v === undefined || v === false) delete r.data[k]; else r.data[k] = v;
     touch(r); render();
   }
@@ -243,6 +253,7 @@
         const lab = e.label || (e.kind === "door" ? "D" : "W"), w = 10 + lab.length * 7;
         h += `<rect x="${(sx - w / 2).toFixed(1)}" y="${(sy - 9).toFixed(1)}" width="${w}" height="18" rx="${e.kind === "door" ? 3 : 9}" fill="${COL[st]}" stroke="${sel ? "#1f4e9c" : "#fff"}" stroke-width="${sel ? 3 : 1.5}"/>`;
         h += `<text class="mk-label" x="${sx.toFixed(1)}" y="${(sy + 4).toFixed(1)}" text-anchor="middle">${esc(lab)}</text>`;
+        if (e.prefill) h += `<circle cx="${(sx + w / 2 - 1).toFixed(1)}" cy="${(sy - 8).toFixed(1)}" r="4.5" fill="#1f4e9c" stroke="#fff" stroke-width="1.5"/>`;
         hits.push({ ref: e.ref, x: sx, y: sy, r: Math.max(16, w / 2 + 4) });
       } else {
         const done = st === "done";
@@ -358,12 +369,12 @@
     evidence: [{ k: "title", l: "Title", t: "line" }, { k: "category", l: "Category", t: "chips", o: CATS }, { k: "notes", l: "Notes", t: "text" }],
     check: [{ k: "state", l: "Status", t: "chips", o: ["Done", "Not applicable", "No access"] }, { k: "notes", l: "Notes", t: "text" }],
   };
-  function fieldHtml(ref, f, d) {
-    const v = d[f.k];
+  function fieldHtml(ref, f, d, pre = {}) {
+    const v = d[f.k]; const tag = pre[f.k] !== undefined ? '<span class="pftag">pre-filled</span>' : "";
     if (f.t === "num" || f.t === "line") return `<div><label>${esc(f.l)}</label><input data-k="${f.k}" ${f.t === "num" ? 'inputmode="decimal" autocomplete="off"' : 'autocomplete="off"'} value="${esc(v ?? "")}" placeholder="${esc(f.ph || "")}"/></div>`;
     if (f.t === "text") return `<div><label>${esc(f.l)}</label><textarea data-k="${f.k}" placeholder="Type or dictate…">${esc(v ?? "")}</textarea></div>`;
     if (f.t === "bool") return `<label class="toggle"><input type="checkbox" data-k="${f.k}" ${v ? "checked" : ""}/> ${esc(f.l)}</label>`;
-    return `<div><label>${esc(f.l)}</label><div class="chips" data-chips="${f.k}">${f.o.map((o) => `<button type="button" class="chip${v === o ? " on" : ""}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
+    return `<div><label>${esc(f.l)}${tag}</label><div class="chips" data-chips="${f.k}">${f.o.map((o) => `<button type="button" class="chip${v === o ? " on" : ""}" data-v="${esc(o)}">${esc(o)}</button>`).join("")}</div></div>`;
   }
   function photosHtml(ref) {
     const srv = (photos.get(ref) || []).map((p) => `<div class="ph"><a href="/api/survey/photo/${p.id}" target="_blank" rel="noopener"><img loading="lazy" src="/api/survey/photo/${p.id}" alt=""/></a><button class="del" data-del="${p.id}" aria-label="Remove">×</button></div>`);
@@ -387,7 +398,7 @@
     }
   }
   function openSheet(e) {
-    const ref = e.ref, kind = e.kind, r = records.get(ref), d = r && !r.deleted ? r.data : {};
+    const ref = e.ref, kind = e.kind, { d, pre } = effData(ref);
     const f = e.floor ? floorOf(e.floor) : null; const room = f && (e.roomObj || f.rooms.find((q) => q.key === (e.room || d.room)));
     let title = "", sub = "", hint = e.hint || "";
     if (kind === "window" || kind === "door") { title = `${e.label || (kind === "door" ? "Door" : "Window")} · ${room ? room.name : f ? f.name : ""}`; const fc = facing(e); sub = `${e.subtype || (kind === "door" ? "Door" : "Window")}${fc ? ` · faces ${fc}` : ""} · ${f ? f.name : ""}`; if (hint && e.seeded) hint = `Desk guess: ${hint}`; }
@@ -398,12 +409,12 @@
     for (const fd of form) {
       if (fd.half && !halfOpen) { fields += '<div class="two">'; halfOpen = true; }
       if (!fd.half && halfOpen) { fields += "</div>"; halfOpen = false; }
-      fields += fieldHtml(ref, fd, d);
+      fields += fieldHtml(ref, fd, d, pre);
     }
     if (halfOpen) fields += "</div>";
     const canMove = kind === "window" || kind === "door" || kind === "evidence";
     sheet.innerHTML = `<div class="grab"></div><button class="x" type="button" data-act="close" aria-label="Close">×</button>
-<h2>${esc(title)}</h2><div class="sub">${esc(sub)}</div>${hint ? `<div class="hintbox">${esc(hint)}</div>` : ""}
+<h2>${esc(title)}</h2><div class="sub">${esc(sub)}</div>${hint ? `<div class="hintbox">${esc(hint)}</div>` : ""}${e.prefill ? `<div class="hintbox pf"><b>Pre-filled from records:</b> ${esc(Object.values(e.prefill).join(" · "))}${e.prefill_note ? ` — ${esc(e.prefill_note)}` : ""}. Change it if the sticker or certificate says otherwise.</div>` : ""}${(kind === "window" || kind === "door") && plan.glazing_records ? `<div class="small muted" style="margin:6px 2px">${esc(plan.glazing_records)}</div>` : ""}
 <form autocomplete="off" onsubmit="return false">${fields}</form>
 <label>Photos</label><div class="photos">${photosHtml(ref)}</div>
 <div class="addphoto"><label class="btn" style="flex:1">📷 Take photo<input type="file" accept="image/*" capture="environment" multiple hidden data-photo="1"/></label><label class="btn secondary" style="flex:1;color:var(--ink)">Add from library<input type="file" accept="image/*" multiple hidden data-photo="1"/></label></div>
@@ -424,8 +435,8 @@
   sheet.addEventListener("click", (ev) => {
     const chip = ev.target.closest(".chip");
     if (chip && selected) {
-      const wrap = chip.parentElement, k = wrap.dataset.chips, v = chip.dataset.v; const cur = ((records.get(selected) || {}).data || {})[k];
-      const nv = cur === v ? "" : v; wrap.querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", c.dataset.v === nv)); setField(selected, k, nv); return;
+      const wrap = chip.parentElement, k = wrap.dataset.chips, v = chip.dataset.v; const { d: ed, pre } = effData(selected); const cur = ed[k];
+      const nv = cur === v && pre[k] === undefined ? "" : v; wrap.querySelectorAll(".chip").forEach((c) => c.classList.toggle("on", c.dataset.v === nv)); setField(selected, k, nv); return;
     }
     const del = ev.target.closest("[data-del]"); if (del && selected) { ev.preventDefault(); deletePhoto(selected, del.dataset.del); return; }
     const act = ev.target.closest("[data-act]"); if (!act) return;
@@ -444,8 +455,9 @@
     const rooms = plan.floors.flatMap((f) => f.rooms.map((r) => ({ ref: roomRef(f.key, r.key), label: r.name, sub: f.name, kind: "room" })));
     const evid = items.filter((i) => i.kind === "evidence");
     const tag = (x) => ({ ...x, st: status(x.ref, x.kind || "check"), np: nPhotos(x.ref) });
-    const W = wins.map((i) => tag({ ...i, sub: `${floorOf(i.floor).name} · ${((floorOf(i.floor).rooms.find((r) => r.key === i.room)) || {}).name || ""}` }));
-    const D = doors.map((i) => tag({ ...i, sub: `${floorOf(i.floor).name} · ${((floorOf(i.floor).rooms.find((r) => r.key === i.room)) || {}).name || ""}` }));
+    const pfx = (i) => (i.prefill && i.prefill.age_evidence ? ` · ${i.prefill.age_evidence} pre-filled` : "");
+    const W = wins.map((i) => tag({ ...i, sub: `${floorOf(i.floor).name} · ${((floorOf(i.floor).rooms.find((r) => r.key === i.room)) || {}).name || ""}${pfx(i)}` }));
+    const D = doors.map((i) => tag({ ...i, sub: `${floorOf(i.floor).name} · ${((floorOf(i.floor).rooms.find((r) => r.key === i.room)) || {}).name || ""}${pfx(i)}` }));
     const R = rooms.map(tag), E = evid.map((i) => tag({ ...i, sub: i.category || "" })), C = (plan.checklist || []).map((c) => tag({ ...c, kind: "check", sub: c.category }));
     const done = (a) => a.filter((x) => x.st === "done" || x.st === "absent").length;
     const bar = (lab, a) => `<div style="margin:8px 0"><div style="display:flex;justify-content:space-between"><b>${lab}</b><span class="muted small">${done(a)} / ${a.length}</span></div><div class="bar"><i style="width:${pct(done(a), a.length)}%"></i></div></div>`;
