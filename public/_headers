@@ -37,3 +37,7 @@
 /partner*
   X-Robots-Tag: noindex, nofollow
   Cache-Control: no-store
+
+# Admin app script: always revalidate so deploys show up straight away.
+/assets/admin.js
+  Cache-Control: no-cache
