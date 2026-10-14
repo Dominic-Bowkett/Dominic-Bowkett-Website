@@ -16,6 +16,8 @@ export async function onRequestPost({ request, env }) {
       const dup = await d.prepare(`SELECT id, ref FROM jobs WHERE source = ? AND source_ref = ?`).bind(String(body.source), String(body.source_ref)).first();
       if (dup) return new Response(JSON.stringify({ ok: true, duplicate: true, job: dup.ref, id: dup.id }), { headers: { "content-type": "application/json" } });
     }
+    // Calls: the spoken address is only trusted as the property address if it includes a postcode.
+    if (body.source === "call" && body.property_address && !/[A-Z]{1,2}\d[A-Z\d]?\s*\d[A-Z]{2}/i.test(body.property_address)) body.property_address = null;
     const job = await createJob(env, body, new URL(request.url).origin);
     return new Response(JSON.stringify({ ok: true, job: job.ref, id: job.id, status: job.status }), { headers: { "content-type": "application/json" } });
   } catch (e) {

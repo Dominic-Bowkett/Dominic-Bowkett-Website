@@ -25,6 +25,19 @@ const OWN_PHONES = ["+447946618203", "+447476394125", "+447973713747"];
 const isOwnPhone = (p) => OWN_PHONES.includes(e164(p));
 const POSTCODE_IN_TEXT = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
 
+export function normaliseService(v) {
+  const svc = String(v || "").toLowerCase();
+  if (!svc) return null;
+  if (/epc|energy performance/.test(svc)) return /commercial|non.?domestic|office|shop|retail|business/.test(svc) ? "Commercial EPC" : "Domestic EPC";
+  if (/level 3|building survey|full structural/.test(svc)) return "Building Survey (Level 3)";
+  if (/level 2|homebuyer/.test(svc)) return "HomeBuyer Survey (Level 2)";
+  if (/retrofit/.test(svc)) return "Retrofit Assessment";
+  if (/ventilation/.test(svc)) return "Ventilation Assessment";
+  if (/drone|roof/.test(svc)) return "Drone Roof Survey";
+  if (/survey/.test(svc)) return "Home Insight Survey";
+  return String(v).trim();
+}
+
 export function postcodeFrom(text) {
   const m = POSTCODE_IN_TEXT.exec(String(text || "").toUpperCase());
   return m ? `${m[1]} ${m[2]}` : null;
@@ -92,7 +105,7 @@ export async function createJob(env, data, origin, { notify = true, ack } = {}) 
     property_address: address,
     postcode,
     lat: geo?.lat ?? null, lng: geo?.lng ?? null,
-    service: clean(data.service, 120) || "Domestic EPC",
+    service: normaliseService(clean(data.service, 120)) || "Domestic EPC",
     details: clean(data.details, 4000),
     requested_times: clean(data.requested_times, 400),
     internal_notes: clean(data.internal_notes, 4000),
@@ -104,7 +117,7 @@ export async function createJob(env, data, origin, { notify = true, ack } = {}) 
   let full = await getJob(env, id);
   if (notify) await notifyDom(env, full, origin, address ? "New job" : "New job — address needed");
   // Acknowledge the customer. Checkatrade leads are skipped: the watcher has already emailed and texted them.
-  if (ack ?? job.source !== "checkatrade") { await sendAck(env, full); full = await getJob(env, id); }
+  if (ack ?? !["checkatrade", "call"].includes(job.source)) { await sendAck(env, full); full = await getJob(env, id); }
   if (full.property_address && full.lat != null) {
     const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= 25 && p.offers !== false);
     if (near) { try { full = await offerJob(env, id, near.stripe_account_id, origin, { by: "system" }); } catch (e) { await addMessage(env, id, { direction: "out", channel: "system", party: "system", body: `Auto-dispatch failed: ${e.message}` }); } }
@@ -438,6 +451,8 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
   if (!job) return { handled: false };
   await addMessage(env, job.id, { direction: "in", channel: "sms", party: "customer", counterpart: job.partner_account_id ? "partner" : "admin", body, meta: media.length ? { media } : null });
   let headline = `Text from customer: "${body.slice(0, 80)}"`;
+  const textedEmail = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.exec(body)?.[0];
+  if (textedEmail && !job.customer_email) { await editJob(env, job.id, { customer_email: textedEmail }); headline = `Email address received: ${textedEmail}`; }
   if (job.status === "awaiting_address") {
     const extracted = await extractAddress(env, body, job);
     if (extracted?.property_address) {
