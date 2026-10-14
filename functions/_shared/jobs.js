@@ -81,7 +81,7 @@ export async function listJobs(env, { status, q, partner } = {}) {
   if (status && status !== "all") { if (status === "open") where.push(`status IN (${OPEN.map(() => "?").join(",")})`), binds.push(...OPEN); else where.push("status = ?"), binds.push(status); }
   if (partner) { where.push("partner_account_id = ?"); binds.push(partner); }
   if (q) { where.push("(ref LIKE ? OR customer_name LIKE ? OR customer_email LIKE ? OR customer_phone LIKE ? OR property_address LIKE ? OR service LIKE ?)"); for (let i = 0; i < 6; i++) binds.push(`%${q}%`); }
-  const r = await d.prepare(`SELECT * FROM jobs ${where.length ? "WHERE " + where.join(" AND ") : ""} ORDER BY last_activity_at DESC LIMIT 300`).bind(...binds).all();
+  const r = await d.prepare(`SELECT jobs.*, (SELECT COUNT(*) FROM tasks t WHERE t.job_id = jobs.id AND t.done_at IS NULL) AS open_tasks, (SELECT MIN(due_date) FROM tasks t WHERE t.job_id = jobs.id AND t.done_at IS NULL) AS next_task_due FROM jobs ${where.length ? "WHERE " + where.join(" AND ") : ""} ORDER BY last_activity_at DESC LIMIT 300`).bind(...binds).all();
   return r.results || [];
 }
 

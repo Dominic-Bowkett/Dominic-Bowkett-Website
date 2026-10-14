@@ -13,6 +13,7 @@ import {
 } from "../../_shared/jobs.js";
 import { getPartner as partnerRow } from "../../_shared/db.js";
 import { PARTNER_SERVICES } from "../../_shared/services.js";
+import { listTasks, createTask, updateTask, deleteTask, taskDigest, TaskError } from "../../_shared/tasks.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -128,6 +129,14 @@ export async function onRequest(context) {
       }
     }
 
+    if (head === "tasks") {
+      if (method === "GET" && !id) return json({ ok: true, tasks: await listTasks(env, { status: url.searchParams.get("status") || "open", job: url.searchParams.get("job") || undefined }) });
+      if (method === "POST" && id === "digest") return json({ ok: true, ...(await taskDigest(env, origin, { force: true })) });
+      if (method === "POST" && !id) return json({ ok: true, task: await createTask(env, body) });
+      if (method === "PATCH" && id) return json({ ok: true, task: await updateTask(env, id, body) });
+      if (method === "DELETE" && id) { await deleteTask(env, id); return json({ ok: true }); }
+    }
+
     if (head === "jobs") {
       if (method === "GET" && !id) {
         const jobs = await listJobs(env, { status: url.searchParams.get("status") || "open", q: (url.searchParams.get("q") || "").trim() });
@@ -197,7 +206,7 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "Unknown endpoint" }, 404);
   } catch (e) {
-    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError ? e.status : 500;
+    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError || e instanceof TaskError ? e.status : 500;
     if (status === 500) console.error("admin api error", e);
     return json({ ok: false, error: e.message || String(e) }, status);
   }

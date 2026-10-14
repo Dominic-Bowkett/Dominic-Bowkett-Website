@@ -65,7 +65,7 @@ function shell(inner, { title = "Invoicing", app = false } = {}) {
 <meta name="robots" content="noindex, nofollow" /><title>${title} · Admin · Dominic Bowkett</title>
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
-<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin.js?v=17" defer></script>' : ""}</body></html>`;
+<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin.js?v=18" defer></script>' : ""}</body></html>`;
 }
 
 export async function onRequestGet({ request, env }) {
@@ -88,7 +88,7 @@ export async function onRequestGet({ request, env }) {
   const renewed = { ...headers, "Set-Cookie": await sessionCookie(env) };
   return new Response(
     shell(`<header class="bar"><span class="brand">Invoicing</span>
-<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Partners</a><a href="#setup" data-nav="setup">Setup</a><a href="/admin/survey">Surveys</a></nav>
+<nav><a href="#jobs" data-nav="jobs">Jobs</a><a href="#tasks" data-nav="tasks">Tasks</a><a href="#invoices" data-nav="invoices">Invoices</a><a href="#new" data-nav="new">New invoice</a><a href="#partners" data-nav="partners">Partners</a><a href="#setup" data-nav="setup">Setup</a><a href="/admin/survey">Surveys</a></nav>
 <div class="right"><a class="btn secondary small" href="/api/admin/export.csv">Export CSV</a><form method="post" action="/admin/logout"><button class="btn secondary small" type="submit">Sign out</button></form></div></header>
 <main id="app"><p class="muted">Loading…</p></main>`, { app: true }),
     { status: 200, headers: renewed }

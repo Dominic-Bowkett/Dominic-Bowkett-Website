@@ -144,6 +144,18 @@ export const SCHEMA = [
     meta TEXT
   )`,
   `CREATE INDEX IF NOT EXISTS job_messages_job ON job_messages(job_id, id)`,
+  `CREATE TABLE IF NOT EXISTS tasks (
+    id TEXT PRIMARY KEY,
+    title TEXT NOT NULL,
+    notes TEXT,
+    due_date TEXT,
+    job_id TEXT,
+    done_at TEXT,
+    created_at TEXT DEFAULT (datetime('now')),
+    updated_at TEXT DEFAULT (datetime('now'))
+  )`,
+  `CREATE INDEX IF NOT EXISTS tasks_open ON tasks(done_at, due_date)`,
+  `CREATE INDEX IF NOT EXISTS tasks_job ON tasks(job_id)`,
   `CREATE TABLE IF NOT EXISTS partner_signups (
     token TEXT PRIMARY KEY,
     email TEXT NOT NULL,

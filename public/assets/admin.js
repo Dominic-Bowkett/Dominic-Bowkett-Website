@@ -321,11 +321,55 @@
         ${jobs.map((j) => `<tr class="click" data-id="${j.id}"><td class="mono hide-m">${esc(j.ref)}</td><td class="hide-m">${when(j.last_activity_at)}</td>
           <td>${esc(j.customer_name || "")}<br/><span class="muted small">${esc(j.customer_phone || "")}${j.customer_phone && j.customer_email ? " · " : ""}${esc(j.customer_email || "")}</span></td>
           <td>${esc(j.service)}<br/><span class="muted small">${esc(j.property_address || (j.postcode ? `postcode ${j.postcode} (address not confirmed)` : "address not confirmed"))}</span></td>
-          <td class="hide-m">${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}${j.partner_name ? `<br/><span class="small muted hide-d">${esc(j.partner_name)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
+          <td class="hide-m">${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.open_tasks ? `<br/><span class="small" style="color:${j.next_task_due && j.next_task_due <= todayISO() ? "#8a2a2a" : "var(--muted)"}">${j.open_tasks} task${j.open_tasks === 1 ? "" : "s"}${j.next_task_due ? ` · ${j.next_task_due <= todayISO() ? "due" : day(j.next_task_due)}` : ""}</span>` : ""}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}${j.partner_name ? `<br/><span class="small muted hide-d">${esc(j.partner_name)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
       list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#job/" + tr.dataset.id)));
     };
     document.getElementById("j-status").addEventListener("change", load);
     let t; document.getElementById("j-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(load, 250); });
+    await load();
+  }
+
+  // ------------------------------------------------------------ tasks
+  const todayISO = () => new Date().toLocaleDateString("en-CA");
+  const dueLabel = (d) => { if (!d) return ""; const t = todayISO(); return d < t ? `<span style="color:#8a2a2a">overdue · ${day(d)}</span>` : d === t ? `<strong>today</strong>` : day(d); };
+  const taskRow = (t, { showJob = true } = {}) => `<li class="task" data-id="${t.id}" style="display:flex;gap:10px;align-items:flex-start;padding:9px 0;border-bottom:1px solid var(--rule);list-style:none">
+      <input type="checkbox" class="task-done" ${t.done_at ? "checked" : ""} style="width:auto;margin-top:3px;transform:scale(1.25)" />
+      <div style="flex:1;min-width:0"><div style="${t.done_at ? "text-decoration:line-through;color:var(--muted)" : ""}">${esc(t.title)}</div>
+        <div class="small muted">${t.due_date ? dueLabel(t.due_date) : "no date"}${showJob && t.job_ref ? ` · <a href="#job/${t.job_id}">${esc(t.job_ref)}${t.job_customer ? ` ${esc(t.job_customer)}` : ""}</a>` : ""}${t.notes ? ` · ${esc(t.notes)}` : ""}</div></div>
+      <button class="btn secondary small task-del" title="Delete" style="padding:3px 9px">✕</button></li>`;
+  const wireTasks = (root, reload) => {
+    root.querySelectorAll("li.task").forEach((li) => {
+      li.querySelector(".task-done").addEventListener("change", async (e) => { try { await api("tasks/" + li.dataset.id, { method: "PATCH", body: { done: e.target.checked } }); await reload(); } catch (err) { alert(err.message); } });
+      li.querySelector(".task-del").addEventListener("click", async () => { if (!confirm("Delete this task?")) return; try { await api("tasks/" + li.dataset.id, { method: "DELETE", body: {} }); await reload(); } catch (err) { alert(err.message); } });
+    });
+  };
+  const taskForm = (jobId) => `<form class="task-add" style="display:flex;gap:8px;flex-wrap:wrap;align-items:flex-end;margin-bottom:10px">
+      <div style="flex:1 1 260px"><label>New task</label><input name="title" placeholder="e.g. Ring Raul to confirm 18 Dec" required /></div>
+      <div><label>Due</label><input name="due_date" type="date" value="${todayISO()}" style="width:auto" /></div>
+      ${jobId ? `<input type="hidden" name="job_id" value="${esc(jobId)}" />` : ""}
+      <button class="btn" type="submit">Add</button></form>`;
+  const wireTaskForm = (root, reload) => root.querySelector("form.task-add").addEventListener("submit", async (e) => {
+    e.preventDefault(); const b = Object.fromEntries(new FormData(e.target).entries());
+    try { await api("tasks", { method: "POST", body: b }); e.target.title.value = ""; await reload(); } catch (err) { alert(err.message); }
+  });
+
+  async function viewTasks() {
+    setNav("tasks");
+    const status = sessionStorage.getItem("task.status") || "open";
+    app.innerHTML = `<div class="card"><div class="toolbar" style="justify-content:space-between"><h1 style="margin:0">Tasks</h1>
+      <select id="t-status" style="width:auto"><option value="open" ${status === "open" ? "selected" : ""}>To do</option><option value="done" ${status === "done" ? "selected" : ""}>Done</option><option value="all" ${status === "all" ? "selected" : ""}>All</option></select></div>
+      ${taskForm(null)}
+      <p class="small muted" style="margin:0 0 6px">Tasks for a particular job can also be added on that job's page. Anything due is emailed to you each morning.</p>
+      <ul id="tlist" style="padding:0;margin:0"></ul></div>`;
+    const load = async () => {
+      const s = document.getElementById("t-status").value; sessionStorage.setItem("task.status", s);
+      const { tasks } = await api("tasks?status=" + s);
+      const ul = document.getElementById("tlist");
+      ul.innerHTML = tasks.length ? tasks.map((t) => taskRow(t)).join("") : `<li class="muted" style="list-style:none;padding:10px 0">${s === "done" ? "Nothing done yet." : "Nothing to do."}</li>`;
+      wireTasks(ul, load);
+    };
+    document.getElementById("t-status").addEventListener("change", load);
+    wireTaskForm(app, load);
     await load();
   }
 
@@ -394,6 +438,7 @@
         ${["closed", "taken", "declined"].includes(j.status) ? `<button class="btn secondary" data-act="reopen">Reopen as new</button>` : ""}
       </div>
     </div>
+    <div class="card" id="job-tasks"><h2>Tasks</h2>${taskForm(j.id)}<ul id="jtlist" style="padding:0;margin:0"></ul></div>
     <div class="card"><h2>Send a message</h2>
       <form id="job-msg">
         <div style="display:flex;gap:10px;flex-wrap:wrap">
@@ -417,6 +462,15 @@
     const act = async (fn) => { try { await fn(); await viewJob(id); } catch (err) { flash(msg, err.message, "err"); window.scrollTo(0, 0); } };
     document.getElementById("job-edit").addEventListener("submit", (e) => { e.preventDefault(); act(() => api("jobs/" + id, { method: "PUT", body: Object.fromEntries(new FormData(e.target).entries()) })); });
     // Compose box: a full email-style area for email, a short box with a character count for texts.
+    const loadJobTasks = async () => {
+      const { tasks } = await api(`tasks?status=all&job=${id}`);
+      const ul = document.getElementById("jtlist");
+      if (!ul) return;
+      ul.innerHTML = tasks.length ? tasks.map((t) => taskRow(t, { showJob: false })).join("") : `<li class="muted small" style="list-style:none;padding:4px 0">No tasks for this job.</li>`;
+      wireTasks(ul, loadJobTasks);
+    };
+    wireTaskForm(document.getElementById("job-tasks"), loadJobTasks);
+    loadJobTasks();
     const mf = document.getElementById("job-msg");
     const defaultSubject = `${j.service}${j.property_address ? ` — ${j.property_address}` : ""}`;
     const greet = (name) => (name ? `Hi ${String(name).trim().split(/\s+/)[0]},\n\n` : "Hello,\n\n");
@@ -571,7 +625,8 @@
   async function route() {
     const h = location.hash.replace(/^#/, "") || "invoices";
     try {
-      if (h === "jobs") await viewJobs();
+      if (h === "tasks") await viewTasks();
+      else if (h === "jobs") await viewJobs();
       else if (h === "newjob") await viewJobForm();
       else if (h.startsWith("job/")) await viewJob(h.slice(4));
       else if (h === "invoices") await viewInvoices();
@@ -582,6 +637,8 @@
       else if (h === "setup") await viewSetup();
       else await viewInvoices();
     } catch (err) {
+      // A slower page from before the user switched tabs must not overwrite the page they are on now.
+      if ((location.hash.replace(/^#/, "") || "invoices") !== h) return;
       app.innerHTML = `<div class="card"><p class="msg err">${esc(err.message)}</p><p><a href="#setup">Check setup</a></p></div>`;
     }
   }
