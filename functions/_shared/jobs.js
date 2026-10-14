@@ -71,7 +71,7 @@ export async function listJobs(env, { status, q, partner } = {}) {
 
 function clean(s, max = 2000) { return String(s || "").replace(/\r/g, "").trim().slice(0, max) || null; }
 
-export async function createJob(env, data, origin, { notify = true } = {}) {
+export async function createJob(env, data, origin, { notify = true, ack } = {}) {
   const d = await db(env);
   const id = randomToken(12);
   const ref = await nextNumber(env, "job", "DB-JOB-", 6);
@@ -100,6 +100,8 @@ export async function createJob(env, data, origin, { notify = true } = {}) {
   await addMessage(env, id, { direction: "in", channel: "system", party: "system", body: `Job created from ${job.source}${job.source_ref ? ` (${job.source_ref})` : ""}.` });
   let full = await getJob(env, id);
   if (notify) await notifyDom(env, full, origin, address ? "New job" : "New job — address needed");
+  // Acknowledge the customer. Checkatrade leads are skipped: the watcher has already emailed and texted them.
+  if (ack ?? job.source !== "checkatrade") { await sendAck(env, full); full = await getJob(env, id); }
   if (full.property_address && full.lat != null) {
     const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= 25 && p.offers !== false);
     if (near) { try { full = await offerJob(env, id, near.stripe_account_id, origin, { by: "system" }); } catch (e) { await addMessage(env, id, { direction: "out", channel: "system", party: "system", body: `Auto-dispatch failed: ${e.message}` }); } }
@@ -178,6 +180,45 @@ export async function notifyDom(env, job, origin, headline) {
 
 // ---------------------------------------------------------------- dispatch
 
+const firstName = (job) => (job.customer_name ? job.customer_name.trim().split(/\s+/)[0] : "");
+
+// Email the customer if we have an address, otherwise text them. Returns true if something was sent.
+async function tellCustomer(env, job, { kind, subject, text }) {
+  if (job.customer_email) {
+    const hi = firstName(job) ? `Hello ${esc(firstName(job))},` : "Hello,";
+    const id = await mail(env, job.id, kind, {
+      to: job.customer_email, replyTo: JOBS_INBOX, subject: `${jobTag(job)} ${subject}`,
+      html: emailShell(`<p>${hi}</p><p>${esc(text)}</p><p>Kind regards,<br/>Dominic Bowkett</p>`),
+    });
+    if (id) { await addMessage(env, job.id, { direction: "out", channel: "email", party: "system", counterpart: "customer", subject, body: text, provider_id: id }); return true; }
+  }
+  if (job.customer_phone) {
+    const sms = `Hi${firstName(job) ? " " + firstName(job) : ""}, it's Dom Bowkett. ${text}`;
+    try {
+      const sid = await sendSms(env, job.customer_phone, sms);
+      await addMessage(env, job.id, { direction: "out", channel: "sms", party: "system", counterpart: "customer", body: sms, provider_id: sid });
+      return true;
+    } catch (e) { await addMessage(env, job.id, { direction: "out", channel: "system", party: "system", body: `Text to customer failed: ${e.message}` }); }
+  }
+  return false;
+}
+
+export async function sendAck(env, job) {
+  if (job.ack_sent_at) return false;
+  const what = job.service ? `${job.service} request` : "request";
+  const ok = await tellCustomer(env, job, { kind: "ack", subject: "Thank you, we've received your request", text: `Thank you. We've received your ${what}${job.property_address ? ` for ${job.property_address}` : ""} and will be in touch shortly.` });
+  if (ok) await updateJob(env, job.id, { ack_sent_at: new Date().toISOString() });
+  return ok;
+}
+
+// First time a job goes to a partner, let the customer know someone nearby is being lined up.
+async function sendChecking(env, job) {
+  if (job.checking_sent_at) return false;
+  const ok = await tellCustomer(env, job, { kind: "checking", subject: `Your ${job.service || "enquiry"}`, text: `I'm just checking with my team, as I'm unable to do this one myself, but we may have an assessor nearby who can help. I'll be back in touch shortly.` });
+  if (ok) await updateJob(env, job.id, { checking_sent_at: new Date().toISOString() });
+  return ok;
+}
+
 export async function offerJob(env, jobId, partnerId, origin, { by = "admin" } = {}) {
   const job = await getJob(env, jobId);
   if (!job) throw new JobError("Job not found", 404);
@@ -211,6 +252,7 @@ ${btn(link, "View job and accept or decline")}
       await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Text to partner failed: ${e.message}` });
     }
   }
+  await sendChecking(env, await getJob(env, jobId));
   if (by !== "admin") await notifyDom(env, await getJob(env, jobId), origin, `Job offered automatically to ${name}`);
   return getJob(env, jobId);
 }

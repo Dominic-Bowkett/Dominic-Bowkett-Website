@@ -121,6 +121,8 @@ export const SCHEMA = [
     booked_by TEXT,
     price_pence INTEGER,
     invoice_id TEXT,
+    ack_sent_at TEXT,
+    checking_sent_at TEXT,
     created_at TEXT DEFAULT (datetime('now')),
     updated_at TEXT DEFAULT (datetime('now')),
     last_activity_at TEXT DEFAULT (datetime('now'))
@@ -198,6 +200,8 @@ const MIGRATIONS = [
   `ALTER TABLE partners ADD COLUMN registered_at TEXT`,
   `ALTER TABLE partners ADD COLUMN dispatch_mode TEXT DEFAULT 'hold'`,
   `ALTER TABLE partners ADD COLUMN services TEXT`,
+  `ALTER TABLE jobs ADD COLUMN ack_sent_at TEXT`,
+  `ALTER TABLE jobs ADD COLUMN checking_sent_at TEXT`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {

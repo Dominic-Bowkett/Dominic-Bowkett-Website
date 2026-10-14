@@ -135,7 +135,7 @@ export async function onRequest(context) {
         const names = Object.fromEntries(partners.map((p) => [p.stripe_account_id, p.display_name || p.business_name]));
         return json({ ok: true, jobs: jobs.map((j) => ({ ...j, partner_name: names[j.partner_account_id] || null, status_label: STATUS_LABEL[j.status] })) });
       }
-      if (method === "POST" && !id) return json({ ok: true, job: await createJob(env, { ...body, source: "manual" }, origin, { notify: false }) });
+      if (method === "POST" && !id) return json({ ok: true, job: await createJob(env, { ...body, source: "manual" }, origin, { notify: false, ack: body.send_ack !== false }) });
       if (id && method === "GET") {
         const job = await getJob(env, id);
         if (!job) return json({ ok: false, error: "Not found" }, 404);

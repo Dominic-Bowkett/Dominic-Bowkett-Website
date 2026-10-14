@@ -343,10 +343,12 @@
       <label>What they asked for / timing</label><textarea name="details"></textarea>
       <label>Requested times</label><input name="requested_times" placeholder="e.g. mornings next week" />
     </div></div>
+    <div class="check"><input type="checkbox" id="send-ack" checked /><label for="send-ack" style="margin:0;text-transform:none;letter-spacing:0">Send the customer "Thank you, we've received your request" (email, or text if no email)</label></div>
     <div class="actions"><button class="btn" type="submit">Create job</button><a class="btn secondary" href="#jobs">Cancel</a></div></form></div>`;
     document.getElementById("job-form").addEventListener("submit", async (e) => {
       e.preventDefault();
       const body = Object.fromEntries(new FormData(e.target).entries());
+      body.send_ack = document.getElementById("send-ack").checked;
       busy(e.submitter, true);
       try { const r = await api("jobs", { method: "POST", body }); location.hash = "#job/" + r.job.id; }
       catch (err) { flash(document.getElementById("jf-msg"), err.message, "err"); busy(e.submitter, false); }
