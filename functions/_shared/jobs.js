@@ -189,9 +189,9 @@ export function jobSummaryText(job, { contact = true } = {}) {
   ].filter(Boolean).join("\n");
 }
 
-export async function notifyDom(env, job, origin, headline) {
-  const text = `${headline} — ${job.ref}\n\n${jobSummaryText(job)}\nSource: ${job.source}${job.source_ref ? ` ${job.source_ref}` : ""}\nStatus: ${STATUS_LABEL[job.status] || job.status}${job.partner_account_id ? ` · partner ${job.partner_account_id}` : ""}\n\nOpen in admin: ${adminLink(origin, job)}\n`;
-  return mail(env, job.id, "owner", { to: OWNER_TO, subject: `${headline} — ${job.ref} — ${job.service}${job.property_address ? ` — ${job.property_address}` : job.postcode ? ` — ${job.postcode}` : ""}`, text });
+export async function notifyDom(env, job, origin, headline, { message, replyable = false } = {}) {
+  const text = `${headline} — ${job.ref}\n\n${message ? `They wrote:\n${message}\n\n${replyable ? `Reply to this email and your reply goes to ${job.customer_name || "them"} (by text if they texted, otherwise email) and is logged on the job.\n\n` : ""}` : ""}${jobSummaryText(job)}\nSource: ${job.source}${job.source_ref ? ` ${job.source_ref}` : ""}\nStatus: ${STATUS_LABEL[job.status] || job.status}${job.partner_account_id ? ` · partner ${job.partner_account_id}` : ""}\n\nOpen in admin: ${adminLink(origin, job)}\n`;
+  return mail(env, job.id, "owner", { to: OWNER_TO, ...(replyable ? { replyTo: JOBS_INBOX } : {}), subject: `${headline} — ${job.ref} — ${job.service}${job.property_address ? ` — ${job.property_address}` : job.postcode ? ` — ${job.postcode}` : ""}`, text });
 }
 
 // ---------------------------------------------------------------- dispatch
@@ -461,7 +461,7 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
     }
   }
   const fresh = await getJob(env, job.id);
-  await notifyDom(env, fresh, origin, headline);
+  await notifyDom(env, fresh, origin, headline, { message: body, replyable: true });
   if (fresh.partner_account_id && ["accepted", "booked"].includes(fresh.status)) {
     const p = await getPartner(env, fresh.partner_account_id);
     if (p?.phone) { try { await sendSms(env, p.phone, `Dominic Bowkett: message from ${fresh.customer_name || "the customer"} about ${fresh.property_address}: "${body.slice(0, 300)}". Reply at ${portalLink(origin, fresh)}`); } catch {} }
@@ -502,7 +502,7 @@ export async function inboundEmail(env, { from, subject = "", text = "", html = 
       if (ex?.property_address) { await editJob(env, job.id, { property_address: ex.property_address, postcode: ex.postcode || "" }); headline = `Address received: ${ex.property_address}`; }
     }
     const fresh = await getJob(env, job.id);
-    await notifyDom(env, fresh, origin, headline);
+    await notifyDom(env, fresh, origin, headline, { message: reply, replyable: true });
     if (fresh.partner_account_id && ["accepted", "booked"].includes(fresh.status)) {
       const p = await getPartner(env, fresh.partner_account_id);
       if (p) await mail(env, fresh.id, "relay_partner", { to: p.invoice_email || p.email, replyTo: JOBS_INBOX, subject: `${jobTag(fresh)} Message from ${fresh.customer_name || "the customer"}`, html: emailShell(`<p style="white-space:pre-wrap;">${esc(reply)}</p><p style="font-size:13px;color:#7a7873;">Reply here or at ${portalLink(origin, fresh)}</p>`) });
@@ -512,7 +512,12 @@ export async function inboundEmail(env, { from, subject = "", text = "", html = 
   if (job && isForwarder) {
     // Dom replying on a tagged thread from his own inbox: treat as a message to the customer.
     const reply = stripQuoted(bodyText);
-    if (reply) await sendMessage(env, job.id, { to: "customer", channel: "email", body: reply, party: "admin", origin });
+    if (reply) {
+      const msgs = await jobMessages(env, job.id);
+      const lastIn = [...msgs].reverse().find((m) => m.party === "customer" && m.direction === "in");
+      const channel = lastIn?.channel === "sms" && job.customer_phone ? "sms" : job.customer_email ? "email" : "sms";
+      await sendMessage(env, job.id, { to: "customer", channel, body: reply, party: "admin", origin });
+    }
     return { handled: true, job };
   }
   if (!isForwarder) return { handled: false, reason: "unknown sender" };
@@ -599,8 +604,16 @@ export async function extractAddress(env, text, job) {
   );
   const addr = ai?.property_address && String(ai.property_address).toLowerCase() !== "null" ? String(ai.property_address).trim() : null;
   if (addr) return { property_address: addr, postcode: normalisePostcode(ai.postcode) || postcodeFrom(addr) || pc };
-  // fallback: a message with a postcode and a house number/name is probably the address
-  if (pc && /\d/.test(text) && text.length < 200) return { property_address: text.trim(), postcode: pc };
+  // fallback: take the line that holds the postcode (joined to the line above when the postcode stands alone)
+  if (pc) {
+    const lines = String(text).split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
+    const i = lines.findIndex((l) => POSTCODE_IN_TEXT.test(l.toUpperCase()));
+    if (i >= 0) {
+      let line = lines[i].replace(/^(the\s+)?(full\s+)?(property\s+)?address\s*(is)?\s*[:\-]?\s*/i, "");
+      if (line.replace(/\s/g, "").length <= 8 && i > 0) line = `${lines[i - 1]}, ${line}`;
+      if (/\d|[a-z]{3,}/i.test(line.replace(POSTCODE_IN_TEXT, ""))) return { property_address: line.slice(0, 200), postcode: pc };
+    }
+  }
   return null;
 }
 
