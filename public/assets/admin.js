@@ -395,18 +395,61 @@
       </div>
     </div>
     <div class="card"><h2>Send a message</h2>
-      <form id="job-msg" class="msgform" style="display:grid;grid-template-columns:auto auto 1fr auto;gap:10px;align-items:end">
-        <div><label>To</label><select name="to" style="width:auto"><option value="customer">Customer</option>${partner ? `<option value="partner">${esc(partnerName)}</option>` : ""}</select></div>
-        <div><label>By</label><select name="channel" style="width:auto"><option value="sms">Text</option><option value="email">Email</option></select></div>
-        <div><label>Message</label><input name="body" placeholder="Type a message…" /></div>
-        <div><button class="btn" type="submit">Send</button></div></form>
+      <form id="job-msg">
+        <div style="display:flex;gap:10px;flex-wrap:wrap">
+          <div><label>To</label><select name="to" style="width:auto">${j.customer_name || j.customer_email || j.customer_phone ? `<option value="customer">${esc(j.customer_name || "Customer")}</option>` : ""}${partner ? `<option value="partner">${esc(partnerName)}</option>` : ""}</select></div>
+          <div><label>Send by</label><select name="channel" style="width:auto"><option value="email" ${j.customer_email ? "selected" : ""}>Email</option><option value="sms" ${!j.customer_email ? "selected" : ""}>Text message</option></select></div>
+        </div>
+        <div id="msg-email-head" style="margin-top:4px">
+          <label>To address</label><div id="msg-to-addr" class="small mono" style="padding:4px 0 2px"></div>
+          <label>Subject</label><input name="subject" id="msg-subject" />
+        </div>
+        <label id="msg-body-label">Message</label>
+        <textarea name="body" id="msg-body" style="min-height:260px;line-height:1.55;resize:vertical"></textarea>
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px">
+          <span id="msg-hint" class="muted small"></span>
+          <button class="btn" type="submit">Send</button>
+        </div></form>
       <form id="job-note" style="display:flex;gap:10px;align-items:end;margin-top:10px"><div style="flex:1"><label>Private note</label><input name="body" /></div><button class="btn secondary" type="submit">Add note</button></form>
     </div>
     <div class="card"><h2>Timeline</h2><ul class="timeline">${messages.map((m) => `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>`;
     const msg = document.getElementById("jmsg");
     const act = async (fn) => { try { await fn(); await viewJob(id); } catch (err) { flash(msg, err.message, "err"); window.scrollTo(0, 0); } };
     document.getElementById("job-edit").addEventListener("submit", (e) => { e.preventDefault(); act(() => api("jobs/" + id, { method: "PUT", body: Object.fromEntries(new FormData(e.target).entries()) })); });
-    document.getElementById("job-msg").addEventListener("submit", (e) => { e.preventDefault(); const b = Object.fromEntries(new FormData(e.target).entries()); if (!b.body.trim()) return; act(() => api(`jobs/${id}/message`, { method: "POST", body: b })); });
+    // Compose box: a full email-style area for email, a short box with a character count for texts.
+    const mf = document.getElementById("job-msg");
+    const defaultSubject = `${j.service}${j.property_address ? ` — ${j.property_address}` : ""}`;
+    const greet = (name) => (name ? `Hi ${String(name).trim().split(/\s+/)[0]},\n\n` : "Hello,\n\n");
+    const syncCompose = () => {
+      const email = mf.channel.value === "email";
+      const toPartner = mf.to.value === "partner";
+      const addr = email ? (toPartner ? (partner?.invoice_email || partner?.email) : j.customer_email) : (toPartner ? partner?.phone : j.customer_phone);
+      document.getElementById("msg-email-head").style.display = email ? "block" : "none";
+      document.getElementById("msg-to-addr").textContent = addr || (email ? "no email address on file" : "");
+      const body = document.getElementById("msg-body");
+      body.style.minHeight = email ? "260px" : "90px";
+      document.getElementById("msg-body-label").textContent = email ? "Message" : `Text message${addr ? ` to ${addr}` : " (no mobile on file)"}`;
+      if (email && !mf.subject.value) mf.subject.value = defaultSubject;
+      if (email && !body.value.trim()) body.value = greet(toPartner ? (partner?.contact_name || partnerName) : j.customer_name) + "\n\nKind regards,\nDominic Bowkett";
+      if (!email && /^(Hi |Hello,)[\s\S]*Kind regards,\nDominic Bowkett$/.test(body.value) && body.value.split("\n").filter(Boolean).length <= 3) body.value = "";
+      updateHint();
+    };
+    const updateHint = () => {
+      const email = mf.channel.value === "email";
+      const n = document.getElementById("msg-body").value.length;
+      document.getElementById("msg-hint").textContent = email ? "Sent from info@dominicbowkett.com; replies come back onto this job." : `${n} characters · ${Math.max(1, Math.ceil(n / 153))} text${n > 160 ? "s" : ""} · sent from the office number`;
+    };
+    mf.channel.addEventListener("change", syncCompose);
+    mf.to.addEventListener("change", () => { document.getElementById("msg-body").value = ""; syncCompose(); });
+    document.getElementById("msg-body").addEventListener("input", updateHint);
+    syncCompose();
+    mf.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const b = Object.fromEntries(new FormData(mf).entries());
+      if (!b.body.trim()) return;
+      if (!confirm(`Send this ${b.channel === "email" ? "email" : "text"}?`)) return;
+      act(() => api(`jobs/${id}/message`, { method: "POST", body: b }));
+    });
     document.getElementById("job-note").addEventListener("submit", (e) => { e.preventDefault(); const b = Object.fromEntries(new FormData(e.target).entries()); if (!b.body.trim()) return; act(() => api(`jobs/${id}/note`, { method: "POST", body: b })); });
     app.querySelectorAll("[data-act]").forEach((b) => b.addEventListener("click", () => {
       const a = b.dataset.act;

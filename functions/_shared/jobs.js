@@ -326,10 +326,10 @@ ${btn(portalLink(origin, fresh), "Open the job")}
 }
 
 // Customer <-> partner/Dom messaging, always through the system so it is logged and oversight is kept.
-export async function sendMessage(env, jobId, { to, channel, body, party = "admin", origin }) {
+export async function sendMessage(env, jobId, { to, channel, body, subject: customSubject, party = "admin", origin }) {
   const job = await getJob(env, jobId);
   if (!job) throw new JobError("Job not found", 404);
-  body = clean(body, 3000);
+  body = clean(body, 10000);
   if (!body) throw new JobError("Message is empty");
   const p = job.partner_account_id ? await getPartner(env, job.partner_account_id) : null;
   const senderName = party === "partner" ? `${p?.contact_name || p?.display_name || p?.business_name}` : "Dominic Bowkett";
@@ -342,12 +342,12 @@ export async function sendMessage(env, jobId, { to, channel, body, party = "admi
   if (channel === "sms") {
     provider_id = await sendSms(env, dest, party === "partner" ? `${body} — ${senderName} (via Dominic Bowkett)` : body);
   } else {
-    const subject = `${jobTag(job)} ${job.service}${job.property_address ? ` — ${job.property_address}` : ""}`;
+    const subject = `${jobTag(job)} ${clean(customSubject, 200) || `${job.service}${job.property_address ? ` — ${job.property_address}` : ""}`}`;
     provider_id = await mail(env, jobId, "message", {
       to: dest,
       replyTo: JOBS_INBOX,
       subject,
-      html: emailShell(`<p style="white-space:pre-wrap;">${linkify(esc(body))}</p><p>${esc(senderName)}${party === "partner" ? ` · via Dominic Bowkett` : ""}</p><p style="font-size:13px;color:#7a7873;">Reply to this email and it will reach ${party === "partner" ? "them" : "me"}.</p>`),
+      html: emailShell(`<p style="white-space:pre-wrap;">${linkify(esc(body))}</p>${party === "admin" && /dominic bowkett\s*$/i.test(body) ? "" : `<p>${esc(senderName)}${party === "partner" ? ` · via Dominic Bowkett` : ""}</p>`}<p style="font-size:13px;color:#7a7873;">Reply to this email and it will reach ${party === "partner" ? "them" : "me"}.</p>`),
     });
     if (!provider_id) throw new JobError("The email could not be sent", 502);
   }

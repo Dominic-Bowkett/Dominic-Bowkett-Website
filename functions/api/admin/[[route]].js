@@ -147,7 +147,7 @@ export async function onRequest(context) {
       if (id && method === "POST") {
         if (action === "offer") return json({ ok: true, job: await offerJob(env, id, body.partner_account_id, origin, { by: "admin" }) });
         if (action === "respond") return json({ ok: true, job: await partnerResponds(env, id, !!body.accepted, origin, { via: "admin", note: body.note || "" }) });
-        if (action === "message") return json({ ok: true, job: await sendMessage(env, id, { to: body.to || "customer", channel: body.channel || "sms", body: body.body, party: "admin", origin }) });
+        if (action === "message") return json({ ok: true, job: await sendMessage(env, id, { to: body.to || "customer", channel: body.channel || "sms", body: body.body, subject: body.subject, party: "admin", origin }) });
         if (action === "ask-address") return json({ ok: true, job: await askForAddress(env, id, origin) });
         if (action === "book") return json({ ok: true, job: await confirmBooking(env, id, { booked_date: body.booked_date, booked_time: body.booked_time, price: body.price, party: "admin" }, origin) });
         if (action === "note") { await addMessage(env, id, { direction: "in", channel: "note", party: "admin", body: String(body.body || "") }); return json({ ok: true, job: await getJob(env, id) }); }
