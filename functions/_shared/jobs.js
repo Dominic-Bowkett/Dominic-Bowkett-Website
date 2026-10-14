@@ -20,6 +20,9 @@ export const STATUS_LABEL = {
 };
 const JOBS_INBOX = "in@jobs.dominicbowkett.com";
 const ALLOWED_FORWARDERS = ["info@dominicbowkett.com", "dbowkett1@gmail.com", "dom@ukbrewerytours.com"];
+// Dom's own numbers: never treat these as a customer's (they appear in his email signature and forwards).
+const OWN_PHONES = ["+447946618203", "+447476394125", "+447973713747"];
+const isOwnPhone = (p) => OWN_PHONES.includes(e164(p));
 const POSTCODE_IN_TEXT = /\b([A-Z]{1,2}\d[A-Z\d]?)\s*(\d[A-Z]{2})\b/i;
 
 export function postcodeFrom(text) {
@@ -85,7 +88,7 @@ export async function createJob(env, data, origin, { notify = true, ack } = {}) 
     source_ref: clean(data.source_ref, 120),
     customer_name: clean(data.customer_name, 120),
     customer_email: (clean(data.customer_email, 200) || "").toLowerCase() || null,
-    customer_phone: data.customer_phone ? e164(data.customer_phone) : null,
+    customer_phone: data.customer_phone && !isOwnPhone(data.customer_phone) ? e164(data.customer_phone) : null,
     property_address: address,
     postcode,
     lat: geo?.lat ?? null, lng: geo?.lng ?? null,
@@ -531,13 +534,13 @@ async function aiJson(env, system, user) {
 export async function extractEnquiry(env, text, subject = "") {
   const fallback = {
     customer_name: null, customer_email: /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.exec(text)?.[0] || null,
-    customer_phone: /(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}/.exec(text)?.[0] || null,
+    customer_phone: [...text.matchAll(/(\+44\s?7\d{3}|\(?07\d{3}\)?)\s?\d{3}\s?\d{3}/g)].map((m) => m[0]).find((p) => !isOwnPhone(p)) || null,
     property_address: null, postcode: postcodeFrom(text), service: /survey/i.test(text + subject) && !/epc|energy performance/i.test(text + subject) ? "Home survey" : "Domestic EPC",
     requested_times: null, summary: stripQuoted(text).slice(0, 1500),
   };
   const ai = await aiJson(
     env,
-    `You extract a property-services enquiry from a forwarded email. Ignore email signatures, legal footers, quoted headers and the forwarder's own words; focus on the customer and the job. Reply with ONLY a JSON object with keys: customer_name, customer_email, customer_phone, property_address (full postal address if given, else null), postcode (UK postcode or null), service (e.g. "Domestic EPC", "Home survey", "Retrofit assessment"), requested_times (any dates/times/urgency the customer mentioned, else null), summary (2-3 plain sentences of what the customer wants, no signature). Use null when unknown. Never invent details.`,
+    `You extract a property-services enquiry from a forwarded email. Ignore email signatures, legal footers, quoted headers and the forwarder's own words; focus on the customer and the job. The forwarder is Dominic Bowkett (phones 07946 618203, 07476 394125, 07973 713747; emails @dominicbowkett.com): never return his details as the customer's. Reply with ONLY a JSON object with keys: customer_name, customer_email, customer_phone, property_address (full postal address if given, else null), postcode (UK postcode or null), service (e.g. "Domestic EPC", "Home survey", "Retrofit assessment"), requested_times (any dates/times/urgency the customer mentioned, else null), summary (2-3 plain sentences of what the customer wants, no signature). Use null when unknown. Never invent details.`,
     `Subject: ${subject}\n\n${text.slice(0, 12000)}`
   );
   if (!ai) return fallback;
@@ -545,6 +548,7 @@ export async function extractEnquiry(env, text, subject = "") {
   for (const k of Object.keys(fallback)) if (ai[k] != null && String(ai[k]).trim() && String(ai[k]).toLowerCase() !== "null") out[k] = String(ai[k]).trim();
   if (out.customer_email && !/[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.test(out.customer_email)) out.customer_email = fallback.customer_email;
   if (ALLOWED_FORWARDERS.includes(String(out.customer_email || "").toLowerCase())) out.customer_email = null;
+  if (out.customer_phone && isOwnPhone(out.customer_phone)) out.customer_phone = fallback.customer_phone;
   out.postcode = normalisePostcode(out.postcode) || postcodeFrom(out.property_address) || fallback.postcode;
   // Use the service names the admin dropdown uses, so jobs and invoices line up.
   const svc = String(out.service || "").toLowerCase();
