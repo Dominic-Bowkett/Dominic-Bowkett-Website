@@ -52,6 +52,7 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .ph{position:relative;aspect-ratio:1;border-radius:8px;overflow:hidden;background:#eee}
 .ph img{width:100%;height:100%;object-fit:cover;display:block}
 .ph .del{position:absolute;right:4px;top:4px;border:0;background:rgba(0,0,0,.6);color:#fff;border-radius:50%;width:26px;height:26px;font-size:14px}
+.again{border:1px solid var(--rule);border-radius:12px;padding:10px 12px;margin:14px 0;background:#fff8f1}
 .chip .sw{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px;box-shadow:inset 0 0 0 1px rgba(0,0,0,.25)}
 .ph .cap{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;font-size:10.5px;padding:1px 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;pointer-events:none;z-index:1}
 .ph .wait{z-index:2;position:absolute;left:0;right:0;bottom:0;background:rgba(194,124,0,.9);color:#fff;font-size:11px;text-align:center;padding:2px}

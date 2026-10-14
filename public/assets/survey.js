@@ -832,17 +832,17 @@ ${removed ? '<div class="hintbox rm"><b>Removed from the plan.</b> <button class
     sheet.innerHTML = `<div class="grab"></div><button class="x" type="button" data-act="close" aria-label="Close">×</button><div class="prog">
 <h2>Progress</h2><div class="sub">${esc(plan.address || "")}</div>
 ${bar("Windows", W)}${bar("External doors", D)}${bar("Rooms measured", R)}${bar("Evidence checklist", C)}${E.length ? bar("Evidence pins", E) : ""}
+${startAgain()}
 <p class="small muted">${esc(plan.note || "")}</p>
 <p style="display:flex;gap:8px;flex-wrap:wrap"><a download class="btn secondary small" href="${API}/export.csv">Download CSV</a><a download class="btn secondary small" href="${API}/photos.csv">Photo log (time + GPS)</a></p>
 <h3>Evidence checklist</h3>${rows(C)}
-<h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}${removedList.length ? `<h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Removed from the plan <button class="btn secondary small" type="button" data-act="restore-all">Restore all (${removedList.length})</button></h3>${rows(removedList)}` : ""}
-${startAgain()}</div>`;
+<h3>Windows</h3>${rows(todoFirst(W))}<h3>External doors</h3>${rows(todoFirst(D))}<h3>Rooms</h3>${rows(todoFirst(R))}${E.length ? `<h3>Evidence pins</h3>${rows(E)}` : ""}${removedList.length ? `<h3 style="display:flex;justify-content:space-between;align-items:center;gap:8px">Removed from the plan <button class="btn secondary small" type="button" data-act="restore-all">Restore all (${removedList.length})</button></h3>${rows(removedList)}` : ""}</div>`;
     sheet.hidden = false; sheet.scrollTop = 0;
   }
-  function startAgain() {
-    const nf = liveOpenings(floorKey).length, na = liveOpenings(null).length; if (!na) return "";
-    return `<h3>Start again</h3><p class="small muted">Take every window and door off the plan, then add them yourself with + Window and + Door (numbered W1, W2… as you go). Nothing is deleted: measurements and photos stay with the removed items, and one Undo puts them all back.</p>
-<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px">${nf ? `<button class="btn danger small" type="button" data-act="clear-floor">Clear ${esc(curFloor().name)} (${nf})</button>` : ""}<button class="btn danger small" type="button" data-act="clear-all">Clear whole plan (${na})</button></div>`;
+  function startAgain() {   // top of Progress: take every window/door off (one floor or all), or put removed ones back
+    const nf = liveOpenings(floorKey).length, na = liveOpenings(null).length, nr = removedItems().length; if (!na && !nr) return "";
+    return `<div class="again"><b>Start again with windows &amp; doors</b><p class="small muted" style="margin:4px 0 8px">Take them all off, then add your own with + Window / + Door (numbered W1, W2… as you go). Nothing is deleted, and one Undo puts them all back.</p>
+<div style="display:flex;gap:8px;flex-wrap:wrap">${nf ? `<button class="btn danger small" type="button" data-act="clear-floor">Clear ${esc(curFloor().name)} (${nf})</button>` : ""}${na ? `<button class="btn danger small" type="button" data-act="clear-all">Clear whole plan (${na})</button>` : ""}${nr ? `<button class="btn secondary small" type="button" data-act="restore-all">Restore all (${nr})</button>` : ""}</div></div>`;
   }
   sheet.addEventListener("click", (ev) => { const row = ev.target.closest(".prow"); if (row) select(row.dataset.ref); });
 
