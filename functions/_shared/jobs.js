@@ -243,7 +243,7 @@ export async function offerJob(env, jobId, partnerId, origin, { by = "admin" } =
 <pre style="white-space:pre-wrap;font:inherit;background:#fafaf8;border:1px solid #e2dfd8;border-radius:4px;padding:12px;">${esc(text)}</pre>
 <p>Price to the customer and your share are agreed once it's booked; the platform commission is ${esc(String(p.commission_pct ?? 10))}% inc VAT. The customer's contact details are released as soon as you accept.</p>
 ${btn(link, "View job and accept or decline")}
-<p style="font-size:13px;color:#7a7873;">You can also reply YES or NO to the text message we've just sent, or reply to this email.</p>`),
+<p style="font-size:13px;color:#7a7873;">You can also reply YES or NO to the text, or reply to this email. If the requested time doesn't suit, reply with the times you can do.</p>`),
   });
   await addMessage(env, jobId, { direction: "out", channel: "email", party: by, counterpart: "partner", subject, body: `Offered to ${name}.\n\n${text}` });
   if (p.phone) {
@@ -308,7 +308,7 @@ ${btn(portalLink(origin, fresh), "Open the job")}
       } catch (e) { await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Text to customer failed: ${e.message}` }); }
     }
   }
-  await notifyDom(env, fresh, origin, accepted ? `${name} accepted the job` : `${name} declined the job`);
+  await notifyDom(env, fresh, origin, `${name} ${accepted ? "accepted" : "declined"} the job${note ? `: "${note.slice(0, 120)}"` : ""}`);
   return fresh;
 }
 
@@ -341,6 +341,20 @@ export async function sendMessage(env, jobId, { to, channel, body, party = "admi
   await addMessage(env, jobId, { direction: "out", channel, party, counterpart: to, body, provider_id });
   // keep the other side in the loop
   if (party === "partner") await notifyDom(env, job, origin, `${senderName} messaged ${destName}`);
+  return getJob(env, jobId);
+}
+
+// Partner writes to Dom about a job (question, different times, etc). Logged on the job; Dom emailed with the full text.
+export async function partnerToDom(env, jobId, body, origin) {
+  const job = await getJob(env, jobId);
+  if (!job) throw new JobError("Job not found", 404);
+  body = clean(body, 3000);
+  if (!body) throw new JobError("Message is empty");
+  const p = job.partner_account_id ? await getPartner(env, job.partner_account_id) : null;
+  const name = p?.contact_name || p?.display_name || p?.business_name || "Partner";
+  await addMessage(env, jobId, { direction: "in", channel: "portal", party: "partner", counterpart: "admin", body });
+  const text = `${name} wrote about ${job.ref} (${job.service}${job.property_address ? `, ${job.property_address}` : ""}):\n\n"${body}"\n\nStatus: ${STATUS_LABEL[job.status]}\nReply to them from the job page (Send a message, To: ${p?.display_name || p?.business_name || "partner"}): ${adminLink(origin, job)}\n`;
+  await mail(env, jobId, "owner", { to: OWNER_TO, subject: `Message from ${name} — ${job.ref} — ${job.property_address || job.service}`, text });
   return getJob(env, jobId);
 }
 

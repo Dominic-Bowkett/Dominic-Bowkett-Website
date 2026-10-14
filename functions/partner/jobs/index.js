@@ -9,7 +9,7 @@ const headers = { "content-type": "text/html; charset=utf-8", "cache-control": "
 
 export async function onRequestGet({ request, env }) {
   const user = await currentPartnerUser(request, env);
-  if (!user) return Response.redirect(new URL("/partner", request.url).toString(), 303);
+  if (!user) return Response.redirect(new URL("/partner?next=/partner/jobs", request.url).toString(), 303);
   const jobs = await listJobs(env, { partner: user.stripe_account_id });
   const row = (j) => `<tr><td class="mono">${esc(j.ref)}</td><td>${esc(j.service)}<br/><span class="muted small">${esc(j.property_address || j.postcode || "")}</span></td>
 <td>${["accepted", "booked", "invoiced"].includes(j.status) ? esc(j.customer_name || "") : '<span class="muted small">after you accept</span>'}</td>

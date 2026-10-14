@@ -2,7 +2,7 @@
 // POST — actions: accept | decline | message | book
 import { currentPartnerUser } from "../../_shared/partner-auth.js";
 import { portalPage } from "../../_shared/portal.js";
-import { getJob, jobMessages, partnerResponds, sendMessage, confirmBooking, STATUS_LABEL, JobError } from "../../_shared/jobs.js";
+import { getJob, jobMessages, partnerResponds, sendMessage, confirmBooking, partnerToDom, STATUS_LABEL, JobError } from "../../_shared/jobs.js";
 import { esc, linkify } from "../../_shared/docs.js";
 import { fmtDate, gbp } from "../../_shared/money.js";
 
@@ -27,12 +27,21 @@ ${job.booked_date ? `<dt class="muted">Booked</dt><dd style="margin:0"><strong>$
 </dl>`;
   let actions = "";
   if (job.status === "offered") {
-    actions = `<form method="post" style="display:flex;gap:10px;flex-wrap:wrap;margin-top:16px"><button class="btn" name="action" value="accept">Yes, I'll take it</button><button class="btn secondary" name="action" value="decline">No thanks</button></form>`;
+    actions = `<form method="post" style="margin-top:18px">
+<label for="note">Message to Dom (optional)</label>
+<textarea id="note" name="note" rows="3" style="width:100%;padding:10px;border:1px solid var(--rule);border-radius:4px;font:inherit" placeholder="e.g. I can't do the 26th but could do Tuesday 28th at 10am, or Thursday afternoon."></textarea>
+<div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:12px">
+<button class="btn" name="action" value="accept">Yes, I'll take it</button>
+<button class="btn secondary" name="action" value="ask">Send message only</button>
+<button class="btn secondary" name="action" value="decline">No thanks</button></div>
+<p class="small muted" style="margin-top:8px">If the requested time doesn't suit, say which times you can do. You can accept with a note, or just send the message and decide once Dom replies.</p>
+</form>`;
   } else if (mine) {
     actions = `
-<div class="card"><h2>Message the customer</h2>
+<div class="card"><h2>Send a message</h2>
 <form method="post"><input type="hidden" name="action" value="message" />
-<label>Send by</label><select name="channel" style="width:auto;padding:8px;border:1px solid var(--rule);border-radius:4px"><option value="sms" ${job.customer_phone ? "" : "disabled"}>Text message${job.customer_phone ? "" : " (no mobile on file)"}</option><option value="email" ${job.customer_email ? "" : "disabled"}>Email${job.customer_email ? "" : " (no email on file)"}</option></select>
+<label>To</label><select name="to" style="width:auto;padding:8px;border:1px solid var(--rule);border-radius:4px"><option value="customer">The customer</option><option value="dom">Dom</option></select>
+<label>Send by (customer only)</label><select name="channel" style="width:auto;padding:8px;border:1px solid var(--rule);border-radius:4px"><option value="sms" ${job.customer_phone ? "" : "disabled"}>Text message${job.customer_phone ? "" : " (no mobile on file)"}</option><option value="email" ${job.customer_email ? "" : "disabled"}>Email${job.customer_email ? "" : " (no email on file)"}</option></select>
 <label>Message</label><textarea name="body" rows="4" style="width:100%;padding:10px;border:1px solid var(--rule);border-radius:4px;font:inherit" placeholder="e.g. Hi, it's Matt from Ecocertsolutions about your EPC. Would Thursday at 10am suit?"></textarea>
 <p style="margin-top:12px"><button class="btn" type="submit">Send</button> <span class="muted small">Sent from Dominic Bowkett's number / email with your name; replies come back to this page.</span></p></form></div>
 ${job.status !== "booked" && job.status !== "invoiced" ? `<div class="card"><h2>Confirm the booking</h2>
@@ -55,7 +64,7 @@ ${job.status === "offered" ? "" : actions}
 
 async function load(request, env, params) {
   const user = await currentPartnerUser(request, env);
-  if (!user) return { redirect: Response.redirect(new URL("/partner", request.url).toString(), 303) };
+  if (!user) return { redirect: Response.redirect(new URL(`/partner?next=${encodeURIComponent(`/partner/jobs/${params.id}`)}`, request.url).toString(), 303) };
   const job = await getJob(env, params.id);
   if (!job || job.partner_account_id !== user.stripe_account_id) return { redirect: new Response("Not found", { status: 404 }) };
   return { user, job };
@@ -74,11 +83,20 @@ export async function onRequestPost({ request, env, params }) {
   const action = String(fd.get("action") || "");
   const origin = new URL(request.url).origin;
   try {
+    if (action === "ask") {
+      const j = await partnerToDom(env, job.id, String(fd.get("note") || ""), origin);
+      return render(env, user, j, { ok: "Message sent to Dom. He'll reply by email or here, and the job stays open for you." });
+    }
     if (action === "accept" || action === "decline") {
-      const j = await partnerResponds(env, job.id, action === "accept", origin, { via: "portal" });
+      const note = String(fd.get("note") || "").trim().slice(0, 1000);
+      const j = await partnerResponds(env, job.id, action === "accept", origin, { via: "portal", note });
       return render(env, user, j, { ok: action === "accept" ? "Thanks. The customer's details are now shown above; please get in touch with them and confirm the booking here once arranged." : "Declined. Thanks for letting us know." });
     }
     if (action === "message") {
+      if (String(fd.get("to")) === "dom") {
+        const j = await partnerToDom(env, job.id, String(fd.get("body") || ""), origin);
+        return render(env, user, j, { ok: "Message sent to Dom." });
+      }
       const j = await sendMessage(env, job.id, { to: "customer", channel: String(fd.get("channel") || "sms"), body: String(fd.get("body") || ""), party: "partner", origin });
       return render(env, user, j, { ok: "Message sent." });
     }

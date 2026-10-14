@@ -131,7 +131,9 @@ ${stripeNote ? `<p class="msg err">${esc(stripeNote)}</p>` : ""}
 <td class="small"><a href="/invoice/${i.id}/pdf" target="_blank">PDF</a>${i.fee_invoice_number ? ` · <a href="/fee-invoice/${i.id}/pdf" target="_blank">Fee invoice</a>` : ""}</td></tr>`
     )
     .join("");
-  const body = `${stripeBanner}${profile}
+  const waiting = (await d.prepare(`SELECT COUNT(*) n FROM jobs WHERE partner_account_id = ? AND status = 'offered'`).bind(user.stripe_account_id).first().catch(() => ({ n: 0 })))?.n || 0;
+  const jobsBanner = waiting ? `<div class="card" style="border-color:#e0c36a;background:#fffaf0;display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap"><strong>${waiting} job${waiting === 1 ? "" : "s"} waiting for your answer</strong><a class="btn" href="/partner/jobs">View job${waiting === 1 ? "" : "s"}</a></div>` : "";
+  const body = `${jobsBanner}${stripeBanner}${profile}
 <div class="tiles">
   <div class="tile"><div class="v">${invoices.length}</div><div class="k">Invoices sent</div></div>
   <div class="tile"><div class="v">${gbp(sum((i) => i.status === "paid"))}</div><div class="k">Paid (${paid.length})</div></div>
