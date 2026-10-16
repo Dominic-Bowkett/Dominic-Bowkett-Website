@@ -162,16 +162,9 @@ Partners can now run a job end to end from `/partner/jobs/<id>` once they have a
 - New `jobs` columns: `quote_pence, quote_message, quote_token, quote_sent_at, quote_accepted_at, quote_declined_at` (additive
   migration in `db.js`). Admin: `quoted` status in the filter/badge and a "Partner quote" line on the job view.
 
-## Xero fee invoices to partners (16 Oct 2026)
+## Xero fee invoices to partners
 
-Dom's VAT invoice to the partner for the platform fee is raised in Xero as a **draft** by the local
-"Xero booking check" scheduled routine (`~/.claude/tools/xero-bookings`, Step 4d, every 2 hours), not by the
-Worker: Xero access there is via the Composio connector, so no Xero credentials live in Cloudflare. The routine
-reads `GET /api/cron/paid-invoices` (X-Cron-Key = `CRON_SECRET`; `fee_invoices.py` wraps it) — paid invoices
-with a fee from the last 60 days, partner snapshot included — and creates one ACCREC draft per invoice in the
-format Dom approved on INV-0201 (item PLATFORM, account 200, OUTPUT2, ex-VAT = fee inc VAT / 1.2, reference
-`DB-FEE-xxxxx / DB-INV-xxxxxx`), recording what it has done in its `state.json`. Dom approves the drafts in Xero.
-
-`POST /api/cron/paid-invoices {"backfill_fee_ids": true}` fills in `stripe_application_fee_id` where the
-paid-time lookup missed it; `markPaid` now also falls back to listing application fees by charge.
-`REVIEW_URL` is set in `wrangler.toml`, so the paid-confirmation email now invites the client to leave a Google review.
+Not done. Dom decided on 16 Oct 2026 that the platform-fee VAT invoices (DB-FEE-xxxxx, emailed to the partner as a PDF
+on payment) are not also entered in Xero. `GET /api/cron/paid-invoices` (X-Cron-Key = `CRON_SECRET`) remains as a feed of
+paid invoices with a fee, and `POST` with `{"backfill_fee_ids": true}` fills in missing `stripe_application_fee_id`s.
+`REVIEW_URL` is set in `wrangler.toml`, so the paid-confirmation email invites the client to leave a Google review.
