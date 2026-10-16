@@ -365,6 +365,7 @@ async function markPaid(env, inv, s, origin) {
   } catch (e) {
     await logEvent(env, inv.id, "paid.detail_lookup_failed", e.message);
   }
+  if (!appFee && charge) appFee = await lookupApplicationFee(env, inv, charge);
   const feeNumber = inv.fee_invoice_number || (inv.application_fee_pence > 0 ? await nextNumber(env, "fee_invoice", "DB-FEE-", 5) : null);
   await updateInvoice(env, inv.id, {
     status: "paid",
@@ -381,6 +382,30 @@ async function markPaid(env, inv, s, origin) {
   const fresh = await getInvoice(env, inv.id);
   await sendPaidEmails(env, fresh, origin);
   return getInvoice(env, inv.id);
+}
+
+// The charge object on a direct charge does not always carry application_fee straight after Checkout completes;
+// application fees are platform objects, so list them by charge on the platform account instead.
+async function lookupApplicationFee(env, inv, chargeId) {
+  try {
+    const fees = await stripe(env, "GET", "/v1/application_fees", { charge: chargeId, limit: 1 });
+    return fees?.data?.[0]?.id || null;
+  } catch (e) {
+    await logEvent(env, inv.id, "paid.fee_lookup_failed", e.message);
+    return null;
+  }
+}
+
+// Fill in stripe_application_fee_id on an already-paid invoice (used by POST /api/cron/paid-invoices).
+export async function backfillApplicationFee(env, inv) {
+  if (inv.stripe_application_fee_id) return inv.stripe_application_fee_id;
+  if (!inv.stripe_charge_id) return null;
+  const id = await lookupApplicationFee(env, inv, inv.stripe_charge_id);
+  if (id) {
+    await updateInvoice(env, inv.id, { stripe_application_fee_id: id });
+    await logEvent(env, inv.id, "paid.fee_id_backfilled", { application_fee: id });
+  }
+  return id;
 }
 
 export async function sendPaidEmails(env, inv, origin) {

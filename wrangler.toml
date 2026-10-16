@@ -6,7 +6,7 @@ pages_build_output_dir = "./public"
 MAIL_FROM = "Dominic Bowkett <info@dominicbowkett.com>"
 # Invoicing: platform identity printed on invoices (see functions/_shared/business.js for defaults)
 FEE_VAT_RATE = "20"
-# REVIEW_URL = "https://g.page/r/.../review"   # when set, the paid-confirmation email invites the client to rate the service
+REVIEW_URL = "https://g.page/r/CSADAvvgaUO_EBM/review"   # the paid-confirmation email invites the client to leave a Google review
 SMS_RELAY_URL = "https://ecoweald-call-agent.silent-star-877f.workers.dev/send-sms"
 
 # Workers AI: extracts job details from forwarded enquiry emails and customer texts (functions/_shared/jobs.js)
