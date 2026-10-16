@@ -243,7 +243,7 @@ export function feeInvoicePdf(inv, env) {
 
 // ---------------------------------------------------------------- HTML page shell (client-facing)
 
-export function page({ title, body, noindex = true }) {
+export function page({ title, body, noindex = true, section = "Invoicing" }) {
   return `<!doctype html><html lang="en-GB"><head>
 <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 ${noindex ? '<meta name="robots" content="noindex, nofollow" />' : ""}
@@ -266,7 +266,7 @@ p{margin:0 0 12px}.muted{color:var(--muted)}.small{font-size:13px}
 .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
 pre{white-space:pre-wrap;font:inherit;margin:0}
 </style></head><body><main>
-<div class="brand"><a href="https://www.dominicbowkett.com/">Dominic Bowkett</a> · Invoicing</div>
+<div class="brand"><a href="https://www.dominicbowkett.com/">Dominic Bowkett</a> · ${esc(section)}</div>
 ${body}
 </main></body></html>`;
 }

@@ -141,3 +141,23 @@ The schema creates itself on first request (`functions/_shared/db.js`).
 cp .dev.vars.example .dev.vars   # fill in test keys
 npx wrangler pages dev public --port 8788
 ```
+
+## Partner quotes and partner-sent invoices (16 Oct 2026)
+
+Partners can now run a job end to end from `/partner/jobs/<id>` once they have accepted it:
+
+- **Quote** (`sendQuote` in `_shared/jobs.js`): price + optional message. Sent to the customer by email and text (whichever is on
+  file) with an accept link `/quote/<token>` (`functions/quote/[token]/index.js`); the customer can also reply YES/NO to the text
+  (`inboundSms`). Job status becomes `quoted`; acceptance sets `quote_accepted_at`, copies the price to `price_pence` and puts the
+  job back to `accepted`; the partner is emailed + texted, the customer gets a confirmation, Dom is notified. Turning it down sets
+  `quote_declined_at` and the partner can re-quote. Only one accepted quote per job; extras go on the invoice.
+- **Fee breakdown** (`partnerBreakdown`, `STRIPE_EST`): shown to the partner only — platform fee at `partners.commission_pct`
+  inc VAT (exact, matches `invoiceDraftFromJob`) and Stripe's fee estimated at 1.5% + 20p. Customers never see it.
+- **Booking**: the price field pre-fills from the accepted quote; `confirmBooking` falls back to it when the price is left blank.
+- **Invoice** (`partnerInvoice` → `partnerSendInvoice`): amount pre-filled from the quote/booking and editable, optional message
+  and an optional EPC certificate link (appended to `client_message`, so it appears at the top of the invoice email). Creates the
+  invoice through `createInvoice` with the fee at the partner's commission %, then `sendInvoice` — same direct-charge Checkout,
+  owner copy, partner copy, paid emails and fee VAT invoice as an admin-created invoice. If sending fails (Stripe not ready) the
+  draft stays on the job (`invoice_id`) with a "Send invoice now" retry. Job status becomes `invoiced` on send.
+- New `jobs` columns: `quote_pence, quote_message, quote_token, quote_sent_at, quote_accepted_at, quote_declined_at` (additive
+  migration in `db.js`). Admin: `quoted` status in the filter/badge and a "Partner quote" line on the job view.

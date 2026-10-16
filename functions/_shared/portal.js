@@ -54,7 +54,7 @@ ${first
 <p style="margin:22px 0;"><a href="${link}" style="background:#0c0c0c;color:#fff;text-decoration:none;padding:13px 22px;border-radius:4px;font-weight:600;display:inline-block;">${first ? "Set my password" : "Choose a new password"}</a></p>
 <p style="font-size:13px;color:#7a7873;">Or copy this link into your browser: ${link}</p>
 <p>After that, sign in any time at <a href="${origin}/partner" style="color:#0c0c0c;">${origin}/partner</a> with this email address.</p>
-${first ? `<p>For now the account is view-only. Sending invoices yourself may come later.</p>` : ""}
+${first ? `<p>From the Jobs page you can accept jobs I send you, quote the customer, confirm the booking and send the invoice yourself; payment comes straight to your Stripe account.</p>` : ""}
 <p>Any questions, just reply to this email.</p>
 <p>Thanks,<br/>Dominic Bowkett</p>
 <p style="font-size:12px;color:#7a7873;margin-top:28px;border-top:1px solid #e2dfd8;padding-top:14px;">Dominic Bowkett · EMS-2 Ltd, 128 City Road, London, EC1V 2NX · Company No. 11235441 · info@dominicbowkett.com</p></div>`,
@@ -144,6 +144,6 @@ ${stripeNote ? `<p class="msg err">${esc(stripeNote)}</p>` : ""}
 <p class="muted small">"Your share" is the invoice amount less the platform fee (inc VAT); Stripe's processing fee is then deducted by Stripe in your own account. Every paid invoice has a VAT invoice for the fee.</p>
 ${invoices.length ? `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table><thead><tr><th>Number</th><th>Sent</th><th>Client</th><th class="hide-m">Service</th><th class="num">Amount</th><th class="num hide-m">Fee</th><th class="num">Your share</th><th>Status</th><th>Documents</th></tr></thead><tbody>${rows}</tbody></table></div>` : `<p class="muted">No invoices yet.</p>`}
 </div>
-<p class="muted small">This portal is view-only. Questions about an invoice: <a href="mailto:info@dominicbowkett.com">info@dominicbowkett.com</a>.</p>`;
+<p class="muted small">To quote for a job or send its invoice, open the job under <a href="/partner/jobs">Jobs</a>. Questions about an invoice: <a href="mailto:info@dominicbowkett.com">info@dominicbowkett.com</a>.</p>`;
   return portalPage({ title: "Your invoices", body, user });
 }

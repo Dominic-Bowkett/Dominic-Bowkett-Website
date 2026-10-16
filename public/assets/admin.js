@@ -301,12 +301,12 @@
   }
 
   // ------------------------------------------------------------ jobs
-  const jbadge = (j) => `<span class="badge ${j.status === "booked" || j.status === "invoiced" ? "paid" : j.status === "offered" || j.status === "accepted" ? "sent" : j.status === "declined" || j.status === "awaiting_address" ? "failed" : j.status === "new" ? "draft" : ""}">${esc(j.status_label || j.status)}</span>`;
+  const jbadge = (j) => `<span class="badge ${j.status === "booked" || j.status === "invoiced" ? "paid" : j.status === "offered" || j.status === "accepted" || j.status === "quoted" ? "sent" : j.status === "declined" || j.status === "awaiting_address" ? "failed" : j.status === "new" ? "draft" : ""}">${esc(j.status_label || j.status)}</span>`;
   async function viewJobs() {
     setNav("jobs");
     const status = sessionStorage.getItem("job.status") || "open";
     app.innerHTML = `<div class="card"><div class="toolbar">
-      <select id="j-status">${[["open", "Open jobs"], ["new", "New"], ["awaiting_address", "Waiting for address"], ["offered", "Offered"], ["accepted", "Accepted"], ["booked", "Booked"], ["invoiced", "Invoiced"], ["taken", "Taken by me"], ["declined", "Declined"], ["closed", "Closed"], ["all", "Everything"]].map(([v, l]) => `<option value="${v}" ${v === status ? "selected" : ""}>${l}</option>`).join("")}</select>
+      <select id="j-status">${[["open", "Open jobs"], ["new", "New"], ["awaiting_address", "Waiting for address"], ["offered", "Offered"], ["accepted", "Accepted"], ["quoted", "Quote sent"], ["booked", "Booked"], ["invoiced", "Invoiced"], ["taken", "Taken by me"], ["declined", "Declined"], ["closed", "Closed"], ["all", "Everything"]].map(([v, l]) => `<option value="${v}" ${v === status ? "selected" : ""}>${l}</option>`).join("")}</select>
       <input id="j-q" placeholder="Search name, address, phone, ref…" />
       <a class="btn small" href="#newjob">New job</a>
       <span class="muted small">Forward enquiries to <strong>in@jobs.dominicbowkett.com</strong>.</span></div>
@@ -423,6 +423,7 @@
       </div></form>
       <div class="totals" style="margin-top:6px">
         <div><span>Partner</span><span>${partnerName ? `<strong>${esc(partnerName)}</strong> ${j.partner_response ? `(${esc(j.partner_response)})` : ""}` : "<span class='muted'>none yet</span>"}</span></div>
+        ${j.quote_pence != null ? `<div><span>Partner quote</span><span><strong>${gbp(j.quote_pence)}</strong> ${j.quote_accepted_at ? `· accepted ${day(j.quote_accepted_at)}` : j.quote_declined_at ? `· turned down ${day(j.quote_declined_at)}` : j.status === "quoted" ? "· waiting for the customer" : ""}</span></div>` : ""}
         ${j.booked_date ? `<div><span>Booked</span><span><strong>${day(j.booked_date)} ${esc(j.booked_time || "")}</strong>${j.price_pence != null ? ` · ${gbp(j.price_pence)}` : ""}</span></div>` : ""}
         ${j.invoice_id ? `<div><span>Invoice</span><span><a href="#inv/${j.invoice_id}">open invoice</a></span></div>` : ""}
       </div>

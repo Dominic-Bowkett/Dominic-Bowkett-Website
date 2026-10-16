@@ -7,17 +7,28 @@ import { gbp, fmtDate } from "./money.js";
 import { geocodePostcode, normalisePostcode } from "./register.js";
 import { platform } from "./business.js";
 import { offersService, parseServices } from "./services.js";
+import { createInvoice, sendInvoice } from "./invoicing.js";
+import { getInvoice } from "./db.js";
 
 export class JobError extends Error {
   constructor(msg, status = 400) { super(msg); this.status = status; }
 }
 
-export const JOB_STATUSES = ["awaiting_address", "new", "offered", "accepted", "declined", "booked", "invoiced", "taken", "closed"];
-export const OPEN = ["awaiting_address", "new", "offered", "accepted", "booked"];
+export const JOB_STATUSES = ["awaiting_address", "new", "offered", "accepted", "quoted", "declined", "booked", "invoiced", "taken", "closed"];
+export const OPEN = ["awaiting_address", "new", "offered", "accepted", "quoted", "booked"];
 export const STATUS_LABEL = {
-  awaiting_address: "Waiting for address", new: "New", offered: "Offered to partner", accepted: "Accepted by partner", declined: "Declined",
+  awaiting_address: "Waiting for address", new: "New", offered: "Offered to partner", accepted: "Accepted by partner", quoted: "Quote sent", declined: "Declined",
   booked: "Booked", invoiced: "Invoiced", taken: "Taken by Dom", closed: "Closed",
 };
+// What the partner keeps from an amount: the platform fee (commission % inc VAT) and Stripe's processing fee.
+// Stripe's fee is an ESTIMATE at the UK standard card rate; the real fee depends on the card used. Never shown to customers.
+export const STRIPE_EST = { pct: 1.5, fixed_pence: 20 };
+export function partnerBreakdown(amountPence, commissionPct) {
+  const amount = Math.max(0, Math.round(amountPence || 0));
+  const fee = Math.round((amount * Number(commissionPct ?? 10)) / 100);
+  const stripe = amount ? Math.round((amount * STRIPE_EST.pct) / 100) + STRIPE_EST.fixed_pence : 0;
+  return { amount, fee, stripe, net: amount - fee - stripe };
+}
 const JOBS_INBOX = "in@jobs.dominicbowkett.com";
 const ALLOWED_FORWARDERS = ["info@dominicbowkett.com", "dbowkett1@gmail.com", "dom@ukbrewerytours.com"];
 // Dom's own numbers: never treat these as a customer's (they appear in his email signature and forwards).
@@ -393,7 +404,8 @@ export async function confirmBooking(env, jobId, { booked_date, booked_time, pri
   if (!job) throw new JobError("Job not found", 404);
   if (!/^\d{4}-\d{2}-\d{2}$/.test(booked_date || "")) throw new JobError("Enter the booking date");
   const time = clean(booked_time, 40);
-  const pricePence = price === "" || price == null ? null : Math.round(Number(String(price).replace(/[£,\s]/g, "")) * 100);
+  // No price typed: fall back to a quote the customer has accepted.
+  const pricePence = price === "" || price == null ? (job.quote_accepted_at && job.quote_pence != null ? job.quote_pence : null) : Math.round(Number(String(price).replace(/[£,\s]/g, "")) * 100);
   if (pricePence != null && !(pricePence >= 0)) throw new JobError("Price must be a number");
   await updateJob(env, jobId, { status: "booked", booked_date, booked_time: time, price_pence: pricePence, booked_at: new Date().toISOString(), booked_by: party });
   await addMessage(env, jobId, { direction: "in", channel: "system", party, body: `Booked for ${fmtDate(booked_date)}${time ? ` at ${time}` : ""}${pricePence != null ? `, price ${gbp(pricePence)}` : ""}.` });
@@ -411,6 +423,141 @@ export async function confirmBooking(env, jobId, { booked_date, booked_time, pri
   }
   await notifyDom(env, fresh, origin, `Booked: ${fmtDate(booked_date)}${time ? ` ${time}` : ""}${pricePence != null ? ` ${gbp(pricePence)}` : ""}`);
   return fresh;
+}
+
+// ---------------------------------------------------------------- partner quote
+
+export const quoteLink = (origin, job) => `${origin}/quote/${job.quote_token}`;
+
+// The partner quotes a price to the customer. Sent by email and text (whichever we have); the customer accepts by link or by replying YES.
+export async function sendQuote(env, jobId, { price, message = "" }, origin) {
+  const job = await getJob(env, jobId);
+  if (!job) throw new JobError("Job not found", 404);
+  if (!["accepted", "quoted"].includes(job.status)) throw new JobError(`This job is ${STATUS_LABEL[job.status]}; a quote can only be sent once you've accepted it and before it is booked`);
+  if (job.quote_accepted_at) throw new JobError("The customer has already accepted a quote for this job. If the price has changed, put the final amount on the invoice.");
+  const pence = Math.round(Number(String(price ?? "").replace(/[£,\s]/g, "")) * 100);
+  if (!Number.isFinite(pence) || pence < 100) throw new JobError("Enter the price to the customer (at least £1)");
+  if (pence > 5_000_000) throw new JobError("That price is over the £50,000 safety limit");
+  if (!job.customer_email && !job.customer_phone) throw new JobError("The customer has no email address or mobile number on file, so a quote can't be sent. Message Dom.");
+  const p = await getPartner(env, job.partner_account_id);
+  const who = p?.contact_name || p?.display_name || p?.business_name || "your assessor";
+  const firm = p?.display_name || p?.business_name || "";
+  const note = clean(message, 1500) || null;
+  const token = job.quote_token || randomToken(16);
+  await updateJob(env, jobId, { status: "quoted", quote_pence: pence, quote_message: note, quote_token: token, quote_sent_at: new Date().toISOString(), quote_accepted_at: null, quote_declined_at: null });
+  const fresh = await getJob(env, jobId);
+  const link = quoteLink(origin, fresh);
+  let sent = [];
+  if (fresh.customer_email) {
+    const hi = firstName(fresh) ? `Hello ${esc(firstName(fresh))},` : "Hello,";
+    const subject = `${jobTag(fresh)} Your ${fresh.service} — quote ${gbp(pence)}`;
+    const id = await mail(env, jobId, "quote", {
+      to: fresh.customer_email, replyTo: JOBS_INBOX, subject,
+      html: emailShell(`<p>${hi}</p>
+<p><strong>${esc(who)}</strong>${firm && firm !== who ? ` from ${esc(firm)}` : ""} has quoted <strong>${gbp(pence)}</strong> for the ${esc(fresh.service)} at ${esc(fresh.property_address || "")}.</p>
+${note ? `<p style="white-space:pre-wrap;border-left:3px solid #e2dfd8;padding-left:12px;">${linkify(esc(note))}</p>` : ""}
+${btn(link, "Accept this quote")}
+<p style="font-size:13px;color:#7a7873;">Once accepted, ${esc(who)} will confirm the date and time with you. If you have any questions, just reply to this email.</p>
+<p>Kind regards,<br/>Dominic Bowkett</p>`),
+    });
+    if (id) { await addMessage(env, jobId, { direction: "out", channel: "email", party: "partner", counterpart: "customer", subject, body: `Quote ${gbp(pence)} sent.${note ? `\n\n${note}` : ""}`, provider_id: id }); sent.push("email"); }
+  }
+  if (fresh.customer_phone) {
+    const sms = `Hi${firstName(fresh) ? " " + firstName(fresh) : ""}, it's Dom Bowkett. ${who} has quoted ${gbp(pence)} for your ${fresh.service} at ${fresh.property_address}. Accept here: ${link} or reply YES. Questions? Just reply.`;
+    try { const sid = await sendSms(env, fresh.customer_phone, sms); await addMessage(env, jobId, { direction: "out", channel: "sms", party: "partner", counterpart: "customer", body: sms, provider_id: sid }); sent.push("text"); }
+    catch (e) { await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Quote text to customer failed: ${e.message}` }); }
+  }
+  if (!sent.length) throw new JobError("The quote could not be sent (email and text both failed). Try again or message Dom.", 502);
+  await notifyDom(env, fresh, origin, `${who} quoted ${gbp(pence)} (sent by ${sent.join(" and ")})${note ? `: "${note.slice(0, 120)}"` : ""}`);
+  return fresh;
+}
+
+export async function getJobByQuoteToken(env, token) {
+  if (!token || !/^[A-Za-z0-9_-]{8,}$/.test(token)) return null;
+  const d = await db(env);
+  return d.prepare(`SELECT * FROM jobs WHERE quote_token = ?`).bind(token).first();
+}
+
+// The customer accepts (or turns down) the quote. Idempotent: a second click on an accepted quote changes nothing.
+export async function customerQuoteResponds(env, jobId, accepted, origin, { via = "link" } = {}) {
+  const job = await getJob(env, jobId);
+  if (!job) throw new JobError("Job not found", 404);
+  if (job.status !== "quoted") return job;
+  const p = await getPartner(env, job.partner_account_id);
+  const who = p?.contact_name || p?.display_name || p?.business_name || "the assessor";
+  const price = gbp(job.quote_pence || 0);
+  if (accepted) await updateJob(env, jobId, { status: "accepted", quote_accepted_at: new Date().toISOString(), price_pence: job.quote_pence });
+  else await updateJob(env, jobId, { status: "accepted", quote_declined_at: new Date().toISOString() });
+  await addMessage(env, jobId, { direction: "in", channel: via === "sms" ? "sms" : "portal", party: "customer", counterpart: "partner", body: `Quote ${price} ${accepted ? "accepted" : "turned down"} by the customer (${via}).` });
+  const fresh = await getJob(env, jobId);
+  const portal = portalLink(origin, fresh);
+  if (accepted) {
+    await mail(env, jobId, "quote_accepted_partner", {
+      to: p?.invoice_email || p?.email, replyTo: JOBS_INBOX,
+      subject: `${jobTag(fresh)} Quote accepted — ${price} — ${fresh.property_address}`,
+      html: emailShell(`<p>${esc(fresh.customer_name || "The customer")} has accepted your quote of <strong>${price}</strong> for the ${esc(fresh.service)} at ${esc(fresh.property_address || "")}.</p>
+<p>Please agree a date and time with them, then confirm the booking in the portal. The price is carried through to the booking and the invoice.</p>
+${btn(portal, "Open the job")}`),
+    });
+    if (p?.phone) { try { await sendSms(env, p.phone, `Dominic Bowkett: ${fresh.customer_name || "the customer"} accepted your quote of ${price} for ${fresh.property_address}. Please confirm the booking at ${portal}`); } catch {} }
+    if (fresh.customer_email) {
+      const subject = `${jobTag(fresh)} Thank you — ${fresh.service} quote accepted`;
+      const id = await mail(env, jobId, "quote_accepted_customer", { to: fresh.customer_email, replyTo: JOBS_INBOX, subject, html: emailShell(`<p>${firstName(fresh) ? `Hello ${esc(firstName(fresh))},` : "Hello,"}</p><p>Thank you. You've accepted the quote of <strong>${price}</strong> for the ${esc(fresh.service)} at ${esc(fresh.property_address || "")}. ${esc(who)} will be in touch to confirm the date and time, and your invoice with a secure payment link will follow.</p><p>Kind regards,<br/>Dominic Bowkett</p>`) });
+      if (id) await addMessage(env, jobId, { direction: "out", channel: "email", party: "system", counterpart: "customer", subject, body: "Quote acceptance confirmed to customer." });
+    }
+  } else {
+    await mail(env, jobId, "quote_declined_partner", {
+      to: p?.invoice_email || p?.email, replyTo: JOBS_INBOX,
+      subject: `${jobTag(fresh)} Quote turned down — ${fresh.property_address}`,
+      html: emailShell(`<p>${esc(fresh.customer_name || "The customer")} turned down the quote of ${price} for the ${esc(fresh.service)} at ${esc(fresh.property_address || "")}. You can message them or send a new quote from the job page.</p>${btn(portal, "Open the job")}`),
+    });
+  }
+  await notifyDom(env, fresh, origin, `Customer ${accepted ? "accepted" : "turned down"} ${who}'s quote of ${price}`);
+  return fresh;
+}
+
+// ---------------------------------------------------------------- partner raises the invoice
+
+// Creates the invoice from the job (platform fee at the partner's commission %) and sends it; the job becomes Invoiced.
+// If sending fails (e.g. Stripe not ready) the draft is kept on the job so it can be re-sent.
+export async function partnerInvoice(env, jobId, { amount, client_message = "", certificate_url = "", customer_email = "" }, origin) {
+  const job = await getJob(env, jobId);
+  if (!job) throw new JobError("Job not found", 404);
+  if (!job.partner_account_id) throw new JobError("No partner on this job");
+  if (!["accepted", "quoted", "booked"].includes(job.status)) throw new JobError(`This job is ${STATUS_LABEL[job.status]}; it can't be invoiced`);
+  if (job.invoice_id) throw new JobError("An invoice already exists for this job");
+  if (!job.customer_email) {
+    const em = String(customer_email || "").trim().toLowerCase();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(em)) throw new JobError("The customer has no email address on file. Enter it so the invoice can be sent.");
+    await editJob(env, jobId, { customer_email: em });
+  }
+  const cert = String(certificate_url || "").trim();
+  if (cert && !/^https?:\/\/\S+$/i.test(cert)) throw new JobError("The certificate link must be a full web address starting with http:// or https://");
+  const pence = Math.round(Number(String(amount ?? "").replace(/[£,\s]/g, "")) * 100);
+  if (!Number.isFinite(pence) || pence < 100) throw new JobError("Enter the invoice amount (at least £1)");
+  const p = await getPartner(env, job.partner_account_id);
+  const { fee } = partnerBreakdown(pence, p?.commission_pct);
+  const msg = [clean(client_message, 1500), cert ? `Your EPC certificate: ${cert}` : null].filter(Boolean).join("\n\n") || null;
+  const fresh = await getJob(env, jobId);
+  const inv = await createInvoice(env, { ...invoiceDraftFromJob(fresh, p), amount: (pence / 100).toFixed(2), fee: (fee / 100).toFixed(2), client_message: msg });
+  await updateJob(env, jobId, { invoice_id: inv.id, price_pence: fresh.price_pence ?? pence });
+  await addMessage(env, jobId, { direction: "in", channel: "system", party: "partner", body: `Invoice ${inv.number} created for ${gbp(pence)} (platform fee ${gbp(fee)}).` });
+  return partnerSendInvoice(env, jobId, origin);
+}
+
+export async function partnerSendInvoice(env, jobId, origin) {
+  const job = await getJob(env, jobId);
+  if (!job?.invoice_id) throw new JobError("There is no invoice on this job yet");
+  const inv = await getInvoice(env, job.invoice_id);
+  if (!inv) throw new JobError("Invoice not found", 404);
+  if (inv.status !== "draft") return { job, invoice: inv };
+  let sentInv;
+  try { sentInv = await sendInvoice(env, inv.id, origin); }
+  catch (e) { throw new JobError(`The invoice (${inv.number}) is saved as a draft but could not be sent: ${e.message}`, e.status || 502); }
+  await updateJob(env, jobId, { status: "invoiced" });
+  await addMessage(env, jobId, { direction: "out", channel: "email", party: "partner", counterpart: "customer", subject: `Invoice ${sentInv.number}`, body: `Invoice ${sentInv.number} for ${gbp(sentInv.amount_pence)} sent to ${sentInv.client_email}.` });
+  await notifyDom(env, await getJob(env, jobId), origin, `Invoice ${sentInv.number} sent by the partner for ${gbp(sentInv.amount_pence)}`);
+  return { job: await getJob(env, jobId), invoice: sentInv };
 }
 
 // ---------------------------------------------------------------- inbound matching
@@ -449,6 +596,14 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
   const jobs = await openJobsWhere(env, "customer_phone = ?", [from]);
   const job = jobs[0];
   if (!job) return { handled: false };
+  // A customer replying YES / NO to a quote text accepts or turns it down.
+  if (job.status === "quoted") {
+    const word = body.trim().toUpperCase().replace(/[^A-Z]/g, " ").trim().split(/\s+/)[0];
+    if (word === "YES" || word === "Y" || word === "NO" || word === "N") {
+      const j = await customerQuoteResponds(env, job.id, word.startsWith("Y"), origin, { via: "sms" });
+      return { handled: true, job: j, reply: word.startsWith("Y") ? `Thank you, that's accepted. Your assessor will be in touch to confirm the date and time.` : `No problem, thanks for letting us know.` };
+    }
+  }
   await addMessage(env, job.id, { direction: "in", channel: "sms", party: "customer", counterpart: job.partner_account_id ? "partner" : "admin", body, meta: media.length ? { media } : null });
   let headline = `Text from customer: "${body.slice(0, 80)}"`;
   const textedEmail = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.exec(body)?.[0];
@@ -462,7 +617,7 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
   }
   const fresh = await getJob(env, job.id);
   await notifyDom(env, fresh, origin, headline, { message: body, replyable: true });
-  if (fresh.partner_account_id && ["accepted", "booked"].includes(fresh.status)) {
+  if (fresh.partner_account_id && ["accepted", "quoted", "booked"].includes(fresh.status)) {
     const p = await getPartner(env, fresh.partner_account_id);
     if (p?.phone) { try { await sendSms(env, p.phone, `Dominic Bowkett: message from ${fresh.customer_name || "the customer"} about ${fresh.property_address}: "${body.slice(0, 300)}". Reply at ${portalLink(origin, fresh)}`); } catch {} }
   }
@@ -503,7 +658,7 @@ export async function inboundEmail(env, { from, subject = "", text = "", html = 
     }
     const fresh = await getJob(env, job.id);
     await notifyDom(env, fresh, origin, headline, { message: reply, replyable: true });
-    if (fresh.partner_account_id && ["accepted", "booked"].includes(fresh.status)) {
+    if (fresh.partner_account_id && ["accepted", "quoted", "booked"].includes(fresh.status)) {
       const p = await getPartner(env, fresh.partner_account_id);
       if (p) await mail(env, fresh.id, "relay_partner", { to: p.invoice_email || p.email, replyTo: JOBS_INBOX, subject: `${jobTag(fresh)} Message from ${fresh.customer_name || "the customer"}`, html: emailShell(`<p style="white-space:pre-wrap;">${esc(reply)}</p><p style="font-size:13px;color:#7a7873;">Reply here or at ${portalLink(origin, fresh)}</p>`) });
     }

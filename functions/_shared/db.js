@@ -214,6 +214,13 @@ const MIGRATIONS = [
   `ALTER TABLE partners ADD COLUMN services TEXT`,
   `ALTER TABLE jobs ADD COLUMN ack_sent_at TEXT`,
   `ALTER TABLE jobs ADD COLUMN checking_sent_at TEXT`,
+  // partner quotes (16 Oct 2026): the partner quotes a price, the customer accepts by link or by replying YES
+  `ALTER TABLE jobs ADD COLUMN quote_pence INTEGER`,
+  `ALTER TABLE jobs ADD COLUMN quote_message TEXT`,
+  `ALTER TABLE jobs ADD COLUMN quote_token TEXT`,
+  `ALTER TABLE jobs ADD COLUMN quote_sent_at TEXT`,
+  `ALTER TABLE jobs ADD COLUMN quote_accepted_at TEXT`,
+  `ALTER TABLE jobs ADD COLUMN quote_declined_at TEXT`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {
