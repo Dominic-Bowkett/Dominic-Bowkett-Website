@@ -212,6 +212,7 @@ const MIGRATIONS = [
   `ALTER TABLE partners ADD COLUMN registered_at TEXT`,
   `ALTER TABLE partners ADD COLUMN dispatch_mode TEXT DEFAULT 'hold'`,
   `ALTER TABLE partners ADD COLUMN services TEXT`,
+  `ALTER TABLE partner_signups ADD COLUMN services TEXT`,
   `ALTER TABLE jobs ADD COLUMN ack_sent_at TEXT`,
   `ALTER TABLE jobs ADD COLUMN checking_sent_at TEXT`,
   // partner quotes (16 Oct 2026): the partner quotes a price, the customer accepts by link or by replying YES
