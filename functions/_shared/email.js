@@ -96,7 +96,7 @@ export async function sendViaResend(env, { to, subject, html, text, replyTo, hea
     body: JSON.stringify({
       from: from || env.MAIL_FROM || FROM_DEFAULT,
       to: Array.isArray(to) ? to : [to],
-      subject,
+      subject: String(subject || "").replace(/\s+/g, " ").trim(), // Resend rejects line breaks in subjects; quoted customer texts often contain them
       ...(html ? { html } : {}),
       ...(text ? { text } : {}),
       ...(cc ? { cc: Array.isArray(cc) ? cc : [cc] } : {}),
