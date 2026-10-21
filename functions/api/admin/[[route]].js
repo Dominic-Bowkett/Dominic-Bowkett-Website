@@ -149,7 +149,7 @@ export async function onRequest(context) {
         const job = await getJob(env, id);
         if (!job) return json({ ok: false, error: "Not found" }, 404);
         const partner = job.partner_account_id ? await partnerRow(env, job.partner_account_id) : null;
-        const candidates = (await partnersForJob(env, job)).map((p) => ({ stripe_account_id: p.stripe_account_id, name: p.display_name || p.business_name, miles: p.miles == null ? null : Math.round(p.miles * 10) / 10, charges_enabled: p.charges_enabled, phone: p.phone, dispatch_mode: p.dispatch_mode, commission_pct: p.commission_pct, coverage_postcode: p.coverage_postcode, offers: p.offers, services: p.service_list }));
+        const candidates = (await partnersForJob(env, job)).map((p) => ({ stripe_account_id: p.stripe_account_id, name: p.display_name || p.business_name, miles: p.miles == null ? null : Math.round(p.miles * 10) / 10, charges_enabled: p.charges_enabled, phone: p.phone, dispatch_mode: p.dispatch_mode, dispatch_radius_miles: p.dispatch_radius_miles, commission_pct: p.commission_pct, coverage_postcode: p.coverage_postcode, offers: p.offers, services: p.service_list }));
         return json({ ok: true, job: { ...job, status_label: STATUS_LABEL[job.status] }, partner, candidates, messages: await jobMessages(env, id), invoice_draft: invoiceDraftFromJob(job, partner) });
       }
       if (id && method === "PUT") return json({ ok: true, job: await editJob(env, id, body) });

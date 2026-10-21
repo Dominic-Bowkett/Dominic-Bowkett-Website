@@ -130,7 +130,7 @@ export async function createJob(env, data, origin, { notify = true, ack } = {}) 
   // Acknowledge the customer. Checkatrade leads are skipped: the watcher has already emailed and texted them.
   if (ack ?? !["checkatrade", "call"].includes(job.source)) { await sendAck(env, full); full = await getJob(env, id); }
   if (full.property_address && full.lat != null) {
-    const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= 25 && p.offers !== false);
+    const near = (await partnersForJob(env, full)).find((p) => p.dispatch_mode === "auto" && p.miles != null && p.miles <= (p.dispatch_radius_miles || 25) && p.offers !== false);
     if (near) { try { full = await offerJob(env, id, near.stripe_account_id, origin, { by: "system" }); } catch (e) { await addMessage(env, id, { direction: "out", channel: "system", party: "system", body: `Auto-dispatch failed: ${e.message}` }); } }
   }
   return full;

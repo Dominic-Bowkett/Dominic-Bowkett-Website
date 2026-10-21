@@ -222,6 +222,8 @@ const MIGRATIONS = [
   `ALTER TABLE jobs ADD COLUMN quote_sent_at TEXT`,
   `ALTER TABLE jobs ADD COLUMN quote_accepted_at TEXT`,
   `ALTER TABLE jobs ADD COLUMN quote_declined_at TEXT`,
+  // per-partner auto-dispatch radius (21 Oct 2026); null = the default 25 miles
+  `ALTER TABLE partners ADD COLUMN dispatch_radius_miles REAL`,
 ];
 async function migrate(env) {
   for (const sql of MIGRATIONS) {

@@ -56,7 +56,7 @@ export async function listPartners(env) {
   return r.results || [];
 }
 
-const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct", "dispatch_mode", "services"];
+const PARTNER_EDITABLE = ["display_name", "invoice_email", "address", "vat_number", "phone", "copy_invoices", "hidden", "notes", "email", "contact_name", "coverage_postcode", "commission_pct", "dispatch_mode", "dispatch_radius_miles", "services"];
 export async function updatePartner(env, id, fields) {
   const d = await db(env);
   const keys = Object.keys(fields).filter((k) => PARTNER_EDITABLE.includes(k));
@@ -69,6 +69,14 @@ export async function updatePartner(env, id, fields) {
     fields.commission_pct = Math.round(pct * 100) / 100;
   }
   if (keys.includes("dispatch_mode") && !["hold", "auto"].includes(fields.dispatch_mode)) throw new UserError("Dispatch mode must be hold or auto");
+  if (keys.includes("dispatch_radius_miles")) {
+    if (fields.dispatch_radius_miles === "" || fields.dispatch_radius_miles == null) fields.dispatch_radius_miles = null;
+    else {
+      const mi = Number(fields.dispatch_radius_miles);
+      if (!Number.isFinite(mi) || mi <= 0 || mi > 200) throw new UserError("Auto-send radius must be between 1 and 200 miles");
+      fields.dispatch_radius_miles = Math.round(mi * 10) / 10;
+    }
+  }
   if (keys.includes("services")) fields.services = servicesJson(fields.services);
   if (keys.includes("phone") && fields.phone) fields.phone = e164(fields.phone);
   if (keys.includes("coverage_postcode")) {
