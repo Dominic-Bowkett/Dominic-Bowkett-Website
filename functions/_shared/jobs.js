@@ -202,7 +202,16 @@ export function jobSummaryText(job, { contact = true } = {}) {
 
 export async function notifyDom(env, job, origin, headline, { message, replyable = false } = {}) {
   const text = `${headline} — ${job.ref}\n\n${message ? `They wrote:\n${message}\n\n${replyable ? `Reply to this email and your reply goes to ${job.customer_name || "them"} (by text if they texted, otherwise email) and is logged on the job.\n\n` : ""}` : ""}${jobSummaryText(job)}\nSource: ${job.source}${job.source_ref ? ` ${job.source_ref}` : ""}\nStatus: ${STATUS_LABEL[job.status] || job.status}${job.partner_account_id ? ` · partner ${job.partner_account_id}` : ""}\n\nOpen in admin: ${adminLink(origin, job)}\n`;
-  return mail(env, job.id, "owner", { to: OWNER_TO, ...(replyable ? { replyTo: JOBS_INBOX } : {}), subject: `${headline} — ${job.ref} — ${job.service}${job.property_address ? ` — ${job.property_address}` : job.postcode ? ` — ${job.postcode}` : ""}`, text });
+  // Keep the subject to one short line: message text goes in the body, never the subject.
+  const place = job.property_address || job.postcode || "";
+  const subject = [oneLine(headline, 90), job.ref, job.service, place && !headline.includes(place) ? oneLine(place, 60) : null].filter(Boolean).join(" — ");
+  return mail(env, job.id, "owner", { to: OWNER_TO, ...(replyable ? { replyTo: JOBS_INBOX } : {}), subject, text });
+}
+
+// Collapse line breaks and cap the length, for email subjects.
+function oneLine(s, max) {
+  const t = String(s || "").replace(/\s+/g, " ").trim();
+  return t.length > max ? `${t.slice(0, max - 1).trimEnd()}…` : t;
 }
 
 // ---------------------------------------------------------------- dispatch
@@ -311,28 +320,30 @@ ${btn(portalLink(origin, fresh), "Open the job")}
         await addMessage(env, jobId, { direction: "out", channel: "sms", party: "system", counterpart: "partner", body: "Customer details texted to partner.", provider_id: sid });
       } catch (e) { await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Text to partner failed: ${e.message}` }); }
     }
+    // Accepting only means the partner is available: the customer hasn't agreed a price yet, so say a quote is coming.
     if (fresh.customer_email) {
       const who = fresh.customer_name ? `Hello ${esc(fresh.customer_name.split(" ")[0])},` : "Hello,";
-      const subject = `${jobTag(fresh)} Your ${fresh.service} — who will be in touch`;
+      const subject = `${jobTag(fresh)} Your ${fresh.service} — assessor available`;
       await mail(env, jobId, "accepted_customer", {
         to: fresh.customer_email,
         replyTo: JOBS_INBOX,
         subject,
         html: emailShell(`<p>${who}</p>
-<p>Thank you for your enquiry. <strong>${esc(p?.contact_name || name)}</strong> from ${esc(name)}, an accredited assessor who works with me, will carry out the ${esc(fresh.service)} at ${esc(fresh.property_address)} and will be in touch shortly to arrange a convenient date and time.</p>
+<p>Thank you for your enquiry. <strong>${esc(p?.contact_name || name)}</strong> from ${esc(name)}, an accredited assessor who works with me, is available to carry out the ${esc(fresh.service)} at ${esc(fresh.property_address)}.</p>
+<p>We'll send you a quote shortly. Once you're happy with it, ${esc((p?.contact_name || name).split(" ")[0])} will arrange a convenient date and time with you.</p>
 <p>If you have any questions in the meantime, just reply to this email.</p>
 <p>Kind regards,<br/>Dominic Bowkett</p>`),
       });
-      await addMessage(env, jobId, { direction: "out", channel: "email", party: "system", counterpart: "customer", subject, body: `Customer told that ${p?.contact_name || name} will be in touch.` });
+      await addMessage(env, jobId, { direction: "out", channel: "email", party: "system", counterpart: "customer", subject, body: `Customer told that ${p?.contact_name || name} is available and a quote will follow.` });
     }
     if (fresh.customer_phone) {
       try {
-        const sid = await sendSms(env, fresh.customer_phone, `Hi ${fresh.customer_name ? fresh.customer_name.split(" ")[0] : "there"}, it's Dom Bowkett. ${p?.contact_name || name} (${name}) will be in touch shortly to arrange your ${fresh.service} at ${fresh.property_address}. Thanks.`);
-        await addMessage(env, jobId, { direction: "out", channel: "sms", party: "system", counterpart: "customer", body: "Customer texted who will be in touch.", provider_id: sid });
+        const sid = await sendSms(env, fresh.customer_phone, `Hi ${fresh.customer_name ? fresh.customer_name.split(" ")[0] : "there"}, it's Dom Bowkett. ${p?.contact_name || name} (${name}) is available for your ${fresh.service} at ${fresh.property_address}. We'll send you a quote shortly. Thanks.`);
+        await addMessage(env, jobId, { direction: "out", channel: "sms", party: "system", counterpart: "customer", body: "Customer texted that the assessor is available and a quote will follow.", provider_id: sid });
       } catch (e) { await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Text to customer failed: ${e.message}` }); }
     }
   }
-  await notifyDom(env, fresh, origin, `${name} ${accepted ? "accepted" : "declined"} the job${note ? `: "${note.slice(0, 120)}"` : ""}`);
+  await notifyDom(env, fresh, origin, `${name} ${accepted ? "accepted" : "declined"} the job`, { message: note || undefined });
   return fresh;
 }
 
@@ -353,7 +364,7 @@ export async function sendMessage(env, jobId, { to, channel, body, subject: cust
   if (channel === "sms") {
     provider_id = await sendSms(env, dest, party === "partner" ? `${body} — ${senderName} (via Dominic Bowkett)` : body);
   } else {
-    const subject = `${jobTag(job)} ${clean(customSubject, 200) || `${job.service}${job.property_address ? ` — ${job.property_address}` : ""}`}`;
+    const subject = `${jobTag(job)} ${oneLine(customSubject, 120) || `${job.service}${job.property_address ? ` — ${oneLine(job.property_address, 60)}` : ""}`}`;
     provider_id = await mail(env, jobId, "message", {
       to: dest,
       replyTo: JOBS_INBOX,
@@ -468,7 +479,7 @@ ${btn(link, "Accept this quote")}
     catch (e) { await addMessage(env, jobId, { direction: "out", channel: "system", party: "system", body: `Quote text to customer failed: ${e.message}` }); }
   }
   if (!sent.length) throw new JobError("The quote could not be sent (email and text both failed). Try again or message Dom.", 502);
-  await notifyDom(env, fresh, origin, `${who} quoted ${gbp(pence)} (sent by ${sent.join(" and ")})${note ? `: "${note.slice(0, 120)}"` : ""}`);
+  await notifyDom(env, fresh, origin, `${who} quoted ${gbp(pence)} (sent by ${sent.join(" and ")})`, { message: note || undefined });
   return fresh;
 }
 
@@ -588,7 +599,7 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
     const job = jobs[0];
     if (job) {
       await addMessage(env, job.id, { direction: "in", channel: "sms", party: "partner", counterpart: "admin", body, meta: media.length ? { media } : null });
-      await notifyDom(env, job, origin, `Text from ${partner.display_name || partner.business_name}: "${body.slice(0, 80)}"`);
+      await notifyDom(env, job, origin, `Text from ${partner.display_name || partner.business_name}`, { message: body });
       return { handled: true, job };
     }
     return { handled: false };
@@ -605,7 +616,7 @@ export async function inboundSms(env, { from, body, media = [] }, origin) {
     }
   }
   await addMessage(env, job.id, { direction: "in", channel: "sms", party: "customer", counterpart: job.partner_account_id ? "partner" : "admin", body, meta: media.length ? { media } : null });
-  let headline = `Text from customer: "${body.slice(0, 80)}"`;
+  let headline = `Text from ${job.customer_name || "customer"}`;
   const textedEmail = /[\w.+-]+@[\w-]+(?:\.[\w-]+)+/.exec(body)?.[0];
   if (textedEmail && !job.customer_email) { await editJob(env, job.id, { customer_email: textedEmail }); headline = `Email address received: ${textedEmail}`; }
   if (job.status === "awaiting_address") {
@@ -643,7 +654,7 @@ export async function inboundEmail(env, { from, subject = "", text = "", html = 
         const yn = reply.trim().toUpperCase().split(/\s+/)[0];
         if (job.status === "offered" && (yn === "YES" || yn === "NO")) { await partnerResponds(env, job.id, yn === "YES", origin, { via: "email", note: reply.slice(0, 200) }); return { handled: true, job }; }
         await addMessage(env, job.id, { direction: "in", channel: "email", party: "partner", counterpart: "admin", subject, body: reply, provider_id: messageId });
-        await notifyDom(env, job, origin, `Email from partner: "${reply.slice(0, 80)}"`);
+        await notifyDom(env, job, origin, `Email from ${p.display_name || p.business_name || "partner"}`, { message: reply });
         return { handled: true, job };
       }
     }
@@ -651,7 +662,7 @@ export async function inboundEmail(env, { from, subject = "", text = "", html = 
   if (job && !isForwarder) {
     const reply = stripQuoted(bodyText);
     await addMessage(env, job.id, { direction: "in", channel: "email", party: "customer", counterpart: job.partner_account_id ? "partner" : "admin", subject, body: reply, provider_id: messageId });
-    let headline = `Email from customer: "${reply.slice(0, 80)}"`;
+    let headline = `Email from ${job.customer_name || "customer"}`;
     if (job.status === "awaiting_address") {
       const ex = await extractAddress(env, reply, job);
       if (ex?.property_address) { await editJob(env, job.id, { property_address: ex.property_address, postcode: ex.postcode || "" }); headline = `Address received: ${ex.property_address}`; }
