@@ -41,3 +41,7 @@
 # Admin app script: always revalidate so deploys show up straight away.
 /assets/admin.js
   Cache-Control: no-cache
+
+# Unlisted page for surveyors (shared by link only): keep it and its sample PDFs out of search.
+/surveyor-referrals/*
+  X-Robots-Tag: noindex, nofollow
