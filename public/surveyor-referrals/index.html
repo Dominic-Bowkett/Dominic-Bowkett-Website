@@ -13,11 +13,11 @@
 
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>Retrofit Survey Referrals for Surveyors — Dominic Bowkett</title>
-  <meta name="description" content="For building surveyors: refer clients who are planning energy upgrades for a retrofit survey and earn 20% commission on the fee." />
+  <title>Retrofit Survey Referrals for Surveyors and Estate Agents — Dominic Bowkett</title>
+  <meta name="description" content="For building surveyors and estate agents: refer clients who are planning energy upgrades for a retrofit survey and earn 20% of the fee." />
   <meta name="theme-color" content="#0c0c0c" />
   <meta name="author" content="Dominic Bowkett" />
-  <!-- Unlisted page: shared directly with surveyors, kept out of search and the menus. -->
+  <!-- Unlisted page: shared directly with surveyors and agents, kept out of search, the menus and the sitemap. -->
   <meta name="robots" content="noindex, nofollow" />
   <link rel="canonical" href="https://www.dominicbowkett.com/surveyor-referrals/" />
 
@@ -31,37 +31,103 @@
 
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Dominic Bowkett — Independent Practice" />
-  <meta property="og:title" content="Retrofit survey referrals for surveyors" />
-  <meta property="og:description" content="Refer clients planning energy upgrades for a retrofit survey and earn 20% commission." />
+  <meta property="og:title" content="Retrofit survey referrals: earn 20%" />
+  <meta property="og:description" content="For building surveyors and estate agents: refer clients planning energy upgrades for a retrofit survey and earn 20% of the fee." />
   <meta property="og:url" content="https://www.dominicbowkett.com/surveyor-referrals/" />
   <meta property="og:locale" content="en_GB" />
-  <meta property="og:image" content="https://www.dominicbowkett.com/assets/og.png" />
-  <meta property="og:image:type" content="image/png" />
-  <meta property="og:image:width" content="1200" />
-  <meta property="og:image:height" content="630" />
-  <meta property="og:image:alt" content="Dominic Bowkett — Plan it well. Build it once." />
+  <meta property="og:image" content="https://www.dominicbowkett.com/surveyor-referrals/img/thermal-1.webp" />
 
   <style>
-    .ref-form { display: grid; gap: 18px; margin-top: 8px; }
+    .ref-wrap { max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-x); }
+    .ref-sec { padding: clamp(56px, 8vw, 112px) 0; border-top: 1px solid var(--rule); }
+    .ref-sec h2 { font-size: clamp(26px, 3vw, 40px); font-weight: 400; letter-spacing: -0.02em; line-height: 1.12; margin: 0 0 18px; max-width: 22ch; }
+    .ref-sec p { max-width: 64ch; }
+    .eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
+    .muted { color: var(--muted); }
+
+    /* photo band under the hero */
+    .band { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr; gap: 8px; max-width: var(--container); margin: 0 auto; padding: 0 var(--pad-x) clamp(48px, 7vw, 96px); }
+    .band figure { margin: 0; position: relative; overflow: hidden; background: var(--paper-deep); }
+    .band img { width: 100%; height: 100%; aspect-ratio: 3 / 4; object-fit: cover; }
+    .band figure:first-child img { aspect-ratio: auto; }
+    .band figcaption { position: absolute; left: 0; bottom: 0; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--ink); color: var(--paper); padding: 5px 8px; }
+    @media (max-width: 760px) { .band { grid-template-columns: 1fr 1fr; } .band figure:first-child { grid-column: 1 / -1; } .band figure:first-child img { aspect-ratio: 4 / 3; } }
+
+    /* calculator */
+    .calc { display: grid; grid-template-columns: 1.2fr 1fr; gap: 0; border: 1px solid var(--ink); margin-top: 32px; background: var(--paper-2); }
+    .calc-in { padding: clamp(20px, 3vw, 36px); display: grid; gap: 28px; }
+    .calc-out { padding: clamp(20px, 3vw, 36px); background: var(--ink); color: var(--paper); display: grid; align-content: center; gap: 22px; }
+    .calc label { display: block; font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    .calc .row { display: grid; grid-template-columns: 1fr 120px; gap: 14px; align-items: center; }
+    .calc input[type=range] { width: 100%; accent-color: var(--ink); height: 28px; }
+    .calc input[type=number] { font: inherit; font-size: 18px; width: 100%; padding: 8px 10px; border: 1px solid var(--rule-strong); background: var(--paper); color: var(--ink); border-radius: 0; }
+    .calc .money { position: relative; }
+    .calc .money::before { content: "£"; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 18px; }
+    .calc .money input { padding-left: 24px; }
+    .calc .scale { display: flex; justify-content: space-between; font-family: var(--mono); font-size: 10px; color: var(--muted-2); margin-top: 2px; }
+    .calc-out .k { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted-2); }
+    .calc-out .v { font-size: clamp(38px, 5vw, 60px); font-weight: 300; letter-spacing: -0.03em; line-height: 1; margin-top: 6px; }
+    .calc-out .v.small { font-size: clamp(26px, 3vw, 34px); }
+    .calc-out .note { font-size: 13px; color: var(--muted-2); }
+    @media (max-width: 760px) { .calc { grid-template-columns: 1fr; } }
+
+    /* two-up and three-up cards */
+    .cards { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 32px; }
+    .cards.two { grid-template-columns: 1fr 1fr; }
+    .cards.three { grid-template-columns: repeat(3, 1fr); }
+    .cards > div { background: var(--paper); padding: clamp(20px, 2.5vw, 32px); }
+    .cards h3 { font-size: 20px; font-weight: 500; margin: 0 0 10px; letter-spacing: -0.01em; }
+    .cards p, .cards li { font-size: 15px; color: var(--ink-soft); }
+    .cards ul { padding-left: 18px; margin: 0; }
+    .cards li { margin-bottom: 6px; }
+    @media (max-width: 860px) { .cards.two, .cards.three { grid-template-columns: 1fr; } }
+
+    /* kit list */
+    .kit { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(24px, 4vw, 64px); margin-top: 32px; }
+    .kit dl { margin: 0; border-top: 1px solid var(--ink); }
+    .kit dt { font-weight: 500; padding-top: 14px; }
+    .kit dd { margin: 4px 0 0; padding-bottom: 14px; border-bottom: 1px solid var(--rule); color: var(--muted); font-size: 14px; }
+    .kit-photos { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 32px; }
+    .kit-photos figure { margin: 0; }
+    .kit-photos img { width: 100%; height: auto; aspect-ratio: 4 / 3; object-fit: cover; background: var(--paper-deep); }
+    .kit-photos figcaption { font-family: var(--mono); font-size: 10px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-top: 6px; }
+    @media (max-width: 760px) { .kit { grid-template-columns: 1fr; } .kit-photos { grid-template-columns: 1fr; } }
+
+    /* sample reports */
+    .samples { display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(16px, 2vw, 28px); margin-top: 32px; }
+    .samples a { border: 0; display: block; }
+    .samples img { width: 100%; height: auto; aspect-ratio: 210 / 297; object-fit: cover; object-position: top; border: 1px solid var(--rule-strong); box-shadow: 0 1px 0 var(--rule), 6px 6px 0 var(--paper-deep); transition: transform .2s; }
+    .samples a:hover img { transform: translateY(-4px); }
+    .samples h3 { font-size: 17px; font-weight: 500; margin: 16px 0 4px; }
+    .samples p { font-size: 14px; color: var(--muted); margin: 0; }
+    @media (max-width: 760px) { .samples { grid-template-columns: 1fr; max-width: 360px; } }
+
+    /* logos */
+    .logos { display: flex; flex-wrap: wrap; align-items: center; gap: clamp(20px, 3vw, 44px); margin-top: 28px; }
+    .logos img { height: 52px; width: auto; object-fit: contain; filter: grayscale(1); opacity: .85; }
+    .logos img.tall { height: 66px; }
+
+    /* steps */
+    .steps { counter-reset: s; display: grid; grid-template-columns: repeat(4, 1fr); gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 32px; }
+    .steps li { list-style: none; background: var(--paper); padding: 22px; font-size: 15px; }
+    .steps li::before { counter-increment: s; content: "0" counter(s); display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-bottom: 10px; }
+    .steps b { display: block; font-weight: 500; margin-bottom: 4px; }
+    @media (max-width: 860px) { .steps { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 480px) { .steps { grid-template-columns: 1fr; } }
+
+    /* form */
+    .ref-form { display: grid; gap: 18px; margin-top: 28px; max-width: 760px; }
     .ref-form fieldset { border: 0; padding: 0; margin: 0 0 8px; display: grid; gap: 18px; }
-    .ref-form legend {
-      font-family: var(--mono); font-size: 11px; letter-spacing: 0.04em; text-transform: uppercase;
-      color: var(--muted); padding: 0; margin-bottom: 14px;
-    }
+    .ref-form legend { font-family: var(--mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--muted); padding: 0; margin-bottom: 14px; }
     .ref-form .row { display: grid; gap: 18px; grid-template-columns: 1fr 1fr; }
     @media (max-width: 640px) { .ref-form .row { grid-template-columns: 1fr; } }
     .ref-form label { display: grid; gap: 6px; font-size: 14px; color: var(--ink-soft); }
-    .ref-form input, .ref-form textarea, .ref-form select {
-      font: inherit; font-size: 16px; color: var(--ink); background: var(--paper-2);
-      border: 1px solid var(--rule-strong); border-radius: 0; padding: 10px 12px; width: 100%;
-    }
+    .ref-form input, .ref-form textarea, .ref-form select { font: inherit; font-size: 16px; color: var(--ink); background: var(--paper-2); border: 1px solid var(--rule-strong); border-radius: 0; padding: 10px 12px; width: 100%; }
     .ref-form input:focus, .ref-form textarea:focus, .ref-form select:focus { outline: 2px solid var(--ink); outline-offset: 0; border-color: var(--ink); }
     .ref-form textarea { min-height: 120px; resize: vertical; }
     .ref-form .hint { font-size: 13px; color: var(--muted); }
-    .ref-form button {
-      justify-self: start; font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase;
-      background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 14px 22px; cursor: pointer;
-    }
+    .ref-form button, .btn-solid { justify-self: start; display: inline-block; font-family: var(--mono); font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; background: var(--ink); color: var(--paper); border: 1px solid var(--ink); padding: 14px 22px; cursor: pointer; }
+    .btn-solid:hover { opacity: .8; }
     .ref-form button[disabled] { opacity: 0.5; cursor: default; }
     .ref-status { font-size: 15px; margin: 4px 0 0; min-height: 1.5em; }
     .ref-hp { position: absolute; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
@@ -72,15 +138,15 @@
 
   <header class="top" role="banner">
     <div class="top-grid">
-      <a class="top-mark" href="/" aria-label="Dominic Bowkett, home">
+      <a class="top-mark" href="../" aria-label="Dominic Bowkett, home">
         Dominic Bowkett<span class="mark-sub">Independent practice &mdash; est. 2018</span>
       </a>
       <nav class="primary" aria-label="Primary">
         <ol>
-          <li><a href="/about/">Practice</a></li>
-          <li><a href="/services/">Services</a></li>
-          <li><a href="/journal/">Writing</a></li>
-          <li><a href="/contact/">Contact</a></li>
+          <li><a href="../about/">Practice</a></li>
+          <li><a href="../services/">Services</a></li>
+          <li><a href="../journal/">Writing</a></li>
+          <li><a href="../contact/">Contact</a></li>
         </ol>
       </nav>
     </div>
@@ -91,118 +157,240 @@
     <section class="page-hero">
       <div class="inner">
         <nav class="crumbs" aria-label="Breadcrumb">
-          <a href="/">Home</a>
+          <a href="../">Home</a>
           <span aria-hidden="true">&rarr;</span>
-          <span>For surveyors</span>
+          <span>Referral partners</span>
         </nav>
         <div>
-          <h1>Retrofit surveys,<br/>for your clients.</h1>
-          <p class="lede">For building surveyors whose clients are buying, or have just bought, and are thinking about making the house warmer and cheaper to run. Refer them to me for a retrofit survey and I&rsquo;ll pay you 20% of the fee.</p>
+          <h1>Refer a retrofit survey.<br/>Earn 20%.</h1>
+          <p class="lede">For building surveyors and estate agents whose clients are buying, or have just bought, and want the house warmer and cheaper to run. Send them to me for a retrofit survey and I&rsquo;ll pay you 20% of my fee.</p>
+          <p style="margin-top:28px;"><a class="btn-solid" href="#refer" style="border-bottom:0">Refer a client</a> &nbsp; <a href="#calc">Work out your commission</a></p>
         </div>
       </div>
     </section>
 
-    <section class="detail-grid">
-      <div class="body">
-        <div>
-          <h2 style="margin-top:0;">Why your clients need one</h2>
-          <p>Your survey tells the buyer what&rsquo;s wrong with the house. The next question is usually &ldquo;what should we do to it?&rdquo; Insulation, new windows, a heat pump, solar: done in the wrong order, or without dealing with damp and ventilation first, energy upgrades can cause condensation, mould and wasted money.</p>
-          <p>A retrofit survey answers that question for the particular house. It sets out which upgrades make sense, what each one will do to the building, and the order to do them in.</p>
+    <div class="band" aria-label="From recent surveys">
+      <figure><img src="img/thermal-3.webp" alt="Thermal image of a bay window showing cold air at the floor and frames" width="900" height="675" /><figcaption>Thermal imaging, where suitable</figcaption></figure>
+      <figure><img src="img/testo-417.webp" alt="Testo 417 anemometer measuring a bathroom extract fan" width="700" height="934" loading="lazy" /><figcaption>Testo 417 · extract flow</figcaption></figure>
+      <figure><img src="img/protimeter.webp" alt="Protimeter MMS3 reading room humidity" width="700" height="934" loading="lazy" /><figcaption>Humidity &amp; damp</figcaption></figure>
+      <figure><img src="img/loft-depth.webp" alt="Tape measure showing loft insulation depth" width="700" height="934" loading="lazy" /><figcaption>Insulation depths</figcaption></figure>
+    </div>
 
-          <h2>Who does the work</h2>
-          <p>I do every survey myself. I&rsquo;m an accredited Retrofit Assessor, a Domestic Energy Assessor and a building surveyor reporting in the <a href="https://www.rpsa.org.uk/" rel="noopener">RPSA</a> format, so I look at the fabric, the energy model and the risks together rather than one at a time.</p>
+    <!-- CALCULATOR -->
+    <section class="ref-sec" id="calc" aria-labelledby="calc-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Commission calculator</p>
+        <h2 id="calc-h">See what a referral is worth.</h2>
+        <p>Surveys start at &pound;500 + VAT and scale with the size of the house. You get 20% of my fee, excluding VAT, on every survey that goes ahead.</p>
 
-          <h2>What the survey covers</h2>
-          <ul>
-            <li><b>Your defects report as the starting point.</b> I don&rsquo;t repeat your condition survey. I work from your findings, and with your permission I&rsquo;ll use your photos too, so the client isn&rsquo;t paying twice.</li>
-            <li><b>Energy performance.</b> A full energy assessment of the house as it is, including whether the current EPC is right and how it compares with the current methodology.</li>
-            <li><b>Ventilation.</b> I test or check the existing ventilation and say what&rsquo;s needed before the house is made more airtight.</li>
-            <li><b>Occupancy and plans.</b> Who will live there, how they&rsquo;ll use the house now, and what they plan to do with it later.</li>
-            <li><b>Thermal imaging</b> and, where it helps, <b>drone survey</b> of roofs and high-level details.</li>
-            <li><b>A plan for the house.</b> A written report with upgrades in a sensible order over the short, medium and long term.</li>
-          </ul>
-          <p>I follow PAS 2035 principles throughout. This is a private survey for the homeowner rather than a lodged PAS 2035 assessment, so it suits people planning their own works. If the client later needs a lodged assessment for a funding scheme, I can do that too.</p>
-
-          <h2>Fees and commission</h2>
-          <p>Prices start from <b>&pound;500 + VAT</b>. Larger or unusual houses are priced on floor area: once I have the address and your report I&rsquo;ll give a fixed quote, usually the same day.</p>
-          <p>You receive <b>20% of my fee, excluding VAT</b>, for every survey you refer that goes ahead, paid once the client has paid.</p>
-
-          <h2>Examples of my work</h2>
-          <p>Three recent reports, anonymised: names, addresses and photos that would identify the house have been removed, along with the photo appendix.</p>
-          <ul>
-            <li><a href="samples/sample-retrofit-report-period-cottage.pdf" target="_blank" rel="noopener">Period cottage</a> (PDF, 30 pages). A cold, mouldy cottage with an extension planned. The report shows how to fold the fixes into the architect&rsquo;s scheme.</li>
-            <li><a href="samples/sample-retrofit-plan-edwardian-terrace.pdf" target="_blank" rel="noopener">Edwardian terrace</a> (PDF, 24 pages). A whole-house plan built from thermal imaging, a drone roof survey and ventilation tests.</li>
-            <li><a href="samples/sample-retrofit-report-semi-detached.pdf" target="_blank" rel="noopener">1900s house with a solid-brick rear wing</a> (PDF, 53 pages). High gas bills, cold rooms and recurring mould, with a costed, staged plan.</li>
-          </ul>
-          <p>See also my <a href="../services/retrofit/">retrofit assessments</a>, <a href="../services/drone-roof-surveys/">drone roof surveys</a> and <a href="../services/epc/">EPCs</a>.</p>
-
-          <h2 id="refer">Refer a client</h2>
-          <p>Fill in what you have. I&rsquo;ll contact the client, agree the fee and keep you copied in. If you can, email your survey report to <a href="mailto:info@dominicbowkett.com?subject=Retrofit%20referral%20%E2%80%94%20survey%20report">info@dominicbowkett.com</a> as well.</p>
-
-          <form class="ref-form" id="ref-form" novalidate>
-            <fieldset>
-              <legend>You</legend>
+        <div class="calc">
+          <div class="calc-in">
+            <div>
+              <label for="fee-n">My fee for the survey (excl. VAT)</label>
               <div class="row">
-                <label>Your name<input name="ref_name" autocomplete="name" required /></label>
-                <label>Firm<input name="ref_firm" autocomplete="organization" /></label>
+                <input type="range" id="fee-r" min="500" max="3000" step="50" value="500" aria-label="Survey fee" />
+                <div class="money"><input type="number" id="fee-n" min="500" step="50" value="500" inputmode="numeric" /></div>
               </div>
+              <div class="scale"><span>&pound;500</span><span>&pound;3,000</span></div>
+            </div>
+            <div>
+              <label for="num-n">Referrals in a year</label>
               <div class="row">
-                <label>Email<input name="ref_email" type="email" autocomplete="email" required /></label>
-                <label>Phone<input name="ref_phone" type="tel" autocomplete="tel" /></label>
+                <input type="range" id="num-r" min="1" max="50" step="1" value="10" aria-label="Referrals in a year" />
+                <input type="number" id="num-n" min="1" step="1" value="10" inputmode="numeric" />
               </div>
-            </fieldset>
-            <fieldset>
-              <legend>Your client and the property</legend>
-              <div class="row">
-                <label>Client name<input name="client_name" required /></label>
-                <label>Client phone or email<input name="client_contact" required /></label>
-              </div>
-              <label>Property address and postcode<input name="address" required /></label>
-              <div class="row">
-                <label>Bedrooms<input name="bedrooms" inputmode="numeric" /></label>
-                <label>Can I use your survey photos?
-                  <select name="photos">
-                    <option value="">Choose&hellip;</option>
-                    <option>Yes</option>
-                    <option>No</option>
-                    <option>Ask me first</option>
-                  </select>
-                </label>
-              </div>
-              <label>Anything else I should know<textarea name="notes"></textarea>
-                <span class="hint">Main defects, what the client is thinking of doing, timescales.</span>
-              </label>
-            </fieldset>
-            <div class="ref-hp" aria-hidden="true"><label>Leave blank<input name="website" tabindex="-1" autocomplete="off" /></label></div>
-            <button type="submit">Send referral</button>
-            <p class="ref-status" id="ref-status" role="status" aria-live="polite"></p>
-          </form>
+              <div class="scale"><span>1</span><span>50</span></div>
+            </div>
+          </div>
+          <div class="calc-out" aria-live="polite">
+            <div><div class="k">You earn per referral</div><div class="v" id="per">&pound;100</div></div>
+            <div><div class="k">You earn in a year</div><div class="v small" id="year">&pound;1,000</div></div>
+            <div class="note">20% of the fee before VAT, paid once the client has paid. Illustration only: each survey is quoted on the house.</div>
+          </div>
         </div>
       </div>
+    </section>
 
-      <aside class="facts" aria-label="At a glance">
-        <h2>At a glance</h2>
-        <dl>
-          <dt>For</dt>
-          <dd>Building surveyors with clients buying, or who have just bought, and planning energy upgrades</dd>
+    <!-- WHO -->
+    <section class="ref-sec" aria-labelledby="who-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Who it&rsquo;s for</p>
+        <h2 id="who-h">Your client asks &ldquo;what should we do to the house?&rdquo; This is the answer.</h2>
+        <div class="cards two">
+          <div>
+            <h3>Building surveyors</h3>
+            <p>Your survey tells the buyer what&rsquo;s wrong with the house. I take it from there: I work from your defects report (and, with your permission, your photos), so the client isn&rsquo;t paying twice, and turn it into a plan for energy upgrades done in the right order.</p>
+          </div>
+          <div>
+            <h3>Estate agents</h3>
+            <p>Buyers ask about the EPC, the heating bills and what it would cost to improve the house. Refer them to an independent assessor who will tell them honestly what the house needs. As with any referral fee, tell your client you receive one.</p>
+          </div>
+        </div>
+      </div>
+    </section>
 
-          <dt>Commission</dt>
-          <dd>20% of my fee, excluding VAT, on every survey that goes ahead</dd>
+    <!-- WHAT IT COVERS -->
+    <section class="ref-sec" aria-labelledby="cover-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">What the survey covers</p>
+        <h2 id="cover-h">Measured on the day, not guessed from a checklist.</h2>
+        <div class="cards three">
+          <div><h3>Energy performance</h3><p>A full energy assessment of the house as it is, including whether the current EPC is right and how it compares with the current methodology.</p></div>
+          <div><h3>Ventilation</h3><p>Extract fans and cooker hoods measured in litres per second against Approved Document F; trickle vents and door undercuts checked before the house is made more airtight.</p></div>
+          <div><h3>Moisture and condensation</h3><p>Humidity and surface readings room by room, so insulation never traps damp. Where the client already has a defects survey, I work from it.</p></div>
+          <div><h3>Thermal imaging</h3><p>If required, and when conditions are suitable (a cold day with the heating on): missing insulation, draughts, cold bridges and weak spots, shown in pictures the client can understand.</p></div>
+          <div><h3>Roof and fabric</h3><p>Loft and floor voids and wall construction checked by borescope. A drone survey of the roof if needed, when conditions are suitable.</p></div>
+          <div><h3>A plan for the house</h3><p>Occupancy and future plans, then upgrades in a sensible order over the short, medium and long term, with indicative costs.</p></div>
+        </div>
+        <p style="margin-top:24px;" class="muted">I follow PAS 2035 principles throughout. This is a private survey for the homeowner rather than a lodged assessment; if a funding scheme later needs a lodged PAS 2035 assessment, I can do that too.</p>
+      </div>
+    </section>
 
-          <dt>Fee</dt>
-          <dd>From &pound;500 + VAT; larger homes quoted on floor area</dd>
+    <!-- KIT AND QUALIFICATIONS -->
+    <section class="ref-sec" aria-labelledby="kit-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Tools and qualifications</p>
+        <h2 id="kit-h">One assessor, properly equipped.</h2>
+        <p>I carry out every survey myself, with the same calibrated kit each time.</p>
+        <div class="kit">
+          <dl>
+            <dt>Testo 417 vane anemometer</dt><dd>Extract fan and cooker hood flow rates in l/s, tested against Approved Document F.</dd>
+            <dt>FLIR thermal imaging camera</dt><dd>Heat loss, draughts and cold bridging, if required and when conditions are suitable.</dd>
+            <dt>Protimeter MMS3</dt><dd>Relative humidity, dew point and non-invasive moisture readings.</dd>
+            <dt>Borescope</dt><dd>Inspection of cavities and floor voids through small holes in mortar joints.</dd>
+            <dt>Laser measure</dt><dd>Room and opening dimensions for the energy model and floor plan.</dd>
+            <dt>Drone</dt><dd>Roof, chimney and high-level inspection if needed, when conditions are suitable; CAA-registered pilot, insured.</dd>
+          </dl>
+          <dl>
+            <dt>Retrofit Coordinator</dt><dd>Qualified to coordinate retrofit projects under PAS 2035.</dd>
+            <dt>Retrofit Assessor</dt><dd>ECMK Certificate of Competence in Retrofit Assessment; TrustMark registered (3310811).</dd>
+            <dt>Domestic Energy Assessor</dt><dd>Level 3 Certificate in Domestic Energy Assessment; Elmhurst and ECMK accredited.</dd>
+            <dt>Ventilation</dt><dd>NICEIC Domestic Ventilation Competency.</dd>
+            <dt>Older and traditional buildings</dt><dd>Level 3 Award in Older and Traditional Buildings.</dd>
+            <dt>Building surveying</dt><dd>MSc Building Surveying; MRPSA; Associate Member CABE; Associate Member Energy Institute.</dd>
+            <dt>Training</dt><dd>Level 3 Award in Education and Training; I train other energy assessors.</dd>
+          </dl>
+        </div>
+        <div class="kit-photos">
+          <figure><img src="img/thermal-1.webp" alt="Thermal image of a cold corner" width="900" height="675" loading="lazy" /><figcaption>Cold corner, thermal</figcaption></figure>
+          <figure><img src="img/thermal-2.webp" alt="Thermal image of a radiator" width="900" height="675" loading="lazy" /><figcaption>Radiator, thermal</figcaption></figure>
+          <figure><img src="img/borescope.webp" alt="Borescope view of cavity wall insulation" width="700" height="525" loading="lazy" /><figcaption>Cavity, borescope</figcaption></figure>
+        </div>
+      </div>
+    </section>
 
-          <dt>Uses</dt>
-          <dd>Your defects report and, with your permission, your photos</dd>
+    <!-- SAMPLES -->
+    <section class="ref-sec" aria-labelledby="samples-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Examples of my work</p>
+        <h2 id="samples-h">Three recent reports, anonymised.</h2>
+        <p>Names, addresses, floor plans and any photo that could identify the house have been removed, along with the photo appendix.</p>
+        <div class="samples">
+          <a href="samples/sample-retrofit-report-period-cottage.pdf" target="_blank" rel="noopener">
+            <img src="img/preview-cottage.webp" alt="Page from the period cottage sample report" width="744" height="1053" loading="lazy" />
+            <h3>Period cottage &rarr;</h3>
+            <p>Cold, mouldy cottage with an extension planned. PDF, 31 pages.</p>
+          </a>
+          <a href="samples/sample-retrofit-plan-edwardian-terrace.pdf" target="_blank" rel="noopener">
+            <img src="img/preview-terrace.webp" alt="Page from the Edwardian terrace sample plan" width="744" height="1053" loading="lazy" />
+            <h3>Edwardian terrace &rarr;</h3>
+            <p>Whole-house plan from thermal imaging, drone and ventilation tests. PDF, 24 pages.</p>
+          </a>
+          <a href="samples/sample-retrofit-report-semi-detached.pdf" target="_blank" rel="noopener">
+            <img src="img/preview-semi.webp" alt="Page from the 1900s house sample report" width="744" height="1053" loading="lazy" />
+            <h3>1900s house, solid-brick wing &rarr;</h3>
+            <p>High gas bills and recurring mould, with a costed, staged plan. PDF, 53 pages.</p>
+          </a>
+        </div>
+      </div>
+    </section>
 
-          <dt>Includes</dt>
-          <dd>Energy assessment and EPC check, ventilation, occupancy, thermal imaging, drone where useful, short/medium/long-term plan</dd>
+    <!-- HOW IT WORKS -->
+    <section class="ref-sec" aria-labelledby="how-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">How it works</p>
+        <h2 id="how-h">Four steps, and you stay in the loop.</h2>
+        <ol class="steps" style="padding:0">
+          <li><b>You refer</b>Use the form below, email or WhatsApp. Send your survey report if you have one.</li>
+          <li><b>I quote</b>A fixed fee from &pound;500 + VAT, worked out from the floor area, usually the same day.</li>
+          <li><b>I survey</b>Usually 2&ndash;3 hours on site; the report follows within 10 working days.</li>
+          <li><b>You&rsquo;re paid</b>20% of my fee, excluding VAT, once the client has paid.</li>
+        </ol>
+        <p style="margin-top:24px;">Coverage: <b>Kent, Sussex, Surrey, Essex and London.</b></p>
+      </div>
+    </section>
 
-          <dt>Coverage</dt>
-          <dd>Kent, Sussex, Surrey &amp; London</dd>
-        </dl>
-        <a class="btn" href="#refer">Refer a client</a>
-      </aside>
+    <!-- TRUST -->
+    <section class="ref-sec" aria-labelledby="trust-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Accreditations and memberships</p>
+        <h2 id="trust-h">Checked, insured and accountable.</h2>
+        <div class="logos">
+          <img src="../assets/logos/trustmark-endorsed.webp" alt="TrustMark — Government Endorsed Quality" width="600" height="152" loading="lazy" />
+          <img src="../assets/logos/rpsa.webp" alt="Residential Property Surveyors Association" width="300" height="147" loading="lazy" />
+          <img src="../assets/logos/cabe-associate-member.webp" alt="Chartered Association of Building Engineers — associate member" width="560" height="209" loading="lazy" />
+          <img src="../assets/logos/elmhurst-approved.webp" alt="Elmhurst Energy — approved energy assessor" width="600" height="285" loading="lazy" />
+          <img src="../assets/logos/ecmk-accredited.webp" alt="ECMK — accredited member" width="600" height="155" loading="lazy" />
+          <img src="../assets/logos/property-ombudsman.webp" alt="The Property Ombudsman" width="300" height="147" loading="lazy" />
+          <img class="tall" src="../assets/logos/which-trusted-trader.svg" alt="Which? Trusted Trader — endorsed business" width="240" height="192" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <!-- FORM -->
+    <section class="ref-sec" id="refer" aria-labelledby="refer-h">
+      <div class="ref-wrap">
+        <p class="eyebrow">Refer a client</p>
+        <h2 id="refer-h">Send me the details.</h2>
+        <p>Fill in what you have. I&rsquo;ll contact the client, agree the fee and keep you copied in. If you have a survey report, email it to <a href="mailto:info@dominicbowkett.com?subject=Retrofit%20referral%20%E2%80%94%20survey%20report">info@dominicbowkett.com</a> as well.</p>
+
+        <form class="ref-form" id="ref-form" novalidate>
+          <fieldset>
+            <legend>You</legend>
+            <div class="row">
+              <label>Your name<input name="ref_name" autocomplete="name" required /></label>
+              <label>Firm<input name="ref_firm" autocomplete="organization" /></label>
+            </div>
+            <div class="row">
+              <label>Email<input name="ref_email" type="email" autocomplete="email" required /></label>
+              <label>Phone<input name="ref_phone" type="tel" autocomplete="tel" /></label>
+            </div>
+            <label>You are
+              <select name="ref_type">
+                <option>Building surveyor</option>
+                <option>Estate agent</option>
+                <option>Other</option>
+              </select>
+            </label>
+          </fieldset>
+          <fieldset>
+            <legend>Your client and the property</legend>
+            <div class="row">
+              <label>Client name<input name="client_name" required /></label>
+              <label>Client phone or email<input name="client_contact" required /></label>
+            </div>
+            <label>Property address and postcode<input name="address" required /></label>
+            <div class="row">
+              <label>Bedrooms<input name="bedrooms" inputmode="numeric" /></label>
+              <label>Can I use your survey photos?
+                <select name="photos">
+                  <option value="">Choose&hellip;</option>
+                  <option>Yes</option>
+                  <option>No</option>
+                  <option>Ask me first</option>
+                  <option>No survey yet</option>
+                </select>
+              </label>
+            </div>
+            <label>Anything else I should know<textarea name="notes"></textarea>
+              <span class="hint">Main defects, what the client is thinking of doing, timescales.</span>
+            </label>
+          </fieldset>
+          <div class="ref-hp" aria-hidden="true"><label>Leave blank<input name="website" tabindex="-1" autocomplete="off" /></label></div>
+          <button type="submit">Send referral</button>
+          <p class="ref-status" id="ref-status" role="status" aria-live="polite"></p>
+        </form>
+      </div>
     </section>
 
     <section class="std" aria-labelledby="cta-h">
@@ -232,23 +420,23 @@
       <div>
         <h4>Site</h4>
         <ul>
-          <li><a href="/about/">Practice</a></li>
-          <li><a href="/services/">Services</a></li>
-          <li><a href="/journal/">Writing</a></li>
-          <li><a href="/contact/">Contact</a></li>
+          <li><a href="../about/">Practice</a></li>
+          <li><a href="../services/">Services</a></li>
+          <li><a href="../journal/">Writing</a></li>
+          <li><a href="../contact/">Contact</a></li>
         </ul>
       </div>
       <div>
         <h4>Services</h4>
         <ul>
-          <li><a href="/services/building-surveys/">Building surveys</a></li>
-          <li><a href="/services/homebuyer-survey/">HomeBuyer survey</a></li>
-          <li><a href="/services/home-insight-survey/">Home Insight Survey</a></li>
-          <li><a href="/services/buy-to-let-survey/">Buy to Let Survey</a></li>
-          <li><a href="/services/drone-roof-surveys/">Drone roof surveys</a></li>
-          <li><a href="/services/epc/">EPCs</a></li>
-          <li><a href="/services/retrofit/">Retrofit</a></li>
-          <li><a href="/services/ventilation/">Ventilation</a></li>
+          <li><a href="../services/building-surveys/">Building surveys</a></li>
+          <li><a href="../services/homebuyer-survey/">HomeBuyer survey</a></li>
+          <li><a href="../services/home-insight-survey/">Home Insight Survey</a></li>
+          <li><a href="../services/buy-to-let-survey/">Buy to Let Survey</a></li>
+          <li><a href="../services/drone-roof-surveys/">Drone roof surveys</a></li>
+          <li><a href="../services/epc/">EPCs</a></li>
+          <li><a href="../services/retrofit/">Retrofit</a></li>
+          <li><a href="../services/ventilation/">Ventilation</a></li>
         </ul>
       </div>
       <div>
@@ -266,15 +454,37 @@
       <span>Hartfield, East Sussex</span>
     </div>
     <nav class="foot-legal-links" aria-label="Legal">
-      <a href="/privacy/">Privacy</a>
-      <a href="/terms/">Terms of use</a>
-      <a href="/terms-of-business/">Terms of business</a>
-      <a href="/complaints/">Complaints</a>
+      <a href="../privacy/">Privacy</a>
+      <a href="../terms/">Terms of use</a>
+      <a href="../terms-of-business/">Terms of business</a>
+      <a href="../complaints/">Complaints</a>
     </nav>
   </footer>
 
   <script>
     document.getElementById('yr').textContent = new Date().getFullYear();
+
+    // Commission calculator: slider and number box stay in step; 20% of the fee before VAT
+    (function () {
+      var gbp = new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP', maximumFractionDigits: 0 });
+      var feeR = document.getElementById('fee-r'), feeN = document.getElementById('fee-n');
+      var numR = document.getElementById('num-r'), numN = document.getElementById('num-n');
+      var per = document.getElementById('per'), year = document.getElementById('year');
+      function update() {
+        var fee = Math.max(0, parseFloat(feeN.value) || 0), n = Math.max(0, Math.round(parseFloat(numN.value) || 0));
+        per.textContent = gbp.format(fee * 0.2);
+        year.textContent = gbp.format(fee * 0.2 * n);
+      }
+      function link(range, box) {
+        range.addEventListener('input', function () { box.value = range.value; update(); });
+        box.addEventListener('input', function () {
+          var v = parseFloat(box.value);
+          if (!isNaN(v)) range.value = Math.min(Math.max(v, range.min), range.max);
+          update();
+        });
+      }
+      link(feeR, feeN); link(numR, numN); update();
+    })();
 
     (function () {
       var form = document.getElementById('ref-form');
@@ -290,14 +500,14 @@
         var message = [
           'RETROFIT SURVEY REFERRAL (20% commission)',
           '',
-          'Referred by: ' + v('ref_name') + (v('ref_firm') ? ', ' + v('ref_firm') : ''),
-          'Surveyor phone: ' + (v('ref_phone') || '-'),
+          'Referred by: ' + v('ref_name') + (v('ref_firm') ? ', ' + v('ref_firm') : '') + ' (' + v('ref_type') + ')',
+          'Referrer phone: ' + (v('ref_phone') || '-'),
           '',
           'Client: ' + v('client_name'),
           'Client contact: ' + v('client_contact'),
           'Property: ' + v('address'),
           'Bedrooms: ' + (v('bedrooms') || '-'),
-          'Use surveyor photos: ' + (v('photos') || '-'),
+          'Use survey photos: ' + (v('photos') || '-'),
           '',
           'Notes:',
           v('notes') || '-'
@@ -322,7 +532,7 @@
     })();
   </script>
 
-  <a class="wa-float" href="https://wa.me/447946618203?text=Hi%20Dominic%2C%20I%27m%20a%20surveyor%20and%20would%20like%20to%20ask%20about%20retrofit%20survey%20referrals." target="_blank" rel="noopener" aria-label="Chat with Dominic on WhatsApp" title="Chat on WhatsApp">
+  <a class="wa-float" href="https://wa.me/447946618203?text=Hi%20Dominic%2C%20I%27d%20like%20to%20ask%20about%20retrofit%20survey%20referrals." target="_blank" rel="noopener" aria-label="Chat with Dominic on WhatsApp" title="Chat on WhatsApp">
     <svg viewBox="0 0 448 512" aria-hidden="true" focusable="false"><path d="M380.9 97.1C339 55.1 283.2 32 223.9 32c-122.4 0-222 99.6-222 222 0 39.1 10.2 77.3 29.6 111L0 480l117.7-30.9c32.4 17.7 68.9 27 106.1 27h.1c122.3 0 224.1-99.6 224.1-222 0-59.3-25.2-115-67.1-157zm-157 341.6c-33.2 0-65.7-8.9-94-25.7l-6.7-4-69.8 18.3L72 359.2l-4.4-7c-18.5-29.4-28.2-63.3-28.2-98.2 0-101.7 82.8-184.5 184.6-184.5 49.3 0 95.6 19.2 130.4 54.1 34.8 34.9 56.2 81.2 56.1 130.5 0 101.8-84.9 184.6-186.6 184.6zm101.2-138.2c-5.5-2.8-32.8-16.2-37.9-18-5.1-1.9-8.8-2.8-12.5 2.8-3.7 5.6-14.3 18-17.6 21.8-3.2 3.7-6.5 4.2-12 1.4-32.6-16.3-54-29.1-75.5-66-5.7-9.8 5.7-9.1 16.3-30.3 1.8-3.7.9-6.9-.5-9.7-1.4-2.8-12.5-30.1-17.1-41.2-4.5-10.8-9.1-9.3-12.5-9.5-3.2-.2-6.9-.2-10.6-.2-3.7 0-9.7 1.4-14.8 6.9-5.1 5.6-19.4 19-19.4 46.3 0 27.3 19.9 53.7 22.6 57.4 2.8 3.7 39.1 59.7 94.8 83.8 35.2 15.2 49 16.5 66.6 13.9 10.7-1.6 32.8-13.4 37.4-26.4 4.6-13 4.6-24.1 3.2-26.4-1.3-2.5-5-3.9-10.5-6.6z"/></svg>
   </a>
 
