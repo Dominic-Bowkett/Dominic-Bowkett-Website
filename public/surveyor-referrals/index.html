@@ -14,7 +14,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <title>Earn More From Every Survey: Retrofit Referrals — Dominic Bowkett</title>
-  <meta name="description" content="For building surveyors, energy assessors, estate agents and letting agents: refer clients who are planning energy upgrades for a retrofit survey and earn 20% of the fee." />
+  <meta name="description" content="For building surveyors, architects, energy assessors, estate agents and letting agents: refer clients who are planning energy upgrades for a retrofit survey and earn 20% of the fee." />
   <meta name="theme-color" content="#0c0c0c" />
   <meta name="author" content="Dominic Bowkett" />
   <!-- Unlisted page: shared directly with surveyors and agents, kept out of search, the menus and the sitemap. -->
@@ -32,7 +32,7 @@
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Dominic Bowkett — Independent Practice" />
   <meta property="og:title" content="Earn more from every survey: 20% on retrofit referrals" />
-  <meta property="og:description" content="For building surveyors, energy assessors, estate agents and letting agents: refer clients planning energy upgrades for a retrofit survey and earn 20% of the fee." />
+  <meta property="og:description" content="For building surveyors, architects, energy assessors, estate agents and letting agents: refer clients planning energy upgrades for a retrofit survey and earn 20% of the fee." />
   <meta property="og:url" content="https://www.dominicbowkett.com/surveyor-referrals/" />
   <meta property="og:locale" content="en_GB" />
   <meta property="og:image" content="https://www.dominicbowkett.com/surveyor-referrals/img/thermal-1.webp" />
@@ -75,6 +75,7 @@
     .cards { display: grid; gap: 1px; background: var(--rule); border: 1px solid var(--rule); margin-top: 32px; }
     .cards.two { grid-template-columns: 1fr 1fr; }
     .cards.three { grid-template-columns: repeat(3, 1fr); }
+    .cards.two > div:last-child:nth-child(odd) { grid-column: 1 / -1; }
     .cards > div { background: var(--paper); padding: clamp(20px, 2.5vw, 32px); }
     .cards h3 { font-size: 20px; font-weight: 500; margin: 0 0 10px; letter-spacing: -0.01em; }
     .cards p, .cards li { font-size: 15px; color: var(--ink-soft); }
@@ -163,7 +164,7 @@
         </nav>
         <div>
           <h1>Earn more from<br/>every survey.</h1>
-          <p class="lede">Your clients are buying a home, have just bought one or let one out, and want it warmer, cheaper to run or up to a better EPC. Pass them to me for a retrofit survey and you earn 20% of my fee, on top of your own. For building surveyors, energy assessors, estate agents and letting agents.</p>
+          <p class="lede">Your clients are buying a home, have just bought one or let one out, and want it warmer, cheaper to run or up to a better EPC. Pass them to me for a retrofit survey and you earn 20% of my fee, on top of your own. For building surveyors, architects, energy assessors, estate agents and letting agents.</p>
           <p style="margin-top:28px;"><a class="btn-solid" href="#refer" style="border-bottom:0">Refer a client</a> &nbsp; <a href="#calc">Work out your commission</a></p>
         </div>
       </div>
@@ -222,8 +223,12 @@
             <p>Your survey tells the buyer what&rsquo;s wrong with the house. I take it from there: I work from your defects report (and, with your permission, your photos), so the client isn&rsquo;t paying twice, and turn it into a plan for energy upgrades done in the right order.</p>
           </div>
           <div>
+            <h3>Architects</h3>
+            <p>Clients planning an extension or renovation often want the house warmer at the same time. A retrofit survey before the design is fixed shows what the existing fabric needs, where the moisture and ventilation risks are, and how the upgrades fit your scheme.</p>
+          </div>
+          <div>
             <h3>Domestic energy assessors</h3>
-            <p>Your EPC client asks what they should do next, but retrofit isn&rsquo;t part of your accreditation. Refer them to me: I&rsquo;ll use your EPC as the starting point, keep the job yours for future EPCs, and pay you 20% of my fee.</p>
+            <p>Your EPC client asks what they should do next, but retrofit isn&rsquo;t part of your accreditation. Refer them to me: I&rsquo;ll use your EPC as the starting point and pay you 20% of my fee.</p>
           </div>
           <div>
             <h3>Estate agents</h3>
@@ -366,6 +371,7 @@
             <label>You are
               <select name="ref_type">
                 <option>Building surveyor</option>
+                <option>Architect</option>
                 <option>Domestic energy assessor</option>
                 <option>Estate agent</option>
                 <option>Letting agent</option>
