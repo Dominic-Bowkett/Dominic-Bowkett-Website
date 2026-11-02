@@ -43,5 +43,5 @@
   Cache-Control: no-cache
 
 # Unlisted page for surveyors (shared by link only): keep it and its sample PDFs out of search.
-/surveyor-referrals/*
+/referrals/*
   X-Robots-Tag: noindex, nofollow

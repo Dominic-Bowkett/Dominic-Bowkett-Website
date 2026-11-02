@@ -34,3 +34,7 @@
 /services/energy-performance-certificate/                          /services/epc/               301
 /epc/                                                              /services/epc/               301
 /contact-us/                                                       /contact/                    301
+
+# Referral partners page moved (unlisted)
+/surveyor-referrals          /referrals/                  301
+/surveyor-referrals/*        /referrals/:splat            301
