@@ -5,7 +5,7 @@
 #     python scripts/build-cards.py <slug> ... # just these journal posts
 #
 # The site default (public/assets/og-default.png) is used by every page that isn't a
-# journal post. Each post gets public/assets/og/<slug>.png showing its own title, and
+# journal post. Each post gets public/assets/cards/<slug>.png showing its own title, and
 # its og:image / twitter:image tags are rewritten to match. Cards are drawn as HTML in
 # the site's own type (Inter + JetBrains Mono from Google Fonts) and screenshotted with
 # headless Chrome, so they always match the site. Run after rebuild-journal.py.
@@ -17,7 +17,7 @@ from PIL import Image
 ROOT = pathlib.Path(__file__).resolve().parent.parent
 PUB = ROOT / 'public'
 J = PUB / 'journal'
-OG = PUB / 'assets' / 'og'
+OG = PUB / 'assets' / 'cards'
 DEFAULT = PUB / 'assets' / 'og-default.png'
 SITE = 'https://www.dominicbowkett.com'
 NOT_POSTS = {'notes', 'costs'}
@@ -119,7 +119,7 @@ def build_post(d, force):
         m = re.search(r'"datePublished":\s*"(\d{4})-(\d{2})', src)
         right = f"{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][int(m.group(2)) - 1]} {m.group(1)}" if m else ''
         render(out, title, category(d.name), right, 'With video' if meta(src, 'og:video') else '')
-    set_image(page, f'{SITE}/assets/og/{d.name}.png', title)
+    set_image(page, f'{SITE}/assets/cards/{d.name}.png', title)
     return True
 
 
