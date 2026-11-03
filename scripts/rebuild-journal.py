@@ -331,3 +331,7 @@ print('front page: ' + ', '.join(
     for k, _, h, _, _ in CATS))
 for a in ARCHIVES:
     print('archive /journal/%s/: %d posts' % (a['dir'], len(buckets[a['key']])))
+
+# Give any new post its own social card (cards that already exist are left alone).
+import subprocess
+subprocess.run([sys.executable, str(ROOT / 'scripts' / 'build-cards.py')], check=True)
