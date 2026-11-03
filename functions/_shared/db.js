@@ -144,6 +144,26 @@ export const SCHEMA = [
     meta TEXT
   )`,
   `CREATE INDEX IF NOT EXISTS job_messages_job ON job_messages(job_id, id)`,
+  // Call recordings from the phone (QACR -> Drive -> Apps Script -> /api/calls), 3 Nov 2026. One row per recording;
+  // job_id is the job it is attached to (null = waiting in the Calls tab), matched = customer | partner.
+  `CREATE TABLE IF NOT EXISTS call_recordings (
+    id TEXT PRIMARY KEY,
+    drive_id TEXT NOT NULL UNIQUE,
+    job_id TEXT,
+    partner_account_id TEXT,
+    matched TEXT,
+    number TEXT,
+    direction TEXT,
+    started_at TEXT NOT NULL,
+    duration_s INTEGER,
+    url TEXT,
+    file_name TEXT,
+    transcript TEXT,
+    summary TEXT,
+    status TEXT,
+    created_at TEXT NOT NULL
+  )`,
+  `CREATE INDEX IF NOT EXISTS call_recordings_job ON call_recordings(job_id, started_at)`,
   `CREATE TABLE IF NOT EXISTS tasks (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,

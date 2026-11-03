@@ -458,7 +458,7 @@
         </div></form>
       <form id="job-note" style="display:flex;gap:10px;align-items:end;margin-top:10px"><div style="flex:1"><label>Private note</label><input name="body" /></div><button class="btn secondary" type="submit">Add note</button></form>
     </div>
-    <div class="card"><h2>Timeline</h2><ul class="timeline">${messages.map((m) => `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>`;
+    <div class="card"><h2>Timeline</h2><ul class="timeline">${messages.map((m) => m.channel === "call" ? callEntry(m) : `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>`;
     const msg = document.getElementById("jmsg");
     const act = async (fn) => { try { await fn(); await viewJob(id); } catch (err) { flash(msg, err.message, "err"); window.scrollTo(0, 0); } };
     document.getElementById("job-edit").addEventListener("submit", (e) => { e.preventDefault(); act(() => api("jobs/" + id, { method: "PUT", body: Object.fromEntries(new FormData(e.target).entries()) })); });
@@ -520,6 +520,56 @@
 
   // ------------------------------------------------------------ partners
   let showHidden = false;
+  // ------------------------------------------------------------ calls (recordings from the phone)
+  const meta = (m) => { try { return JSON.parse(m.meta || "{}") || {}; } catch { return {}; } };
+  const mins = (s) => (s ? (s < 60 ? `${s} sec` : `${Math.round(s / 60)} min`) : "");
+  function callEntry(m) {
+    const x = meta(m);
+    return `<li><span class="muted small">${when(m.at)} · call${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span><br/><strong class="small">${esc(m.subject || (m.direction === "in" ? "Incoming call" : "Call"))}</strong>${x.url ? ` <a class="small" href="${esc(x.url)}" target="_blank" rel="noopener">Listen</a>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div>${x.transcript ? `<details class="small" style="margin-top:4px"><summary class="muted">Read the transcript</summary><div style="white-space:pre-wrap;margin-top:6px">${esc(x.transcript)}</div></details>` : ""}</li>`;
+  }
+  async function viewCalls() {
+    setNav("calls");
+    const only = sessionStorage.getItem("calls.only") || "all";
+    app.innerHTML = `<div class="card"><div class="toolbar">
+      <select id="c-only"><option value="all" ${only === "all" ? "selected" : ""}>All recent calls</option><option value="unmatched" ${only === "unmatched" ? "selected" : ""}>Not on a job yet</option></select>
+      <span class="muted small">Calls recorded on the phone whose number matches a job's customer or a partner. Everything else stays in Google Drive.</span></div>
+      <div id="cmsg"></div><div id="clist"><p class="muted">Loading…</p></div></div>`;
+    const msg = document.getElementById("cmsg");
+    const load = async () => {
+      const o = document.getElementById("c-only").value; sessionStorage.setItem("calls.only", o);
+      const { calls, calls_key_set } = await api(`calls?only=${encodeURIComponent(o)}`);
+      const list = document.getElementById("clist");
+      if (!calls_key_set) flash(msg, "CALLS_KEY is not set on this Pages project yet, so the phone's script cannot send anything.", "warn");
+      if (!calls.length) { list.innerHTML = `<p class="muted">No calls here.</p>`; return; }
+      const { jobs } = await api("jobs?status=open");
+      const opts = jobs.map((j) => `<option value="${j.id}">${esc(j.ref)} · ${esc(j.customer_name || j.customer_phone || "?")} · ${esc(j.property_address || j.postcode || "")}</option>`).join("");
+      list.innerHTML = `<div class="tablewrap"><table><thead><tr><th>When</th><th>Who</th><th>What was said</th><th>Job</th></tr></thead><tbody>
+        ${calls.map((c) => `<tr><td style="white-space:nowrap">${when(c.started_at)}<br/><span class="muted small">${c.direction === "in" ? "they rang" : "Dom rang"}${c.duration_s ? ` · ${mins(c.duration_s)}` : ""} · <a href="${esc(c.url)}" target="_blank" rel="noopener">Listen</a></span></td>
+          <td>${esc(c.customer_name || c.partner_name || "")}<br/><span class="muted small mono">${esc(c.number || "")}</span>${c.partner_name && c.customer_name ? `<br/><span class="muted small">partner: ${esc(c.partner_name)}</span>` : ""}</td>
+          <td>${esc(c.summary || (c.status === "no_transcript" ? "No transcript (nothing said, or the audio was empty)" : ""))}${c.has_transcript ? `<br/><a class="small muted" href="#" data-tr="${c.id}">Read the transcript</a><div class="small" id="tr-${c.id}" style="white-space:pre-wrap;display:none;margin-top:6px"></div>` : ""}</td>
+          <td style="min-width:200px">${c.job_ref ? `<a href="#job/${c.job_id}">${esc(c.job_ref)}</a><br/><span class="muted small">${esc(c.property_address || "")}${c.matched === "partner" ? " · by the partner's number" : ""}</span><br/>` : `<span class="muted small">not on a job</span><br/>`}
+            <select data-att="${c.id}" style="width:auto;max-width:220px;margin-top:4px"><option value="">${c.job_ref ? "Move to…" : "Attach to…"}</option>${opts}</select>${c.job_ref ? "" : ` <button class="btn secondary small" data-mk="${c.id}" style="margin-top:4px">Make a job</button>`}</td></tr>`).join("")}</tbody></table></div>`;
+      list.querySelectorAll("[data-att]").forEach((sel) => sel.addEventListener("change", async () => {
+        if (!sel.value) return;
+        try { await api(`calls/${sel.dataset.att}/attach`, { method: "POST", body: { job_id: sel.value } }); flash(msg, "Attached to the job."); await load(); }
+        catch (err) { flash(msg, err.message, "err"); }
+      }));
+      list.querySelectorAll("[data-mk]").forEach((b) => b.addEventListener("click", async () => {
+        busy(b, true);
+        try { const r = await api(`calls/${b.dataset.mk}/job`, { method: "POST" }); location.hash = "#job/" + r.job.id; }
+        catch (err) { flash(msg, err.message, "err"); busy(b, false); }
+      }));
+      list.querySelectorAll("[data-tr]").forEach((a) => a.addEventListener("click", async (e) => {
+        e.preventDefault();
+        const box = document.getElementById("tr-" + a.dataset.tr);
+        if (box.style.display === "none") { if (!box.textContent) { const { call } = await api("calls/" + a.dataset.tr); box.textContent = call.transcript || ""; } box.style.display = ""; a.textContent = "Hide the transcript"; }
+        else { box.style.display = "none"; a.textContent = "Read the transcript"; }
+      }));
+    };
+    document.getElementById("c-only").addEventListener("change", load);
+    await load();
+  }
+
   async function viewPartners() {
     setNav("partners");
     const all = await getPartners();
@@ -628,6 +678,7 @@
     const h = location.hash.replace(/^#/, "") || "invoices";
     try {
       if (h === "tasks") await viewTasks();
+      else if (h === "calls") await viewCalls();
       else if (h === "jobs") await viewJobs();
       else if (h === "newjob") await viewJobForm();
       else if (h.startsWith("job/")) await viewJob(h.slice(4));

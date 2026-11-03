@@ -14,6 +14,7 @@ import {
 import { getPartner as partnerRow } from "../../_shared/db.js";
 import { PARTNER_SERVICES } from "../../_shared/services.js";
 import { listTasks, createTask, updateTask, deleteTask, taskDigest, TaskError } from "../../_shared/tasks.js";
+import { listRecordings, getRecording, attachRecording, jobFromRecording, CallError } from "../../_shared/calls.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -179,6 +180,14 @@ export async function onRequest(context) {
       }
     }
 
+    // Call recordings from the phone (see functions/_shared/calls.js)
+    if (head === "calls") {
+      if (method === "GET" && !id) return json({ ok: true, calls: await listRecordings(env, { only: url.searchParams.get("only") || undefined }), calls_key_set: !!env.CALLS_KEY });
+      if (method === "GET" && id) { const rec = await getRecording(env, id); if (!rec) return json({ ok: false, error: "Not found" }, 404); return json({ ok: true, call: rec }); }
+      if (method === "POST" && id && action === "attach") return json({ ok: true, call: await attachRecording(env, id, String(body.job_id || "")) });
+      if (method === "POST" && id && action === "job") return json({ ok: true, job: await jobFromRecording(env, id, origin) });
+    }
+
     if (head === "reminders" && method === "POST") {
       const result = await runReminders(env, origin, { asOf: body.as_of || undefined, dryRun: !!body.dry_run });
       return json({ ok: true, ...result });
@@ -206,7 +215,7 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "Unknown endpoint" }, 404);
   } catch (e) {
-    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError || e instanceof TaskError ? e.status : 500;
+    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError || e instanceof TaskError || e instanceof CallError ? e.status : 500;
     if (status === 500) console.error("admin api error", e);
     return json({ ok: false, error: e.message || String(e) }, status);
   }
