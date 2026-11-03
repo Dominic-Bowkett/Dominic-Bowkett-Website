@@ -21,6 +21,8 @@ OG = PUB / 'assets' / 'cards'
 DEFAULT = PUB / 'assets' / 'og-default.png'
 SITE = 'https://www.dominicbowkett.com'
 NOT_POSTS = {'notes', 'costs'}
+# Bump after a design change: new image URLs make X and Cloudflare fetch the new cards.
+VERSION = '1'
 CHROME = r'C:\Program Files\Google\Chrome\Application\chrome.exe'
 
 CSS = """
@@ -119,7 +121,7 @@ def build_post(d, force):
         m = re.search(r'"datePublished":\s*"(\d{4})-(\d{2})', src)
         right = f"{['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'][int(m.group(2)) - 1]} {m.group(1)}" if m else ''
         render(out, title, category(d.name), right, 'With video' if meta(src, 'og:video') else '')
-    set_image(page, f'{SITE}/assets/cards/{d.name}.png', title)
+    set_image(page, f'{SITE}/assets/cards/{d.name}.png?v={VERSION}', title)
     return True
 
 
