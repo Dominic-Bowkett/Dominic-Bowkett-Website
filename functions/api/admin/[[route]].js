@@ -15,6 +15,7 @@ import { getPartner as partnerRow } from "../../_shared/db.js";
 import { PARTNER_SERVICES } from "../../_shared/services.js";
 import { listTasks, createTask, updateTask, deleteTask, taskDigest, TaskError } from "../../_shared/tasks.js";
 import { listRecordings, getRecording, attachRecording, jobFromRecording, CallError } from "../../_shared/calls.js";
+import { VoiceError, voiceSettings, voiceReady, twilioSet, setupVoice, accessToken, startCall, cancelCall, syncIncoming, recKey } from "../../_shared/voice.js";
 
 const json = (data, status = 200) =>
   new Response(JSON.stringify(data), { status, headers: { "content-type": "application/json; charset=utf-8", "cache-control": "no-store" } });
@@ -138,6 +139,32 @@ export async function onRequest(context) {
       if (method === "DELETE" && id) { await deleteTask(env, id); return json({ ok: true }); }
     }
 
+    // People ringing the office number back are logged on their jobs (at most once a minute; never blocks the page)
+    if (method === "GET" && (head === "jobs" || head === "calls")) {
+      try { await syncIncoming(env); } catch (e) { console.log("call sync failed", String(e)); }
+    }
+
+    // Calling from the jobs board through Twilio (see functions/_shared/voice.js)
+    if (head === "voice") {
+      if (method === "GET" && id === "status") {
+        const vs = await voiceSettings(env);
+        return json({ ok: true, twilio: twilioSet(env), ready: twilioSet(env) && voiceReady(vs), caller: vs.voice_caller || null, since: vs.voice_in_since || null });
+      }
+      if (method === "POST" && id === "setup") return json({ ok: true, ...(await setupVoice(env)) });
+      if (method === "GET" && id === "token") {
+        const vs = await voiceSettings(env);
+        if (!twilioSet(env) || !voiceReady(vs)) throw new VoiceError("Calling is not set up yet (Setup tab)", 409);
+        return json({ ok: true, token: await accessToken(env, vs, "dom"), caller: vs.voice_caller });
+      }
+      if (method === "POST" && id === "start") return json({ ok: true, ...(await startCall(env, String(body.job_id || ""), body.who === "partner" ? "partner" : "customer")) });
+      if (method === "POST" && id === "cancel") return json({ ok: true, removed: await cancelCall(env, body.mid) });
+      if (method === "GET" && id === "rec" && /^RE[0-9a-f]{32}$/.test(action || "")) {
+        const obj = env.SURVEY_FILES ? await env.SURVEY_FILES.get(recKey(action)) : null;
+        if (!obj) return json({ ok: false, error: "No recording" }, 404);
+        return new Response(obj.body, { headers: { "content-type": "audio/mpeg", "cache-control": "private, max-age=3600" } });
+      }
+    }
+
     if (head === "jobs") {
       if (method === "GET" && !id) {
         const jobs = await listJobs(env, { status: url.searchParams.get("status") || "open", q: (url.searchParams.get("q") || "").trim() });
@@ -215,7 +242,7 @@ export async function onRequest(context) {
 
     return json({ ok: false, error: "Unknown endpoint" }, 404);
   } catch (e) {
-    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError || e instanceof TaskError || e instanceof CallError ? e.status : 500;
+    const status = e instanceof UserError || e instanceof PortalError || e instanceof JobError || e instanceof TaskError || e instanceof CallError || e instanceof VoiceError ? e.status : 500;
     if (status === 500) console.error("admin api error", e);
     return json({ ok: false, error: e.message || String(e) }, status);
   }

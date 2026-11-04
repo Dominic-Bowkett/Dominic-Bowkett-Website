@@ -164,6 +164,9 @@ export const SCHEMA = [
     created_at TEXT NOT NULL
   )`,
   `CREATE INDEX IF NOT EXISTS call_recordings_job ON call_recordings(job_id, started_at)`,
+  // Small key/value settings (4 Nov 2026): calling from the PC through Twilio keeps its API key, TwiML app and
+  // caller ID here (voice_*), see functions/_shared/voice.js.
+  `CREATE TABLE IF NOT EXISTS settings (key TEXT PRIMARY KEY, value TEXT)`,
   `CREATE TABLE IF NOT EXISTS tasks (
     id TEXT PRIMARY KEY,
     title TEXT NOT NULL,

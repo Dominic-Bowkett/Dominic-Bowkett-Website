@@ -33,7 +33,7 @@ async function matchableJobs(env) {
   ).bind(...OPEN, `-${RECENT_DAYS} days`).all()).results || [];
 }
 
-async function partnersWithPhones(env) {
+export async function partnersWithPhones(env) {
   const d = await db(env);
   return ((await d.prepare(`SELECT stripe_account_id, display_name, business_name, phone FROM partners WHERE phone IS NOT NULL AND phone != ''`).all()).results || [])
     .map((p) => ({ ...p, num: digits(p.phone), name: p.display_name || p.business_name || "partner" }));
@@ -56,7 +56,7 @@ function b64ToBytes(b64) {
   return out;
 }
 
-async function transcribe(env, audioB64) {
+export async function transcribe(env, audioB64) {
   if (!env.AI || !audioB64) return "";
   try {
     const r = await env.AI.run(WHISPER, {
@@ -75,7 +75,7 @@ async function transcribe(env, audioB64) {
   }
 }
 
-async function summarise(env, transcript, who, direction) {
+export async function summarise(env, transcript, who, direction) {
   if (!env.AI || transcript.length < 40) return "";
   try {
     const r = await env.AI.run(SUMMARY_MODEL, {

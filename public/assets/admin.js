@@ -319,10 +319,11 @@
       if (!jobs.length) { list.innerHTML = `<p class="muted">No jobs here.</p>`; return; }
       list.innerHTML = `<div class="tablewrap"><table><thead><tr><th class="hide-m">Ref</th><th class="hide-m">Last activity</th><th>Customer</th><th>Job</th><th class="hide-m">Partner</th><th>Status</th></tr></thead><tbody>
         ${jobs.map((j) => `<tr class="click" data-id="${j.id}"><td class="mono hide-m">${esc(j.ref)}</td><td class="hide-m">${when(j.last_activity_at)}</td>
-          <td>${esc(j.customer_name || "")}<br/><span class="muted small">${esc(j.customer_phone || "")}${j.customer_phone && j.customer_email ? " · " : ""}${esc(j.customer_email || "")}</span></td>
+          <td>${esc(j.customer_name || "")}<br/><span class="muted small">${esc(j.customer_phone || "")}${j.customer_phone && j.customer_email ? " · " : ""}${esc(j.customer_email || "")}</span>${j.customer_phone && window.DBKPhone ? `<br/><button type="button" class="btn secondary small callbtn" data-ring="${j.id}" title="Ring from the office number (recorded)">${PHONE_ICON}Call</button>` : ""}</td>
           <td>${esc(j.service)}<br/><span class="muted small">${esc(j.property_address || (j.postcode ? `postcode ${j.postcode} (address not confirmed)` : "address not confirmed"))}</span></td>
           <td class="hide-m">${esc(j.partner_name || "")}</td><td>${jbadge(j)}${j.open_tasks ? `<br/><span class="small" style="color:${j.next_task_due && j.next_task_due <= todayISO() ? "#8a2a2a" : "var(--muted)"}">${j.open_tasks} task${j.open_tasks === 1 ? "" : "s"}${j.next_task_due ? ` · ${j.next_task_due <= todayISO() ? "due" : day(j.next_task_due)}` : ""}</span>` : ""}${j.booked_date ? `<br/><span class="small muted">${day(j.booked_date)} ${esc(j.booked_time || "")}</span>` : ""}${j.partner_name ? `<br/><span class="small muted hide-d">${esc(j.partner_name)}</span>` : ""}</td></tr>`).join("")}</tbody></table></div>`;
-      list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", () => (location.hash = "#job/" + tr.dataset.id)));
+      list.querySelectorAll("tr.click").forEach((tr) => tr.addEventListener("click", (e) => { if (e.target.closest("[data-ring]")) return; location.hash = "#job/" + tr.dataset.id; }));
+      list.querySelectorAll("[data-ring]").forEach((b) => b.addEventListener("click", (e) => { e.stopPropagation(); window.DBKPhone.call(b.dataset.ring, "customer"); }));
     };
     document.getElementById("j-status").addEventListener("change", load);
     let t; document.getElementById("j-q").addEventListener("input", () => { clearTimeout(t); t = setTimeout(load, 250); });
@@ -399,6 +400,33 @@
     });
   }
 
+  // ------------------------------------------------------------ calling from the board (admin-phone.js)
+  const msgEntry = (m) => `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`;
+  const timelineHtml = (messages) => messages.map((m) => (m.channel === "call" ? callEntry(m) : msgEntry(m))).join("") || "<li class='muted'>Nothing yet</li>";
+  const PHONE_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>`;
+  const ukNice = (n) => String(n || "").replace(/^\+44/, "0").replace(/^(\d{5})(\d+)$/, "$1 $2");
+  function callRow(j, partner) {
+    const cust = j.customer_phone, part = partner && partner.phone;
+    if (!cust && !part) return "";
+    const pc = !!window.DBKPhone;
+    const pn = partner ? partner.contact_name || partner.display_name || partner.business_name : "";
+    return `<div class="callrow">
+      ${cust && pc ? `<button type="button" class="btn" data-ring="customer">${PHONE_ICON}Call ${esc(j.customer_name || "the customer")}</button>` : ""}
+      ${part && pc ? `<button type="button" class="btn secondary" data-ring="partner">${PHONE_ICON}Call ${esc(pn)} (partner)</button>` : ""}
+      <span class="muted small">${pc ? "From the office number, recorded and summarised here." : ""}${cust ? ` Or <a href="tel:${esc(cust)}">ring ${esc(ukNice(cust))} from your mobile</a>.` : ""}</span></div>`;
+  }
+  let callJob = null;
+  function wireCallRow(jobId) {
+    callJob = jobId;
+    app.querySelectorAll(".callrow [data-ring]").forEach((b) => b.addEventListener("click", () => window.DBKPhone.call(jobId, b.dataset.ring)));
+  }
+  /* after a call, refresh the open job's timeline only (so nothing half-typed on the page is lost) */
+  window.addEventListener("dbk-call", async (e) => {
+    const ul = document.getElementById("jtimeline");
+    if (!ul || !e.detail || e.detail.jobId !== callJob || location.hash !== "#job/" + callJob) return;
+    try { const { messages } = await api("jobs/" + callJob); ul.innerHTML = timelineHtml(messages); } catch { /* next load will show it */ }
+  });
+
   async function viewJob(id) {
     setNav("jobs");
     app.innerHTML = `<p class="muted">Loading…</p>`;
@@ -407,6 +435,7 @@
     const partnerName = partner ? partner.display_name || partner.business_name : "";
     app.innerHTML = `<div class="card">
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:center"><h1 style="margin:0">${esc(j.ref)} ${jbadge(j)}</h1><a href="#jobs" class="muted small">← All jobs</a></div>
+      ${callRow(j, partner)}
       <div id="jmsg" style="margin-top:12px"></div>
       <form id="job-edit" class="grid" style="margin-top:12px"><div>
         <label>Customer name</label><input name="customer_name" value="${esc(j.customer_name || "")}" />
@@ -458,8 +487,9 @@
         </div></form>
       <form id="job-note" style="display:flex;gap:10px;align-items:end;margin-top:10px"><div style="flex:1"><label>Private note</label><input name="body" /></div><button class="btn secondary" type="submit">Add note</button></form>
     </div>
-    <div class="card"><h2>Timeline</h2><ul class="timeline">${messages.map((m) => m.channel === "call" ? callEntry(m) : `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`).join("") || "<li class='muted'>Nothing yet</li>"}</ul></div>`;
+    <div class="card"><h2>Timeline</h2><ul class="timeline" id="jtimeline">${timelineHtml(messages)}</ul></div>`;
     const msg = document.getElementById("jmsg");
+    wireCallRow(j.id);
     const act = async (fn) => { try { await fn(); await viewJob(id); } catch (err) { flash(msg, err.message, "err"); window.scrollTo(0, 0); } };
     document.getElementById("job-edit").addEventListener("submit", (e) => { e.preventDefault(); act(() => api("jobs/" + id, { method: "PUT", body: Object.fromEntries(new FormData(e.target).entries()) })); });
     // Compose box: a full email-style area for email, a short box with a character count for texts.
@@ -523,16 +553,17 @@
   // ------------------------------------------------------------ calls (recordings from the phone)
   const meta = (m) => { try { return JSON.parse(m.meta || "{}") || {}; } catch { return {}; } };
   const mins = (s) => (s ? (s < 60 ? `${s} sec` : `${Math.round(s / 60)} min`) : "");
+  const inPage = (u) => /^\/api\/admin\/voice\/rec\//.test(u || "");
   function callEntry(m) {
     const x = meta(m);
-    return `<li><span class="muted small">${when(m.at)} · call${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span><br/><strong class="small">${esc(m.subject || (m.direction === "in" ? "Incoming call" : "Call"))}</strong>${x.url ? ` <a class="small" href="${esc(x.url)}" target="_blank" rel="noopener">Listen</a>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div>${x.transcript ? `<details class="small" style="margin-top:4px"><summary class="muted">Read the transcript</summary><div style="white-space:pre-wrap;margin-top:6px">${esc(x.transcript)}</div></details>` : ""}</li>`;
+    return `<li><span class="muted small">${when(m.at)} · call${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span><br/><strong class="small">${esc(m.subject || (m.direction === "in" ? "Incoming call" : "Call"))}</strong>${x.url && !inPage(x.url) ? ` <a class="small" href="${esc(x.url)}" target="_blank" rel="noopener">Listen</a>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div>${x.url && inPage(x.url) ? `<audio class="rec" controls preload="none" src="${esc(x.url)}"></audio>` : ""}${x.transcript ? `<details class="small" style="margin-top:4px"><summary class="muted">Read the transcript</summary><div style="white-space:pre-wrap;margin-top:6px">${esc(x.transcript)}</div></details>` : ""}</li>`;
   }
   async function viewCalls() {
     setNav("calls");
     const only = sessionStorage.getItem("calls.only") || "all";
     app.innerHTML = `<div class="card"><div class="toolbar">
       <select id="c-only"><option value="all" ${only === "all" ? "selected" : ""}>All recent calls</option><option value="unmatched" ${only === "unmatched" ? "selected" : ""}>Not on a job yet</option></select>
-      <span class="muted small">Calls recorded on the phone whose number matches a job's customer or a partner. Everything else stays in Google Drive.</span></div>
+      <span class="muted small">Calls rung from here (office number) and calls recorded on your mobile whose number matches a job's customer or a partner. Other mobile calls stay in Google Drive.</span></div>
       <div id="cmsg"></div><div id="clist"><p class="muted">Loading…</p></div></div>`;
     const msg = document.getElementById("cmsg");
     const load = async () => {
@@ -544,9 +575,9 @@
       const { jobs } = await api("jobs?status=open");
       const opts = jobs.map((j) => `<option value="${j.id}">${esc(j.ref)} · ${esc(j.customer_name || j.customer_phone || "?")} · ${esc(j.property_address || j.postcode || "")}</option>`).join("");
       list.innerHTML = `<div class="tablewrap"><table><thead><tr><th>When</th><th>Who</th><th>What was said</th><th>Job</th></tr></thead><tbody>
-        ${calls.map((c) => `<tr><td style="white-space:nowrap">${when(c.started_at)}<br/><span class="muted small">${c.direction === "in" ? "they rang" : "Dom rang"}${c.duration_s ? ` · ${mins(c.duration_s)}` : ""} · <a href="${esc(c.url)}" target="_blank" rel="noopener">Listen</a></span></td>
+        ${calls.map((c) => `<tr><td style="white-space:nowrap">${when(c.started_at)}<br/><span class="muted small">${c.direction === "in" ? "they rang" : "Dom rang"}${c.duration_s ? ` · ${mins(c.duration_s)}` : ""}${inPage(c.url) ? " · office number" : ` · <a href="${esc(c.url)}" target="_blank" rel="noopener">Listen</a>`}</span>${inPage(c.url) ? `<audio class="rec" controls preload="none" src="${esc(c.url)}"></audio>` : ""}</td>
           <td>${esc(c.customer_name || c.partner_name || "")}<br/><span class="muted small mono">${esc(c.number || "")}</span>${c.partner_name && c.customer_name ? `<br/><span class="muted small">partner: ${esc(c.partner_name)}</span>` : ""}</td>
-          <td>${esc(c.summary || (c.status === "no_transcript" ? "No transcript (nothing said, or the audio was empty)" : ""))}${c.has_transcript ? `<br/><a class="small muted" href="#" data-tr="${c.id}">Read the transcript</a><div class="small" id="tr-${c.id}" style="white-space:pre-wrap;display:none;margin-top:6px"></div>` : ""}</td>
+          <td>${esc(c.summary || (c.status === "no_transcript" ? "No transcript (nothing said, or the audio was empty)" : c.status === "transcribing" ? "Transcribing…" : ""))}${c.has_transcript ? `<br/><a class="small muted" href="#" data-tr="${c.id}">Read the transcript</a><div class="small" id="tr-${c.id}" style="white-space:pre-wrap;display:none;margin-top:6px"></div>` : ""}</td>
           <td style="min-width:200px">${c.job_ref ? `<a href="#job/${c.job_id}">${esc(c.job_ref)}</a><br/><span class="muted small">${esc(c.property_address || "")}${c.matched === "partner" ? " · by the partner's number" : ""}</span><br/>` : `<span class="muted small">not on a job</span><br/>`}
             <select data-att="${c.id}" style="width:auto;max-width:220px;margin-top:4px"><option value="">${c.job_ref ? "Move to…" : "Attach to…"}</option>${opts}</select>${c.job_ref ? "" : ` <button class="btn secondary small" data-mk="${c.id}" style="margin-top:4px">Make a job</button>`}</td></tr>`).join("")}</tbody></table></div>`;
       list.querySelectorAll("[data-att]").forEach((sel) => sel.addEventListener("change", async () => {
@@ -653,6 +684,8 @@
       <table><tbody>${Object.entries(s.checks).filter(([k]) => k !== "live_mode").map(([k, v]) => row(k, v)).join("")}
       <tr><td class="mono">Stripe mode</td><td>${s.checks.STRIPE_SECRET_KEY ? (s.checks.live_mode ? '<span class="badge paid">live</span>' : '<span class="badge sent">test</span>') : "—"}</td></tr>
       <tr><td class="mono">D1 database</td><td>${s.dbOk ? '<span class="badge paid">ok</span>' : '<span class="badge failed">not bound</span>'}</td></tr></tbody></table>
+      <h2 style="margin-top:20px">Calling from the board</h2>
+      <div id="voice-setup" class="small"><p class="muted">Checking…</p></div>
       <h2 style="margin-top:20px">Stripe webhook</h2>
       <p class="small">In Stripe → Developers → Webhooks, add an endpoint for <strong>connected accounts</strong> ("Listen to events on Connected accounts") pointing at:</p>
       <p class="mono">${esc(s.webhook_url)}</p>
@@ -663,6 +696,24 @@
       <h2 style="margin-top:20px">Counts</h2>
       <table><tbody>${Object.entries(s.counts).map(([k, v]) => `<tr><td>${badge(k)}</td><td>${v.n}</td><td class="num">${gbp(v.total)}</td></tr>`).join("") || "<tr><td class='muted'>No invoices yet</td></tr>"}</tbody></table>
     </div>`;
+    const vbox = document.getElementById("voice-setup");
+    const showVoice = async () => {
+      if (!window.DBKPhone) { vbox.innerHTML = "<p class='muted'>The phone script did not load.</p>"; return; }
+      let v;
+      try { v = await window.DBKPhone.status(); } catch (err) { vbox.innerHTML = `<p class="msg err">${esc(err.message)}</p>`; return; }
+      vbox.innerHTML = !v.twilio
+        ? `<p>Add <span class="mono">TWILIO_ACCOUNT_SID</span> and <span class="mono">TWILIO_AUTH_TOKEN</span> to this Pages project first.</p>`
+        : v.ready
+          ? `<p><span class="badge paid">ready</span> Calls go out from <strong>${esc(ukNice(v.caller))}</strong>, recorded from the answer and summarised on the job. People ringing that number back from a job's number are logged on the job${v.since ? ` (from ${day(v.since)})` : ""}.</p>
+             <p><button class="btn secondary small" id="voice-test">${PHONE_ICON}Test call to my mobile</button> <button class="btn secondary small" id="voice-redo">Repair the set-up</button></p>`
+          : `<p>Twilio is connected. One click makes the API key and the TwiML app (the number itself, and the phone agent answering it, are not touched).</p><p><button class="btn small" id="voice-redo">Set up calling</button></p>`;
+      document.getElementById("voice-test")?.addEventListener("click", () => window.DBKPhone.test());
+      document.getElementById("voice-redo")?.addEventListener("click", async (e) => {
+        busy(e.target, true);
+        try { await window.DBKPhone.setup(); await showVoice(); } catch (err) { vbox.insertAdjacentHTML("beforeend", `<p class="msg err">${esc(err.message)}</p>`); busy(e.target, false); }
+      });
+    };
+    showVoice();
     for (const [id, dry] of [["run-reminders", false], ["dry-reminders", true]]) {
       document.getElementById(id).addEventListener("click", async (e) => {
         if (!dry && !confirm("Send any reminders that are due right now?")) return;

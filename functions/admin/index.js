@@ -58,6 +58,17 @@ header.bar nav{display:flex;gap:2px;overflow-x:auto;white-space:nowrap;-webkit-o
   .msgform{grid-template-columns:1fr!important}
   input,select,textarea{font-size:16px}
 }
+/* phone bar (admin-phone.js) */
+#ph-bar{display:none}#ph-bar.on{display:block;position:fixed;left:0;right:0;bottom:0;z-index:5;background:#fff;border-top:1px solid var(--ink);box-shadow:0 -4px 18px rgba(0,0,0,.08);padding:10px 16px calc(10px + env(safe-area-inset-bottom))}
+.ph-in{max-width:1100px;margin:0 auto;display:flex;gap:10px 16px;align-items:center;flex-wrap:wrap}.ph-who{flex:1 1 260px;min-width:0}.ph-state{font-weight:600;white-space:nowrap}
+.ph-btns{display:flex;gap:8px;flex-wrap:wrap}.ph-end{background:var(--bad);border-color:var(--bad)}
+.ph-keys{max-width:260px;margin:10px auto 0;display:grid;grid-template-columns:repeat(3,1fr);gap:6px}.ph-keys .btn{font-size:16px;padding:8px 0}
+.ph-note{max-width:1100px;margin:6px auto 0;font-size:12px;color:var(--muted)}.ph-note.bad{color:var(--bad)}
+body.ph-on main{padding-bottom:150px}
+.callrow{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:12px}
+.callbtn{padding:3px 8px;font-size:12px;margin-top:4px}
+audio.rec{width:100%;max-width:340px;height:36px;margin-top:6px;display:block}
+@media (max-width:760px){.ph-who{flex-basis:100%}.ph-btns{flex:1 1 100%}.ph-btns .btn{flex:1 1 auto;text-align:center;padding:11px 10px}.callrow .btn{flex:1 1 calc(50% - 8px);text-align:center;padding:11px 10px}}
 `;
 
 function shell(inner, { title = "Invoicing", app = false } = {}) {
@@ -65,7 +76,7 @@ function shell(inner, { title = "Invoicing", app = false } = {}) {
 <meta name="robots" content="noindex, nofollow" /><title>${title} · Admin · Dominic Bowkett</title>
 <link rel="icon" href="/favicon.ico" sizes="any" />
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet" />
-<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin.js?v=19" defer></script>' : ""}</body></html>`;
+<style>${CSS}</style></head><body>${inner}${app ? '<script src="/assets/admin-phone.js?v=1" defer></script><script src="/assets/admin.js?v=20" defer></script>' : ""}</body></html>`;
 }
 
 export async function onRequestGet({ request, env }) {
