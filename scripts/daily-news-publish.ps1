@@ -10,8 +10,12 @@ $log = Join-Path $env:USERPROFILE ".claude\news-roundup-daily.log"
 Set-Location $repo
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run started ===" | Add-Content $log
 
+. (Join-Path $PSScriptRoot "find-claude.ps1")
+$claude = Find-Claude -Log $log -Routine "Surveyor's notes"
+if (-not $claude) { "=== run aborted ===" | Add-Content $log; exit 1 }
+
 $prompt = Get-Content (Join-Path $PSScriptRoot "daily-news-prompt.txt") -Raw
 
-& claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
+& $claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
 
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run finished (exit $LASTEXITCODE) ===" | Add-Content $log

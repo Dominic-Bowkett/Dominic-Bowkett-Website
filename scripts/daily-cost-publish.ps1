@@ -1,4 +1,4 @@
-# Daily "cost of X in 2026" guide — run by Windows Task Scheduler.
+# Weekly (Wednesday) "cost of X in 2026" guide — run by Windows Task Scheduler.
 # Runs Claude Code headless in this repo to research current UK prices and
 # publish one cost guide per docs/COST-GUIDE-SPEC.md, taking the next topic
 # from docs/COST-CALENDAR.md.
@@ -11,8 +11,12 @@ $log = Join-Path $env:USERPROFILE ".claude\cost-guide-daily.log"
 Set-Location $repo
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run started ===" | Add-Content $log
 
+. (Join-Path $PSScriptRoot "find-claude.ps1")
+$claude = Find-Claude -Log $log -Routine "Cost guide"
+if (-not $claude) { "=== run aborted ===" | Add-Content $log; exit 1 }
+
 $prompt = Get-Content (Join-Path $PSScriptRoot "daily-cost-prompt.txt") -Raw
 
-& claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
+& $claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
 
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run finished (exit $LASTEXITCODE) ===" | Add-Content $log

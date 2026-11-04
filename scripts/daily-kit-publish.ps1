@@ -9,10 +9,11 @@ $ErrorActionPreference = "Continue"
 $repo = Split-Path $PSScriptRoot -Parent
 $log = Join-Path $env:USERPROFILE ".claude\field-kit-daily.log"
 $calendar = Join-Path $repo "docs\KIT-CALENDAR.md"
-$perDay = 3
-$alertAt = 3
+$perDay = 1
+$alertAt = 7
 
 . (Join-Path $PSScriptRoot "fieldkit-alert.ps1")
+. (Join-Path $PSScriptRoot "find-claude.ps1")
 
 function Get-RemainingTopics {
     # Pull first so the count reflects what other runs have ticked.
@@ -23,6 +24,8 @@ function Get-RemainingTopics {
 Set-Location $repo
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run started ===" | Add-Content $log
 
+$claude = Find-Claude -Log $log -Routine "Field Kit"
+if (-not $claude) { exit 1 }
 $prompt = Get-Content (Join-Path $PSScriptRoot "daily-kit-prompt.txt") -Raw
 $published = 0
 
@@ -35,7 +38,7 @@ for ($i = 1; $i -le $perDay; $i++) {
     "--- run $i of $perDay ($remaining topics remaining) ---" | Add-Content $log
     $before = (& git -C $repo rev-parse HEAD)
     # Headless Claude Code run; skip-permissions is required for unattended edits/pushes.
-    & claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
+    & $claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
     $after = (& git -C $repo rev-parse HEAD)
     if ($after -ne $before) { $published++ }
 }
@@ -49,7 +52,7 @@ if ($remaining -le $alertAt) {
         $lead = "The Field Kit backlog has run out. The 07:30 routine will keep starting each day but publish nothing until new topics are added."
     } else {
         $subject = "Field Kit calendar: $remaining topic(s) left - add more"
-        $lead = "The Field Kit backlog is down to $remaining unticked topic(s), which is less than a day's run of $perDay."
+        $lead = "The Field Kit backlog is down to $remaining unticked topic(s), about a week's worth at $perDay a day."
     }
     $html = "<p>$lead</p>" +
             "<p>Add new topics as unticked <code>- [ ]</code> lines under <strong>Upcoming</strong> in " +

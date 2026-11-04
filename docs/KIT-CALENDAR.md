@@ -1,6 +1,6 @@
 # Field Kit content calendar
 
-Three guides per day (since 10 Sep 2026). Each run of the daily routine takes the FIRST
+One guide per day (three a day 10 Sep to 15 Oct 2026; one a day from 4 Nov 2026 to Christmas). Each run of the daily routine takes the FIRST
 unticked topic, writes it per `docs/KIT-GUIDE-SPEC.md`, publishes (indexes + sitemap +
 calendar tick), commits and pushes to main. Primary keyword and UK monthly volume noted
 per topic: Ahrefs for entries up to 9 Sep 2026, SE Ranking (getKeywordsMetrics, source uk)
@@ -113,7 +113,7 @@ from then on — the two KD scales are not comparable.
 
 - [x] best-home-tool-kits — tool kit for home (590, KD 9) / basic tool kit (320, KD 9) / tool set (4,400, KD 47) — the first-home tool kit; VonHaus Ultimate 120pc (top pick — broadest genuinely useful contents, spirit level/torch/voltage probe/crimping tool), Makita E-10899 76pc (premium/trade-grade pick — 3/8" ratchet and socket set), Draper Redline 70382 43pc, Amazon Basics 131pc, Hi-Spec 71pc, Stanley STMT0-74101 38pc (canvas bag, not a hard case; price volatile), Hi-Spec 39pc (budget pick); dropped Bosch (no confirmed current amazon.co.uk listing found), Tacklife (no verifiable current UK listing) and a 142pc Stanley aluminium case (reseller-inflated to £264 on Amazon, not a sane primary offer); links best-socket-testers, best-stud-finders, best-tape-measures, homebuyer-survey service — group: Buyers &amp; movers — 17 Sep 2026
 
-## Upcoming (daily routine takes the first unticked — three per day since 10 Sep 2026)
+## Upcoming (daily routine takes the first unticked — one per day from 4 Nov 2026)
 
 Each line: slug — primary keyword (SE Ranking UK volume, KD) — angle — FORMAT if not a
 standard ranked guide — hub group on /kit/. The daily script emails Dom when three or

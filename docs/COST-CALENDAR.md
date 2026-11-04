@@ -1,12 +1,12 @@
 # Cost guide content calendar
 
-One "cost of X in 2026" guide per day. The daily routine takes the FIRST unticked topic,
+One "cost of X in 2026" guide per week (Wednesdays, from 4 Nov 2026; daily before that). The weekly routine takes the FIRST unticked topic,
 writes it per `docs/COST-GUIDE-SPEC.md`, publishes (journal index + sitemap + calendar
 tick), commits and pushes to main. Ordered by priority: direct service-money-makers and
 high-traffic-potential topics first. Primary keyword + UK monthly volume (Ahrefs, GB)
 noted per topic.
 
-## Upcoming (daily routine takes the first unticked)
+## Upcoming (weekly routine takes the first unticked)
 
 - [x] house-survey-cost — house survey cost (1,800) + building/homebuyers survey cost — the direct instruction-winner; TP 26,000; end with your survey CTA — published /journal/house-survey-cost/ on 2026-07-20
 - [x] epc-cost — epc cost (900) + how much does an epc cost (800) — your own service; what the £ pays for; RdSAP explained — published /journal/epc-cost/ on 2026-07-21

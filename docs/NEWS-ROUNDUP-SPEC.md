@@ -1,13 +1,13 @@
-# News roundup spec — dominicbowkett.com daily briefing posts
+# News roundup spec — dominicbowkett.com weekly briefing posts (Fridays)
 
-How to write one daily news-commentary post for the site of Dominic Bowkett, an
+How to write one weekly news-commentary post (published every Friday since 6 Nov 2026) for the site of Dominic Bowkett, an
 independent building surveyor, domestic energy assessor and PAS 2035 retrofit assessor
 in Hartfield, East Sussex. UK English. Same design system and voice as the rest of the
 site — read `public/journal/listed-buildings-epc/index.html` for the register.
 
 ## What this post is
 
-A working surveyor's briefing on what happened in the last day or so across his world:
+A working surveyor's briefing on what happened over the past week across his world:
 EPCs and MEES, landlord regulation (Renters' Rights, licensing, deposits, Section 21),
 retrofit and PAS 2035 (ECO, grant schemes, Great British Insulation Scheme, heat pumps),
 building surveying and conveyancing, RICS/RPSA/professional-body news, housing-market
@@ -36,16 +36,16 @@ never hedge-everything corporate.
   in Dom's own words — never reproduce paragraphs.
 - Prefer primary sources (the consultation PDF, the legislation, the data release)
   over secondary reporting when both exist.
-- Date every post honestly. If a story is older than ~5 days, don't present it as
+- Date every post honestly. If a story is older than ~8 days, don't present it as
   news; either skip it or frame it as "still worth your attention".
 - NO invented quotes, NO stories that could not be verified, NO paywalled content
   summarised from memory.
 
 ## The skip rule
 
-3–5 stories per post. If genuine, on-topic news for the last day can't fill THREE
+4–6 stories per post. If genuine, on-topic news for the past week can't fill THREE
 stories, do not publish — exit cleanly, log "no post today: thin news day", and leave
-the repo untouched. A missed day is invisible; a padded post erodes the whole site.
+the repo untouched. A missed week is invisible; a padded post erodes the whole site.
 
 ## Page structure
 
@@ -61,14 +61,14 @@ the nav exactly as found in the copied page (no Kit item).
 - Hero meta row: Published date · Reading time · By Dominic Bowkett · MRPSA.
 - Breadcrumb: Home → Writing → Notes, DATE.
 - Body inside `<article class="prose"><div class="body">`:
-  1. Short intro paragraph (2–3 sentences): the shape of the day.
+  1. Short intro paragraph (2–3 sentences): the shape of the week.
   2. One `<h2>` per story — the h2 is Dom's angle, not the outlet's headline
      ("The EPC C deadline just got real for 2028 landlords", not "Government
      publishes response to MEES consultation").
      Under each: 2–4 paragraphs — what happened (with source link), then the
      practitioner's read, then who should do what.
   3. `<h2>What I'd actually do</h2>` — a short ordered list: concrete actions for
-     homeowners/landlords arising from today's stories.
+     homeowners/landlords arising from this week's stories.
   4. `<hr/>` + closing paragraph linking the most relevant service page
      (`../../services/epc/`, `../../services/retrofit/`,
      `../../services/building-surveys/`, `../../services/ventilation/`) and
