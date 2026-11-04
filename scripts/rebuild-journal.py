@@ -332,6 +332,8 @@ print('front page: ' + ', '.join(
 for a in ARCHIVES:
     print('archive /journal/%s/: %d posts' % (a['dir'], len(buckets[a['key']])))
 
-# Give any new post its own social card (cards that already exist are left alone).
+# Give any new post its own social card (cards that already exist are left alone), and
+# make sure pages with Amazon links load the click tracker and use their own tracking ID.
 import subprocess
 subprocess.run([sys.executable, str(ROOT / 'scripts' / 'build-cards.py')], check=True)
+subprocess.run([sys.executable, str(ROOT / 'scripts' / 'add-amazon-tracking.py')], check=True)
