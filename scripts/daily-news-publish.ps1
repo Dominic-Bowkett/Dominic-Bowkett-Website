@@ -14,8 +14,11 @@ Set-Location $repo
 $claude = Find-Claude -Log $log -Routine "Surveyor's notes"
 if (-not $claude) { "=== run aborted ===" | Add-Content $log; exit 1 }
 
-$prompt = Get-Content (Join-Path $PSScriptRoot "daily-news-prompt.txt") -Raw
+# Feed the prompt on stdin as UTF-8: Windows PowerShell mangles a long argument with
+# quotes in it (runs were getting the prompt cut off mid-spec).
+$OutputEncoding = New-Object System.Text.UTF8Encoding $false
+$prompt = Get-Content -Encoding UTF8 (Join-Path $PSScriptRoot "daily-news-prompt.txt") -Raw
 
-& $claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
+$prompt | & $claude -p --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
 
 "=== $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') run finished (exit $LASTEXITCODE) ===" | Add-Content $log

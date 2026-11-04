@@ -26,7 +26,10 @@ Set-Location $repo
 
 $claude = Find-Claude -Log $log -Routine "Field Kit"
 if (-not $claude) { exit 1 }
-$prompt = Get-Content (Join-Path $PSScriptRoot "daily-kit-prompt.txt") -Raw
+# Feed the prompt on stdin as UTF-8: Windows PowerShell mangles a long argument with
+# quotes in it (runs were getting the prompt cut off mid-spec).
+$OutputEncoding = New-Object System.Text.UTF8Encoding $false
+$prompt = Get-Content -Encoding UTF8 (Join-Path $PSScriptRoot "daily-kit-prompt.txt") -Raw
 $published = 0
 
 for ($i = 1; $i -le $perDay; $i++) {
@@ -38,7 +41,7 @@ for ($i = 1; $i -le $perDay; $i++) {
     "--- run $i of $perDay ($remaining topics remaining) ---" | Add-Content $log
     $before = (& git -C $repo rev-parse HEAD)
     # Headless Claude Code run; skip-permissions is required for unattended edits/pushes.
-    & $claude -p $prompt --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
+    $prompt | & $claude -p --dangerously-skip-permissions --model sonnet 2>&1 | Add-Content $log
     $after = (& git -C $repo rev-parse HEAD)
     if ($after -ne $before) { $published++ }
 }
