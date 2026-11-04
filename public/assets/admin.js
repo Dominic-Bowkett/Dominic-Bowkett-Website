@@ -404,16 +404,26 @@
   const msgEntry = (m) => `<li><span class="muted small">${when(m.at)} · ${esc(m.channel)} · ${m.direction === "in" ? "from " + esc(m.party) : "to " + esc(m.counterpart || "")}${m.party === "partner" || m.counterpart === "partner" ? " (partner)" : ""}</span>${m.subject && m.channel === "email" ? `<br/><strong class="small">${esc(m.subject)}</strong>` : ""}<div style="white-space:pre-wrap">${esc(m.body)}</div></li>`;
   const timelineHtml = (messages) => messages.map((m) => (m.channel === "call" ? callEntry(m) : msgEntry(m))).join("") || "<li class='muted'>Nothing yet</li>";
   const PHONE_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1.9.4 1.8.7 2.7a2 2 0 0 1-.5 2.1L8 9.8a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.7.7a2 2 0 0 1 1.7 2z"/></svg>`;
+  const TEXT_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>`;
+  const MAIL_ICON = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="vertical-align:-2px;margin-right:6px"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 7-10 6L2 7"/></svg>`;
   const ukNice = (n) => String(n || "").replace(/^\+44/, "0").replace(/^(\d{5})(\d+)$/, "$1 $2");
   function callRow(j, partner) {
     const cust = j.customer_phone, part = partner && partner.phone;
-    if (!cust && !part) return "";
+    const custMail = j.customer_email, partMail = partner && (partner.invoice_email || partner.email);
+    if (!cust && !part && !custMail && !partMail) return "";
     const pc = !!window.DBKPhone;
-    const pn = partner ? partner.contact_name || partner.display_name || partner.business_name : "";
+    const cn = esc(j.customer_name || "the customer");
+    const pn = esc(partner ? partner.contact_name || partner.display_name || partner.business_name : "");
     return `<div class="callrow">
-      ${cust && pc ? `<button type="button" class="btn" data-ring="customer">${PHONE_ICON}Call ${esc(j.customer_name || "the customer")}</button>` : ""}
-      ${part && pc ? `<button type="button" class="btn secondary" data-ring="partner">${PHONE_ICON}Call ${esc(pn)} (partner)</button>` : ""}
-      <span class="muted small">${pc ? "From the office number, recorded and summarised here." : ""}${cust ? ` Or <a href="tel:${esc(cust)}">ring ${esc(ukNice(cust))} from your mobile</a>.` : ""}</span></div>`;
+      ${cust && pc ? `<button type="button" class="btn" data-ring="customer">${PHONE_ICON}Call ${cn}</button>` : ""}
+      ${cust ? `<button type="button" class="btn secondary" data-compose="customer:sms">${TEXT_ICON}Text ${cn}</button>` : ""}
+      ${part && pc ? `<button type="button" class="btn secondary" data-ring="partner">${PHONE_ICON}Call ${pn} (partner)</button>` : ""}
+      ${part ? `<button type="button" class="btn secondary" data-compose="partner:sms">${TEXT_ICON}Text ${pn}</button>` : ""}
+      </div>${custMail || partMail ? `<div class="callrow" style="margin-top:8px">
+      ${custMail ? `<button type="button" class="btn secondary" data-compose="customer:email">${MAIL_ICON}Email ${cn}</button>` : ""}
+      ${partMail ? `<button type="button" class="btn secondary" data-compose="partner:email">${MAIL_ICON}Email ${pn}</button>` : ""}
+      </div>` : ""}
+      <p class="muted small" style="margin:8px 0 0">${pc && (cust || part) ? "Calls and texts go from the office number; calls are recorded and summarised here. " : ""}${cust ? `Or <a href="tel:${esc(cust)}">ring ${esc(ukNice(cust))} from your mobile</a>.` : ""}</p>`;
   }
   let callJob = null;
   function wireCallRow(jobId) {
@@ -528,6 +538,22 @@
     mf.to.addEventListener("change", () => { document.getElementById("msg-body").value = ""; syncCompose(); });
     document.getElementById("msg-body").addEventListener("input", updateHint);
     syncCompose();
+    /* the Text / Email buttons at the top: set the compose box to that person and channel, then jump to it */
+    const openCompose = (who, channel) => {
+      if (![...mf.to.options].some((o) => o.value === who)) return;
+      const body = document.getElementById("msg-body");
+      if (mf.to.value !== who || mf.channel.value !== channel) { mf.to.value = who; body.value = ""; mf.subject.value = ""; }
+      mf.channel.value = channel;
+      syncCompose();
+      const bar = document.querySelector("header.bar");   // sticky, so keep the card's heading clear of it
+      const card = mf.closest(".card") || mf;
+      window.scrollTo({ top: card.getBoundingClientRect().top + window.scrollY - (bar ? bar.offsetHeight : 0) - 10, behavior: "smooth" });
+      setTimeout(() => {
+        body.focus({ preventScroll: true });
+        if (channel === "email") { const at = body.value.indexOf("\n\n") + 2; if (at > 1) body.setSelectionRange(at, at); }   // cursor after "Hi Name,"
+      }, 400);
+    };
+    app.querySelectorAll(".callrow [data-compose]").forEach((b) => b.addEventListener("click", () => { const [who, ch] = b.dataset.compose.split(":"); openCompose(who, ch); }));
     mf.addEventListener("submit", (e) => {
       e.preventDefault();
       const b = Object.fromEntries(new FormData(mf).entries());
