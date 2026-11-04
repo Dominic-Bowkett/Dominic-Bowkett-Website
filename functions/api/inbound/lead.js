@@ -3,6 +3,7 @@
 import { safeEqual } from "../../_shared/email.js";
 import { createJob } from "../../_shared/jobs.js";
 import { db as database } from "../../_shared/db.js";
+import { ecowealdHousehold } from "../../_shared/ecoweald.js";
 
 export async function onRequestPost({ request, env }) {
   const key = request.headers.get("x-relay-key") || "";
@@ -10,6 +11,9 @@ export async function onRequestPost({ request, env }) {
   let body = {};
   try { body = await request.json(); } catch {}
   try {
+    // Ecoweald's tenants ring the same office number: never a job here.
+    const hh = body.customer_phone ? await ecowealdHousehold(env, body.customer_phone) : null;
+    if (hh) return new Response(JSON.stringify({ ok: true, skipped: "ecoweald_household" }), { headers: { "content-type": "application/json" } });
     // One job per source reference.
     if (body.source && body.source_ref) {
       const d = await database(env);

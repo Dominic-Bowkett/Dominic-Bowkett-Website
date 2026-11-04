@@ -14,6 +14,7 @@ import { db } from "./db.js";
 import { e164 } from "./sms.js";
 import { digits, transcribe, summarise, partnersWithPhones } from "./calls.js";
 import { getJob, OPEN } from "./jobs.js";
+import { ecowealdHousehold } from "./ecoweald.js";
 
 export const ORIGIN = "https://www.dominicbowkett.com";
 export const OFFICE_NUMBER = "+447476394125";
@@ -276,6 +277,7 @@ export async function syncIncoming(env, { force = false } = {}) {
     const from = digits(c.from);
     if (from.length < 9) continue;
     if (await d.prepare("SELECT 1 AS x FROM job_messages WHERE provider_id = ?").bind(c.sid).first()) continue;
+    if (await ecowealdHousehold(env, from)) continue;   // an Ecoweald tenant: Ecoweald's inbox logs it
     const mine = jobs.filter((j) => digits(j.customer_phone) === from);
     let job = mine.find(isOpen) || mine[0] || null, party = "customer", who = job ? job.customer_name || "The customer" : "";
     if (!job) {

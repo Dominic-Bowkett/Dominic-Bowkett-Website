@@ -19,6 +19,13 @@ binding = "DB"
 database_name = "dominicbowkett-invoices"
 database_id = "34d87068-e4c9-4978-8a5d-1a4949ad9fda"
 
+# --- Ecoweald's households (read only), 4 Nov 2026: Ecoweald rings its tenants from the same office number, so their
+# numbers are never filed as jobs or logged as job callbacks here (functions/_shared/ecoweald.js) ---
+[[d1_databases]]
+binding = "EW_DB"
+database_name = "ecoweald-bookings"
+database_id = "82ed17cc-b56f-440f-a6fa-2fc76287cbe0"
+
 # --- On-site survey photos (/admin/survey), created 13 Oct 2026 with `wrangler r2 bucket create dominicbowkett-survey-files` ---
 [[r2_buckets]]
 binding = "SURVEY_FILES"
