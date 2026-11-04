@@ -725,8 +725,9 @@
     }
   }
 
+  const HOME = /DBJobsApp/.test(navigator.userAgent) ? "jobs" : "invoices";   // the Jobs app opens on the jobs board
   async function route() {
-    const h = location.hash.replace(/^#/, "") || "invoices";
+    const h = location.hash.replace(/^#/, "") || HOME;
     try {
       if (h === "tasks") await viewTasks();
       else if (h === "calls") await viewCalls();
@@ -739,10 +740,11 @@
       else if (h.startsWith("inv/")) await viewInvoice(h.slice(4));
       else if (h === "partners") await viewPartners();
       else if (h === "setup") await viewSetup();
+      else if (HOME === "jobs") await viewJobs();
       else await viewInvoices();
     } catch (err) {
       // A slower page from before the user switched tabs must not overwrite the page they are on now.
-      if ((location.hash.replace(/^#/, "") || "invoices") !== h) return;
+      if ((location.hash.replace(/^#/, "") || HOME) !== h) return;
       app.innerHTML = `<div class="card"><p class="msg err">${esc(err.message)}</p><p><a href="#setup">Check setup</a></p></div>`;
     }
   }
