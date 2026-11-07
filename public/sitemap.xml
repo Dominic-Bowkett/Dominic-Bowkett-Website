@@ -68,7 +68,7 @@
   </url>
   <url>
     <loc>https://www.dominicbowkett.com/journal/</loc>
-    <lastmod>2026-11-06</lastmod>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -2067,6 +2067,12 @@
   <url>
     <loc>https://www.dominicbowkett.com/journal/best-first-aid-kits/</loc>
     <lastmod>2026-11-06</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://www.dominicbowkett.com/journal/best-laptop-rucksacks/</loc>
+    <lastmod>2026-11-07</lastmod>
     <changefreq>monthly</changefreq>
     <priority>0.7</priority>
   </url>
